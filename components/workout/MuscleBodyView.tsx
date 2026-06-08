@@ -1,5 +1,5 @@
 // react-native-body-highlighter 래퍼 — 운동 부위 시각화 (영역별 크롭)
-import { View, StyleSheet, UIManager, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { Icon } from '../ui/Icon';
 import Body from 'react-native-body-highlighter';
 import type { MuscleGroup } from '../../types';
@@ -27,13 +27,6 @@ const SIZE_BOX: Record<MuscleBodySize, { width: number; height: number }> = {
   card: { width: 100, height: 120 },
   hero: { width: 0, height: 160 },
 };
-
-function isSvgNativeAvailable(): boolean {
-  if (Platform.OS === 'web') return true;
-  return UIManager.getViewManagerConfig?.('RNSVGSvgView') != null;
-}
-
-const svgAvailable = isSvgNativeAvailable();
 
 export function MuscleBodyView({
   muscleKeys,
@@ -63,7 +56,8 @@ export function MuscleBodyView({
       ? styles.heroWrap
       : { width: box.width, height: box.height };
 
-  if (!svgAvailable) {
+  // Web만 SVG 미지원 시 아이콘 fallback (iOS/Android APK는 react-native-svg 사용)
+  if (Platform.OS === 'web') {
     return (
       <View style={[styles.wrap, wrapStyle, styles.fallback]}>
         <Icon

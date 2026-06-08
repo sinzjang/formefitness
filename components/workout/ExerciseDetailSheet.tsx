@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '../ui/Icon';
 import type { Language, ResistanceType } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
@@ -52,11 +53,14 @@ export function ExerciseDetailSheet({
   presentation = 'modal',
   onDeactivate,
 }: ExerciseDetailSheetProps) {
-  const { width } = useWindowDimensions();
+  const { width, height: windowHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const cardGap = 8;
   const cardWidth = (width - layout.screenPadding * 2 - cardGap * 2) / 3;
   const heroWidth = width - layout.screenPadding * 2;
-  const heroHeight = heroWidth;
+  // 상단 safe area 아래까지만 시트가 올라감
+  const maxSheetHeight = windowHeight - insets.top - 8;
+  const heroHeight = Math.min(heroWidth, maxSheetHeight * 0.42);
 
   const [showInstructions, setShowInstructions] = useState(false);
   const [instructions, setInstructions] = useState<string[] | null>(null);
@@ -131,7 +135,11 @@ export function ExerciseDetailSheet({
 
   const sheetContent = (
     <Pressable style={styles.sheetOverlay} onPress={onClose}>
-      <Pressable style={styles.sheet} onPress={() => {}}>
+      <Pressable
+        style={[styles.sheet, { maxHeight: maxSheetHeight, paddingBottom: insets.bottom + 16 }]}
+        onPress={() => {}}
+      >
+        {/* 상단 바 — 스크롤 밖 고정 (X·휴지통 항상 터치 가능) */}
         <View style={styles.sheetTopBar}>
           <View style={styles.sheetHandle} />
           {onDeactivate && exercise.is_active !== false && (
@@ -154,84 +162,93 @@ export function ExerciseDetailSheet({
           </Pressable>
         </View>
 
-        <View style={[styles.sheetHeroImage, { height: heroHeight }]}>
-          <ExerciseDbThumb
-            nameEn={exercise.nameEn}
-            exerciseDbId={getExerciseDbId(exercise)}
-            gifUrl={exercise.gifUrl}
-            variant="hero"
-            width={heroWidth}
-            height={heroHeight}
-            borderRadius={12}
-          />
-          <Pressable
-            style={({ pressed }) => [styles.heroInfoBtn, pressed && styles.heroInfoBtnPressed]}
-            onPress={handleOpenInstructions}
-            hitSlop={6}
-            accessibilityLabel={t('exerciseInstructions', lang)}
-          >
-            <Icon name="info" size={28} color={colors.textPrimary} />
-          </Pressable>
-        </View>
-
-        <Text style={styles.sheetTitle}>{exerciseName(exercise, lang)}</Text>
-
-        <View style={styles.sheetMetaRow}>
-          <View style={styles.chip}>
-            <Text style={styles.chipText}>{muscleGroupLabel(exercise.muscleGroup, lang)}</Text>
-          </View>
-          <View style={styles.chip}>
-            <Text style={styles.chipText}>{exercise.gear}</Text>
-          </View>
-          <View style={styles.chip}>
-            <Text style={styles.chipText}>{resistanceLabel(exercise.gear, lang)}</Text>
-          </View>
-        </View>
-
         <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.muscleCardRow}
-          snapToInterval={cardWidth + cardGap}
-          decelerationRate="fast"
+          style={styles.sheetScroll}
+          contentContainerStyle={styles.sheetScrollContent}
+          showsVerticalScrollIndicator={false}
+          bounces
+          nestedScrollEnabled
         >
-          {muscleCards.map((card, index) => (
-            <View key={`${card.role}-${index}`} style={[styles.muscleCard, { width: cardWidth }]}>
-              <Text style={styles.muscleCardRole}>{card.label}</Text>
-              <View style={styles.muscleCardBody}>
-                {card.role === 'primary' ? (
-                  <MuscleBodyView
-                    size="card"
-                    fill
-                    muscleKeys={card.muscleKeys}
-                    muscleGroup={exercise.muscleGroup}
-                  />
-                ) : (
-                  <MuscleBodyView
-                    size="card"
-                    fill
-                    muscleKey={card.muscleKey}
-                    muscleGroup={exercise.muscleGroup}
-                    empty={card.empty}
-                  />
-                )}
-              </View>
-              <Text style={styles.muscleCardName} numberOfLines={2}>
-                {card.name}
-              </Text>
-            </View>
-          ))}
-        </ScrollView>
+          <View style={[styles.sheetHeroImage, { height: heroHeight }]}>
+            <ExerciseDbThumb
+              nameEn={exercise.nameEn}
+              exerciseDbId={getExerciseDbId(exercise)}
+              gifUrl={exercise.gifUrl}
+              variant="hero"
+              width={heroWidth}
+              height={heroHeight}
+              borderRadius={12}
+            />
+            <Pressable
+              style={({ pressed }) => [styles.heroInfoBtn, pressed && styles.heroInfoBtnPressed]}
+              onPress={handleOpenInstructions}
+              hitSlop={6}
+              accessibilityLabel={t('exerciseInstructions', lang)}
+            >
+              <Icon name="info" size={28} color={colors.textPrimary} />
+            </Pressable>
+          </View>
 
-        {onAdd && (
-          <Pressable
-            style={({ pressed }) => [styles.sheetAdd, pressed && styles.sheetAddPressed]}
-            onPress={() => onAdd(exercise)}
+          <Text style={styles.sheetTitle}>{exerciseName(exercise, lang)}</Text>
+
+          <View style={styles.sheetMetaRow}>
+            <View style={styles.chip}>
+              <Text style={styles.chipText}>{muscleGroupLabel(exercise.muscleGroup, lang)}</Text>
+            </View>
+            <View style={styles.chip}>
+              <Text style={styles.chipText}>{exercise.gear}</Text>
+            </View>
+            <View style={styles.chip}>
+              <Text style={styles.chipText}>{resistanceLabel(exercise.gear, lang)}</Text>
+            </View>
+          </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.muscleCardRow}
+            snapToInterval={cardWidth + cardGap}
+            decelerationRate="fast"
+            nestedScrollEnabled
           >
-            <Icon name="add" size={20} color={colors.background} />
-            <Text style={styles.sheetAddText}>{t('addExercise', lang)}</Text>
-          </Pressable>
-        )}
+            {muscleCards.map((card, index) => (
+              <View key={`${card.role}-${index}`} style={[styles.muscleCard, { width: cardWidth }]}>
+                <Text style={styles.muscleCardRole}>{card.label}</Text>
+                <View style={styles.muscleCardBody}>
+                  {card.role === 'primary' ? (
+                    <MuscleBodyView
+                      size="card"
+                      fill
+                      muscleKeys={card.muscleKeys}
+                      muscleGroup={exercise.muscleGroup}
+                    />
+                  ) : (
+                    <MuscleBodyView
+                      size="card"
+                      fill
+                      muscleKey={card.muscleKey}
+                      muscleGroup={exercise.muscleGroup}
+                      empty={card.empty}
+                    />
+                  )}
+                </View>
+                <Text style={styles.muscleCardName} numberOfLines={2}>
+                  {card.name}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+
+          {onAdd && (
+            <Pressable
+              style={({ pressed }) => [styles.sheetAdd, pressed && styles.sheetAddPressed]}
+              onPress={() => onAdd(exercise)}
+            >
+              <Icon name="add" size={20} color={colors.background} />
+              <Text style={styles.sheetAddText}>{t('addExercise', lang)}</Text>
+            </Pressable>
+          )}
+        </ScrollView>
 
         <Modal
           visible={showInstructions}
@@ -303,7 +320,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingHorizontal: layout.screenPadding,
     paddingTop: 10,
-    paddingBottom: 36,
+    overflow: 'hidden',
+  },
+  sheetScroll: {
+    flexShrink: 1,
+    minHeight: 0,
+  },
+  sheetScrollContent: {
+    paddingBottom: 8,
   },
   sheetHandle: {
     alignSelf: 'center',
