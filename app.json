@@ -20,6 +20,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8cb3f234-f6d9-4917-a95f-346e83c4d5c4"
+      }
+    },
+    "owner": "sinzjang"
   }
 }
