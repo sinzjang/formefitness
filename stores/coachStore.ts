@@ -90,18 +90,24 @@ export const useCoachStore = create<CoachState>()(
       clearError: () => set({ error: null }),
 
       onLanguageChanged: (lang) => {
-        if (get().lastGreetingLanguage === lang) return;
+        if (get().lastGreetingLanguage === lang && get().messages.length > 0) return;
         set({
           messages: [],
           lastGreetingDate: null,
           lastGreetingLanguage: null,
         });
-        get().fetchDailyGreetingIfNeeded();
+        void get().fetchDailyGreetingIfNeeded();
       },
 
       fetchDailyGreetingIfNeeded: async () => {
         const lang = useSettingsStore.getState().language;
         const today = toLocalDateKey(new Date());
+
+        // 저장된 채팅 언어와 앱 설정이 다르면 새로 시작
+        if (get().lastGreetingLanguage && get().lastGreetingLanguage !== lang) {
+          set({ messages: [], lastGreetingDate: null, lastGreetingLanguage: null });
+        }
+
         if (
           get().lastGreetingDate === today &&
           get().lastGreetingLanguage === lang &&
@@ -130,7 +136,7 @@ export const useCoachStore = create<CoachState>()(
         } catch (e) {
           const fallback =
             lang === 'ko'
-              ? '안녕하세요! 오늘 운동 계획이 있으신가요? 무엇이든 물어보세요 💪'
+              ? '안녕하세요! 오늘 운동 계획이 있으신가요? 무엇이든 물어보세요.'
               : "Hey! Ready to train today? Ask me anything about your workout.";
           set({
             messages: [

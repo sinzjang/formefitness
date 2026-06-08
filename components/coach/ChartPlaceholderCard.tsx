@@ -1,6 +1,6 @@
 // 차트 응답 플레이스홀더 (Phase 5 전까지 요약 표시)
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type { CoachChartData, Language } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
@@ -14,7 +14,7 @@ export function ChartPlaceholderCard({ lang, chart }: ChartPlaceholderCardProps)
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Ionicons name="stats-chart-outline" size={16} color={colors.textPrimary} />
+        <Icon name="stats-chart" size={16} color={colors.textPrimary} />
         <Text style={styles.title}>{chart.title}</Text>
       </View>
       <Text style={styles.meta}>

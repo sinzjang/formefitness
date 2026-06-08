@@ -14,6 +14,7 @@ const { toFormeExercise } = require('./lib/exerciseDbToForme');
 
 const ROOT = path.join(__dirname, '..');
 const SRC_JSON = path.join(ROOT, 'src/data/exercisedb_full.json');
+const SRC_KO = path.join(ROOT, 'src/data/ko.json');
 const OUT_CATALOG = path.join(ROOT, 'src/data/forme_exercise_catalog.json');
 const OUT_IDS = path.join(ROOT, 'constants/exerciseDbCatalogIds.ts');
 const LEGACY = path.join(ROOT, 'constants/exercises.legacy.ts');
@@ -41,10 +42,16 @@ export function getCatalogExerciseDbId(nameEn: string): string | undefined {
     process.exit(1);
   }
 
+  const koById = fs.existsSync(SRC_KO)
+    ? JSON.parse(fs.readFileSync(SRC_KO, 'utf8'))
+    : {};
+
   const catalog = raw
     .filter((r) => r?.id && r?.name)
-    .map(toFormeExercise)
+    .map((r) => toFormeExercise(r, koById))
     .sort((a, b) => a.nameEn.localeCompare(b.nameEn));
+
+  const activeCount = catalog.filter((ex) => ex.is_active).length;
 
   const byGroup = {};
   for (const ex of catalog) {
@@ -52,7 +59,7 @@ export function getCatalogExerciseDbId(nameEn: string): string | undefined {
   }
 
   fs.writeFileSync(OUT_CATALOG, JSON.stringify(catalog, null, 2), 'utf8');
-  console.log(`✅ 카탈로그 ${catalog.length}건 → ${OUT_CATALOG}`);
+  console.log(`✅ 카탈로그 ${catalog.length}건 (is_active=true ${activeCount}건) → ${OUT_CATALOG}`);
   console.log('   부위별:', byGroup);
 
   const idMap = {};

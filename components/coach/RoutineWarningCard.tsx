@@ -1,6 +1,6 @@
 // 루틴 추천 + 피로 경고 카드
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type { CoachRecommendedRoutine, Language } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
@@ -16,7 +16,7 @@ export function RoutineWarningCard({ lang, routine }: RoutineWarningCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Ionicons name="barbell-outline" size={16} color={colors.textPrimary} />
+        <Icon name="barbell" size={16} color={colors.textPrimary} />
         <Text style={styles.title}>{routine.routineName}</Text>
       </View>
 

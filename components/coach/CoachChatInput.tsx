@@ -1,7 +1,7 @@
 // 코치 채팅 입력
 import { useState } from 'react';
 import { View, TextInput, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import type { Language } from '../../types';
@@ -43,7 +43,7 @@ export function CoachChatInput({ lang, disabled, onSend }: CoachChatInputProps) 
         onPress={handleSend}
         disabled={!text.trim() || disabled}
       >
-        <Ionicons name="arrow-up" size={18} color={colors.background} />
+        <Icon name="arrow-up" size={18} color={colors.background} />
       </Pressable>
     </View>
   );

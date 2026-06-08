@@ -2,7 +2,7 @@
 // 보더 색상은 피로도에 따라 변함 (none=회색, good=초록, caution=주황, overload=빨강)
 import { useState, useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type {
   ExerciseRestSeconds,
   FatigueLevel,
@@ -20,11 +20,15 @@ import { useLanguage } from '../../stores/settingsStore';
 import { useRestTimerStore } from '../../stores/restTimerStore';
 import { useCustomExerciseStore } from '../../stores/customExerciseStore';
 import { getExerciseDbId, workoutExerciseToDef } from '../../lib/exerciseCatalog';
+import { resolveDisplayExerciseName } from '../../lib/exerciseKo';
+import { mergeCatalogExerciseMeta } from '../../lib/exerciseMeta';
+import { useExerciseCatalogPrefsStore } from '../../stores/exerciseCatalogPrefsStore';
 import { SetRow } from './SetRow';
 import { SwipeRow } from './SwipeRow';
 import { HistorySheet } from './HistorySheet';
 import { ExerciseDbThumb } from './ExerciseDbThumb';
 import { ExerciseDetailSheet } from './ExerciseDetailSheet';
+import { DragHandle } from './DragHandle';
 
 // 저항 타입 → i18n 키
 const RESISTANCE_KEY: Record<ResistanceType, StringKey> = {
@@ -45,6 +49,9 @@ interface ExerciseAccordionProps {
   onSetAdd: () => void;
   onSetDelete: (setNumber: number) => void;
   onRestChange: (seconds: ExerciseRestSeconds) => void;
+  /** 길게 눌러 순서 변경 (세션 리스트) */
+  onDrag?: () => void;
+  isDragging?: boolean;
 }
 
 export function ExerciseAccordion({
@@ -56,18 +63,33 @@ export function ExerciseAccordion({
   onSetAdd,
   onSetDelete,
   onRestChange,
+  onDrag,
+  isDragging = false,
 }: ExerciseAccordionProps) {
   const lang = useLanguage();
   const customExercises = useCustomExerciseStore((s) => s.exercises);
+  const setCustomActive = useCustomExerciseStore((s) => s.setActive);
+  const catalogPrefs = useExerciseCatalogPrefsStore((s) => s.prefs);
+  const setCatalogActive = useExerciseCatalogPrefsStore((s) => s.setActive);
   const startRest = useRestTimerStore((s) => s.start);
   const completedCount = exercise.sets.filter((s) => s.completed).length;
   const [historyVisible, setHistoryVisible] = useState(false);
   const [detailVisible, setDetailVisible] = useState(false);
 
-  const exerciseDef = useMemo(
-    () => workoutExerciseToDef(exercise, customExercises),
-    [exercise, customExercises]
-  );
+  const exerciseDef = useMemo(() => {
+    const def = workoutExerciseToDef(exercise, customExercises);
+    if (def.isCustom) return def;
+    return mergeCatalogExerciseMeta(def, catalogPrefs);
+  }, [exercise, customExercises, catalogPrefs]);
+
+  const handleDeactivateExercise = () => {
+    if (exerciseDef.isCustom && exerciseDef.customId) {
+      setCustomActive(exerciseDef.customId, false);
+    } else {
+      setCatalogActive(exerciseDef.nameEn, false);
+    }
+    setDetailVisible(false);
+  };
 
   // 세트 완료 시 휴식 타이머 시작
   const handleSetChange = (set: SetData, data: Partial<SetData>) => {
@@ -82,15 +104,31 @@ export function ExerciseAccordion({
       style={[
         styles.container,
         { borderColor: fatigueLevel === 'none' ? colors.border : FATIGUE_COLORS[fatigueLevel] },
+        isDragging && styles.containerDragging,
       ]}
     >
-      <View style={styles.header}>
-        {/* 왼쪽: 정지 GIF 썸네일 — 탭하면 운동 디테일 모달 */}
+      <View style={[styles.header, onDrag && styles.headerWithGrip]}>
+        {onDrag && (
+          <>
+            <Pressable
+              onLongPress={onDrag}
+              delayLongPress={120}
+              style={({ pressed }) => [styles.gripBtn, pressed && styles.gripBtnPressed]}
+              hitSlop={4}
+              accessibilityLabel={t('reorderExercise', lang)}
+            >
+              <DragHandle active={isDragging} />
+            </Pressable>
+            <View style={styles.headerDivider} />
+          </>
+        )}
+
+        {/* 정지 GIF 썸네일 — 탭하면 운동 디테일 모달 */}
         <Pressable
           style={({ pressed }) => [styles.thumbBtn, pressed && styles.thumbBtnPressed]}
           onPress={() => setDetailVisible(true)}
           hitSlop={4}
-          accessibilityLabel={exercise.exerciseName[lang]}
+          accessibilityLabel={resolveDisplayExerciseName(exercise.exerciseName, lang)}
         >
           <ExerciseDbThumb
             nameEn={exerciseDef.nameEn}
@@ -102,7 +140,7 @@ export function ExerciseAccordion({
 
         {/* 타이틀 영역: 탭하면 접기/펼치기 */}
         <Pressable style={styles.headerToggle} onPress={onToggle}>
-          <Text style={styles.name}>{exercise.exerciseName[lang]}</Text>
+          <Text style={styles.name}>{resolveDisplayExerciseName(exercise.exerciseName, lang)}</Text>
           <Text style={styles.meta}>
             {muscleGroupLabel(exercise.muscleGroup, lang)} ·{' '}
             {resistanceLabel(exercise.resistanceType, lang)} · {completedCount}/
@@ -118,11 +156,11 @@ export function ExerciseAccordion({
             hitSlop={6}
             accessibilityLabel={t('history', lang)}
           >
-            <Ionicons name="stats-chart-outline" size={18} color={colors.textPrimary} />
+            <Icon name="stats-chart" size={18} color={colors.textPrimary} />
           </Pressable>
 
           <Pressable onPress={onToggle} hitSlop={8} style={styles.chevronBtn}>
-            <Ionicons
+            <Icon
               name={expanded ? 'chevron-up' : 'chevron-down'}
               size={18}
               color={colors.textSecondary}
@@ -141,13 +179,14 @@ export function ExerciseAccordion({
         exercise={detailVisible ? exerciseDef : null}
         lang={lang}
         onClose={() => setDetailVisible(false)}
+        onDeactivate={handleDeactivateExercise}
       />
 
       {expanded && (
         <View style={styles.body}>
           {/* 쉬는 시간 설정: 30 / 60 / 90 / 120초 */}
           <View style={styles.restRow}>
-            <Ionicons name="timer-outline" size={16} color={colors.textMuted} />
+            <Icon name="timer" size={16} color={colors.textMuted} />
             <Text style={styles.restLabel}>{t('restTime', lang)}</Text>
             <View style={styles.restChips}>
               {EXERCISE_REST_OPTIONS.map((sec) => {
@@ -178,7 +217,7 @@ export function ExerciseAccordion({
           ))}
 
           <Pressable style={styles.addSet} onPress={onSetAdd}>
-            <Ionicons name="add" size={18} color={colors.textPrimary} />
+            <Icon name="add" size={18} color={colors.textPrimary} />
             <Text style={styles.addSetText}>{t('addSet', lang)}</Text>
           </Pressable>
         </View>
@@ -194,12 +233,33 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     overflow: 'hidden',
   },
+  containerDragging: {
+    opacity: 0.92,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
     gap: 10,
+  },
+  headerWithGrip: {
+    paddingLeft: 10,
+    gap: 8,
+  },
+  gripBtn: {
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+    justifyContent: 'center',
+  },
+  gripBtnPressed: {
+    opacity: 0.7,
+  },
+  headerDivider: {
+    width: StyleSheet.hairlineWidth,
+    alignSelf: 'stretch',
+    backgroundColor: colors.border,
+    marginVertical: 2,
   },
   thumbBtn: {
     borderRadius: 8,

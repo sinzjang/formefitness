@@ -1,30 +1,34 @@
-// 운동 추가 피커: Gear / Target 필터 + 근육 그룹별 운동 카탈로그
-import { useState, useMemo } from 'react';
+// 운동 추가 피커: 검색 + Gear / Target 필터 + 근육 그룹별 운동 카탈로그
+import { useState, useMemo, useEffect } from 'react';
 import {
   Modal,
   View,
   Text,
+  TextInput,
   Pressable,
   ScrollView,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type { Gear, Language, MuscleGroup } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { MUSCLES, muscleGroupLabel } from '../../constants/muscles';
 import { GEARS } from '../../constants/gears';
-import { exercisesByMuscle, exerciseName, type ExerciseDef } from '../../constants/exercises';
+import { exerciseName, type ExerciseDef } from '../../constants/exercises';
 import { localizeMuscleList, localizeMuscle } from '../../constants/anatomy';
 import { t } from '../../lib/i18n';
 import { useLanguage } from '../../stores/settingsStore';
 import { useCustomExerciseStore } from '../../stores/customExerciseStore';
 import {
   filterExercises,
-  getCatalogExercises,
+  getCatalogExercisesWithPrefs,
   getCustomExerciseDefs,
   getExerciseDbId,
 } from '../../lib/exerciseCatalog';
+import { filterActiveExercises } from '../../lib/exerciseMeta';
+import { searchCatalogExercises } from '../../lib/exerciseSearch';
+import { useExerciseCatalogPrefsStore } from '../../stores/exerciseCatalogPrefsStore';
 import { AddCustomExerciseSheet } from './AddCustomExerciseSheet';
 import { MuscleBodyView } from './MuscleBodyView';
 import { ExerciseDbThumb } from './ExerciseDbThumb';
@@ -41,20 +45,53 @@ type OpenFilter = 'gear' | 'target' | null;
 export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerProps) {
   const lang = useLanguage();
   const customExercises = useCustomExerciseStore((s) => s.exercises);
+  const setCustomActive = useCustomExerciseStore((s) => s.setActive);
+  const catalogPrefs = useExerciseCatalogPrefsStore((s) => s.prefs);
+  const setCatalogActive = useExerciseCatalogPrefsStore((s) => s.setActive);
   const [gear, setGear] = useState<Gear | null>(null);
   const [target, setTarget] = useState<MuscleGroup | null>(null);
   const [open, setOpen] = useState<OpenFilter>(null);
   const [detail, setDetail] = useState<ExerciseDef | null>(null);
   const [customSheetVisible, setCustomSheetVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (!visible) {
+      setSearchQuery('');
+      setOpen(null);
+      setDetail(null);
+    }
+  }, [visible]);
+
+  const fullCatalog = useMemo(
+    () => getCatalogExercisesWithPrefs(catalogPrefs),
+    [catalogPrefs]
+  );
+
+  const isSearching = searchQuery.trim().length > 0;
 
   const catalogItems = useMemo(
-    () => filterExercises(getCatalogExercises(), gear, target),
-    [gear, target]
+    () => filterExercises(filterActiveExercises(fullCatalog), gear, target),
+    [fullCatalog, gear, target]
   );
+
+  const searchResults = useMemo(() => {
+    if (!isSearching) return [];
+    return filterExercises(searchCatalogExercises(fullCatalog, searchQuery, lang), gear, target);
+  }, [fullCatalog, searchQuery, lang, gear, target, isSearching]);
   const customItems = useMemo(
     () => filterExercises(getCustomExerciseDefs(customExercises), gear, target),
     [customExercises, gear, target]
   );
+
+  const handleDeactivate = (ex: ExerciseDef) => {
+    if (ex.isCustom && ex.customId) {
+      setCustomActive(ex.customId, false);
+    } else {
+      setCatalogActive(ex.nameEn, false);
+    }
+    setDetail(null);
+  };
 
   // 운동 추가 후 피커 닫기
   const handleAdd = (ex: ExerciseDef) => {
@@ -83,8 +120,29 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
           <View style={styles.header}>
             <Text style={styles.title}>{t('addExercise', lang)}</Text>
             <Pressable onPress={onClose} hitSlop={8}>
-              <Ionicons name="close" size={26} color={colors.textPrimary} />
+              <Icon name="close" size={26} color={colors.textPrimary} />
             </Pressable>
+          </View>
+
+          {/* 검색 — 전체 DB (is_active 무관) */}
+          <View style={styles.searchBar}>
+            <Icon name="search" size={18} color={colors.textMuted} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder={t('exerciseSearchPlaceholder', lang)}
+              placeholderTextColor={colors.textMuted}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+              clearButtonMode="while-editing"
+            />
+            {searchQuery.length > 0 && (
+              <Pressable onPress={() => setSearchQuery('')} hitSlop={8}>
+                <Icon name="close-circle" size={18} color={colors.textMuted} />
+              </Pressable>
+            )}
           </View>
 
           {/* 필터 바: GEAR | TARGET */}
@@ -95,7 +153,7 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
                 <Text style={styles.filterValue} numberOfLines={1}>
                   {gearLabel}
                 </Text>
-                <Ionicons
+                <Icon
                   name={open === 'gear' ? 'chevron-up' : 'chevron-down'}
                   size={16}
                   color={colors.textSecondary}
@@ -111,7 +169,7 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
                 <Text style={styles.filterValue} numberOfLines={1}>
                   {targetLabel}
                 </Text>
-                <Ionicons
+                <Icon
                   name={open === 'target' ? 'chevron-up' : 'chevron-down'}
                   size={16}
                   color={colors.textSecondary}
@@ -171,7 +229,34 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
             </ScrollView>
           )}
 
-          <ScrollView contentContainerStyle={styles.scroll}>
+          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+            {isSearching ? (
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>{t('exerciseCatalog', lang)}</Text>
+                  <Text style={styles.searchCount}>
+                    {searchResults.length}
+                    {t('exerciseSearchCountSuffix', lang)}
+                  </Text>
+                </View>
+
+                {searchResults.length === 0 ? (
+                  <Text style={styles.emptyCustom}>{t('exerciseSearchEmpty', lang)}</Text>
+                ) : (
+                  searchResults.map((ex) => (
+                    <ExerciseListRow
+                      key={ex.exerciseDbId ?? ex.nameEn}
+                      exercise={ex}
+                      lang={lang}
+                      showInactiveBadge={ex.is_active !== true}
+                      onPressDetail={() => setDetail(ex)}
+                      onAdd={() => handleAdd(ex)}
+                    />
+                  ))
+                )}
+              </View>
+            ) : (
+              <>
             {/* MY EXERCISES — 커스텀 */}
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
@@ -180,7 +265,7 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
                   style={styles.addCustomLink}
                   onPress={() => setCustomSheetVisible(true)}
                 >
-                  <Ionicons name="add" size={16} color={colors.textPrimary} />
+                  <Icon name="add" size={16} color={colors.textPrimary} />
                   <Text style={styles.addCustomText}>{t('addCustomExercise', lang)}</Text>
                 </Pressable>
               </View>
@@ -228,14 +313,18 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
                 </View>
               );
             })}
+              </>
+            )}
           </ScrollView>
 
-          {/* 운동 요약 시트 (하단에서 슬라이드 업) */}
+          {/* 운동 요약 시트 — picker 안에서는 Modal 중첩 없이 오버레이 */}
           <ExerciseDetailSheet
             exercise={detail}
             lang={lang}
+            presentation="overlay"
             onClose={() => setDetail(null)}
             onAdd={handleAdd}
+            onDeactivate={detail ? () => handleDeactivate(detail) : undefined}
           />
           <AddCustomExerciseSheet
             visible={customSheetVisible}
@@ -253,12 +342,14 @@ function ExerciseListRow({
   exercise,
   lang,
   showCustomBadge = false,
+  showInactiveBadge = false,
   onPressDetail,
   onAdd,
 }: {
   exercise: ExerciseDef;
   lang: Language;
   showCustomBadge?: boolean;
+  showInactiveBadge?: boolean;
   onPressDetail: () => void;
   onAdd: () => void;
 }) {
@@ -294,6 +385,9 @@ function ExerciseListRow({
             {showCustomBadge && (
               <Text style={styles.customBadge}>{t('customBadge', lang)}</Text>
             )}
+            {showInactiveBadge && (
+              <Text style={styles.inactiveBadge}>{t('exerciseInactiveBadge', lang)}</Text>
+            )}
           </View>
           <Text style={styles.rowMuscle} numberOfLines={2}>
             <Text style={styles.muscleLabel}>{t('primary', lang)} </Text>
@@ -312,7 +406,7 @@ function ExerciseListRow({
         onPress={onAdd}
         hitSlop={6}
       >
-        <Ionicons name="add" size={24} color={colors.textPrimary} />
+        <Icon name="add" size={24} color={colors.textPrimary} />
       </Pressable>
     </View>
   );
@@ -338,11 +432,11 @@ function OptionRow({
       {/* 왼쪽: 이미지 플레이스홀더 (Gear=기구, Target=부위 이미지 자리) */}
       {thumb && (
         <View style={styles.optionThumb}>
-          <Ionicons name="image-outline" size={18} color={colors.textMuted} />
+          <Icon name="image" size={18} color={colors.textMuted} />
         </View>
       )}
       <Text style={[styles.optionLabel, selected && styles.optionLabelSelected]}>{label}</Text>
-      {selected && <Ionicons name="checkmark" size={18} color={colors.accent} />}
+      {selected && <Icon name="check" size={18} color={colors.accent} />}
     </Pressable>
   );
 }
@@ -350,6 +444,7 @@ function OptionRow({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
     backgroundColor: colors.background,
   },
   header: {
@@ -361,6 +456,31 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.sectionHeader,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginHorizontal: layout.screenPadding,
+    marginBottom: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    backgroundColor: colors.surface,
+  },
+  searchInput: {
+    flex: 1,
+    ...typography.listItem,
+    fontSize: 15,
+    paddingVertical: 0,
+    color: colors.textPrimary,
+  },
+  searchCount: {
+    ...typography.caption,
+    marginLeft: 'auto',
+    color: colors.textMuted,
   },
   // 필터 바
   filterBar: {
@@ -468,6 +588,17 @@ const styles = StyleSheet.create({
     fontSize: 9,
     letterSpacing: 0.5,
     color: colors.textMuted,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderRadius: 3,
+  },
+  inactiveBadge: {
+    ...typography.caption,
+    fontSize: 9,
+    letterSpacing: 0.5,
+    color: colors.textSecondary,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
     paddingHorizontal: 4,

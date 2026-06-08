@@ -10,6 +10,7 @@ import { getExerciseKey } from '../../lib/exerciseKey';
 import { setLoad, setVolume, epley1RM } from '../../lib/strength';
 import { summarizeSets } from '../../lib/sessionStats';
 import { useLanguage } from '../../stores/settingsStore';
+import { resolveDisplayExerciseName } from '../../lib/exerciseKo';
 import { useHistoryStore } from '../../stores/historyStore';
 
 const CHART_H = 100;
@@ -78,7 +79,7 @@ export function HistorySheet({ visible, exercise, onClose }: HistorySheetProps) 
         <Pressable style={styles.sheet} onPress={() => {}}>
           <View style={styles.handle} />
 
-          <Text style={styles.title}>{exercise.exerciseName[lang]}</Text>
+          <Text style={styles.title}>{resolveDisplayExerciseName(exercise.exerciseName, lang)}</Text>
           <Text style={styles.subtitle}>
             {t('history', lang)} · {metricLabel}
           </Text>

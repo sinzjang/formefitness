@@ -1,6 +1,6 @@
 // react-native-body-highlighter 래퍼 — 운동 부위 시각화 (영역별 크롭)
 import { View, StyleSheet, UIManager, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import Body from 'react-native-body-highlighter';
 import type { MuscleGroup } from '../../types';
 import { colors, muscleColors } from '../../constants/theme';
@@ -66,8 +66,8 @@ export function MuscleBodyView({
   if (!svgAvailable) {
     return (
       <View style={[styles.wrap, wrapStyle, styles.fallback]}>
-        <Ionicons
-          name="body-outline"
+        <Icon
+          name="body"
           size={size === 'thumb' ? 26 : size === 'card' ? 40 : 56}
           color={empty ? colors.textMuted : highlightColor}
         />

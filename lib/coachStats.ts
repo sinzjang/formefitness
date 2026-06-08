@@ -3,6 +3,8 @@ import type { FatigueLevel, Language, MuscleGroup, SavedWorkoutSession, WorkoutR
 import { getFatigueLevel } from './fatigue';
 import { summarizeSets } from './sessionStats';
 import { getCurrentWeekDays, isoToLocalDateKey, toLocalDateKey } from './dates';
+import { resolveDisplayExerciseName } from './exerciseKo';
+import { muscleGroupLabel } from '../constants/muscles';
 
 const MUSCLE_GROUPS: MuscleGroup[] = ['chest', 'shoulder', 'back', 'arms', 'core', 'legs'];
 const WEEKLY_GOAL = 5;
@@ -13,14 +15,14 @@ export interface CoachCustomRoutine {
   name: string;
   exercises: {
     name: string;
-    muscleGroup: MuscleGroup;
+    muscleGroup: string;
     type: 'compound' | 'isolation';
   }[];
 }
 
 export interface CoachContextData {
   goalTier: number;
-  fatigueState: Record<MuscleGroup, FatigueLevel>;
+  fatigueState: Record<string, FatigueLevel>;
   lastSession: object | null;
   historyContext: object[];
   prRecords: Record<string, { weight: number; date: string }>;
@@ -28,15 +30,23 @@ export interface CoachContextData {
     sessionsThisWeek: number;
     goalSessions: number;
     totalVolume: number;
-    mostWorkedMuscle: MuscleGroup | null;
+    mostWorkedMuscle: string | null;
   };
   customRoutines: CoachCustomRoutine[];
   conditionSleep: number;
   conditionFatigue: number;
 }
 
-/** 최근 N일 세션에서 근육별 완료 세트 수 → 피로 상태 */
-function buildFatigueFromSessions(sessions: SavedWorkoutSession[]): Record<MuscleGroup, FatigueLevel> {
+/** 코치 컨텍스트용 근육 그룹 라벨 */
+function coachMuscleLabel(mg: MuscleGroup, lang: Language): string {
+  return lang === 'ko' ? muscleGroupLabel(mg, 'ko') : mg;
+}
+
+/** 최근 N일 세션에서 근육별 완료 세트 수 → 피로 상태 (코치용 라벨) */
+function buildFatigueForCoach(
+  sessions: SavedWorkoutSession[],
+  lang: Language
+): Record<string, FatigueLevel> {
   const counts: Record<MuscleGroup, number> = {
     chest: 0,
     shoulder: 0,
@@ -58,10 +68,11 @@ function buildFatigueFromSessions(sessions: SavedWorkoutSession[]): Record<Muscl
 
   return MUSCLE_GROUPS.reduce(
     (acc, mg) => {
-      acc[mg] = getFatigueLevel(mg, counts[mg]);
+      const label = coachMuscleLabel(mg, lang);
+      acc[label] = getFatigueLevel(mg, counts[mg]);
       return acc;
     },
-    {} as Record<MuscleGroup, FatigueLevel>
+    {} as Record<string, FatigueLevel>
   );
 }
 
@@ -69,8 +80,8 @@ function summarizeSession(session: SavedWorkoutSession, lang: Language) {
   const exercises = session.exercises.map((ex) => {
     const stats = summarizeSets(ex.sets, ex.resistanceType);
     return {
-      name: ex.exerciseName[lang],
-      muscleGroup: ex.muscleGroup,
+      name: resolveDisplayExerciseName(ex.exerciseName, lang),
+      muscleGroup: coachMuscleLabel(ex.muscleGroup, lang),
       sets: ex.sets.filter((s) => s.reps > 0).length,
       maxWeight: stats.bestE1rm,
       totalVolume: stats.totalVolume,
@@ -94,7 +105,7 @@ function buildPrRecords(sessions: SavedWorkoutSession[], lang: Language) {
     for (const ex of session.exercises) {
       const stats = summarizeSets(ex.sets, ex.resistanceType);
       if (!stats.hasLoad || stats.bestE1rm <= 0) continue;
-      const key = ex.exerciseName[lang];
+      const key = resolveDisplayExerciseName(ex.exerciseName, lang);
       const prev = pr[key];
       if (!prev || stats.bestE1rm > prev.weight) {
         pr[key] = { weight: stats.bestE1rm, date: session.endedAt.slice(0, 10) };
@@ -110,7 +121,7 @@ function countWorkoutsThisWeek(dayMap: Record<string, { workedOut: boolean }>): 
   return weekKeys.filter((key) => dayMap[key]?.workedOut).length;
 }
 
-function buildWeeklyStats(sessions: SavedWorkoutSession[]) {
+function buildWeeklyStats(sessions: SavedWorkoutSession[], lang: Language) {
   const dayMap = useHistoryDayMap(sessions);
   const sessionsThisWeek = countWorkoutsThisWeek(dayMap);
 
@@ -134,7 +145,7 @@ function buildWeeklyStats(sessions: SavedWorkoutSession[]) {
     }
   }
 
-  const mostWorkedMuscle =
+  const mostWorkedMuscleId =
     (Object.entries(muscleCounts).sort((a, b) => b[1] - a[1])[0]?.[1] ?? 0) > 0
       ? (Object.entries(muscleCounts).sort((a, b) => b[1] - a[1])[0][0] as MuscleGroup)
       : null;
@@ -143,7 +154,7 @@ function buildWeeklyStats(sessions: SavedWorkoutSession[]) {
     sessionsThisWeek,
     goalSessions: WEEKLY_GOAL,
     totalVolume: Math.round(totalVolume),
-    mostWorkedMuscle,
+    mostWorkedMuscle: mostWorkedMuscleId ? coachMuscleLabel(mostWorkedMuscleId, lang) : null,
   };
 }
 
@@ -168,15 +179,17 @@ function getWeekStart(): Date {
 }
 
 function toCustomRoutines(routines: WorkoutRoutine[], lang: Language): CoachCustomRoutine[] {
-  return routines.map((r) => ({
-    id: r.id,
-    name: r.name,
-    exercises: r.exercises.map((ex) => ({
-      name: ex.exerciseName[lang],
-      muscleGroup: ex.muscleGroup,
-      type: 'compound' as const,
-    })),
-  }));
+  return routines
+    .filter((r) => r.is_active !== false)
+    .map((r) => ({
+      id: r.id,
+      name: r.name,
+      exercises: r.exercises.map((ex) => ({
+        name: resolveDisplayExerciseName(ex.exerciseName, lang),
+        muscleGroup: coachMuscleLabel(ex.muscleGroup, lang),
+        type: 'compound' as const,
+      })),
+    }));
 }
 
 export function buildCoachContextData(
@@ -191,11 +204,11 @@ export function buildCoachContextData(
 
   return {
     goalTier: options?.goalTier ?? 3,
-    fatigueState: buildFatigueFromSessions(sorted),
+    fatigueState: buildFatigueForCoach(sorted, lang),
     lastSession,
     historyContext,
     prRecords: buildPrRecords(sorted, lang),
-    weeklyStats: buildWeeklyStats(sorted),
+    weeklyStats: buildWeeklyStats(sorted, lang),
     customRoutines: toCustomRoutines(routines, lang),
     conditionSleep: options?.conditionSleep ?? 3,
     conditionFatigue: options?.conditionFatigue ?? 3,

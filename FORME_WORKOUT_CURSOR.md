@@ -1,4 +1,4 @@
-# Formé Workout — Cursor Development Brief
+# Formé Fitness — Cursor Development Brief
 
 > AI-powered personalized workout planner. White background, black text, Nike-inspired bold typography. Built with React Native (Expo) + Supabase + Claude API.
 
@@ -6,7 +6,7 @@
 
 ## 🎯 Product Summary
 
-**App Name:** Formé Workout (App Store: Forme Workout)  
+**App Name:** Formé Fitness (App Store: Forme Fitness)  
 **Platform:** iOS + Android (React Native Expo)  
 **Core Concept:** Photo-based body goal setting + AI muscle fatigue tracking + post-session AI coaching
 
@@ -72,7 +72,7 @@ const typography = {
 ## 📁 Project Structure
 
 ```
-forme-workout/
+forme-fitness/
 ├── app/                        # Expo Router (file-based routing)
 │   ├── (auth)/
 │   │   ├── index.tsx           # Splash screen
@@ -409,8 +409,8 @@ interface ExerciseAccordionProps {
 
 ```bash
 # 1. Initialize
-npx create-expo-app forme-workout --template blank-typescript
-cd forme-workout
+npx create-expo-app forme-fitness --template blank-typescript
+cd forme-fitness
 
 # 2. Core dependencies
 npx expo install expo-camera expo-image-picker expo-file-system
@@ -467,4 +467,4 @@ npx expo install expo-router
 
 ---
 
-_Formé Workout — PRD v2.0 | June 2026_
+_Formé Fitness — PRD v2.0 | June 2026_

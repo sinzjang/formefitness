@@ -193,7 +193,7 @@ export const sendCoachMessage = async (
   const system = buildCoachSystemPrompt(input);
   const langNote =
     input.language === 'ko'
-      ? '[앱 언어: 한국어 — 반드시 한국어로만 답변]'
+      ? '[중요] 앱 언어는 한국어입니다. 반드시 자연스러운 한국어 구어체로만 답변하세요. 영어를 사용하지 마세요.'
       : '[App language: English — reply in English only]';
 
   const messages = [
@@ -226,8 +226,8 @@ export const sendCoachMessage = async (
 export const fetchDailyGreeting = async (input: CoachPromptInput): Promise<CoachResponse> => {
   const trigger =
     input.language === 'ko'
-      ? '[앱 오픈] 오늘의 데일리 인사를 생성해 주세요.'
-      : "[App open] Generate today's daily greeting.";
+      ? '[앱 오픈] 오늘의 데일리 인사를 한국어로 작성해 주세요. message와 recommendedRoutine의 모든 텍스트는 한국어여야 합니다.'
+      : "[App open] Generate today's daily greeting in English.";
 
   return sendCoachMessage({ ...input, isAppOpen: true }, trigger, []);
 };

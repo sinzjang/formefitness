@@ -10,10 +10,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type { RoutineExerciseEntry } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
-import type { ExerciseDef } from '../../constants/exercises';
+import { exerciseLocalizedName, type ExerciseDef } from '../../constants/exercises';
+import { resolveDisplayExerciseName } from '../../lib/exerciseKo';
 import { getExerciseKey } from '../../lib/exerciseKey';
 import { gearToResistance } from '../../constants/gears';
 import { t } from '../../lib/i18n';
@@ -47,14 +48,15 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
   };
 
   const handleAddExercise = (ex: ExerciseDef) => {
-    const key = getExerciseKey({ ko: ex.name, en: ex.nameEn }, ex.customId);
+    const localized = exerciseLocalizedName(ex);
+    const key = getExerciseKey(localized, ex.customId);
     if (exercises.some((e) => e.exerciseKey === key)) return;
 
     setExercises((prev) => [
       ...prev,
       {
         exerciseKey: key,
-        exerciseName: { ko: ex.name, en: ex.nameEn },
+        exerciseName: localized,
         muscleGroup: ex.muscleGroup,
         resistanceType: gearToResistance(ex.gear),
         defaultRestSeconds: defaultRest,
@@ -78,7 +80,7 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
             <View style={styles.header}>
               <Text style={styles.title}>{t('addRoutine', lang)}</Text>
               <Pressable onPress={handleClose} hitSlop={8}>
-                <Ionicons name="close" size={26} color={colors.textPrimary} />
+                <Icon name="close" size={26} color={colors.textPrimary} />
               </Pressable>
             </View>
 
@@ -95,20 +97,22 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
               <Text style={styles.label}>{t('addExercise', lang)}</Text>
               {exercises.map((ex) => (
                 <View key={ex.exerciseKey} style={styles.exerciseRow}>
-                  <Text style={styles.exerciseName}>{ex.exerciseName[lang]}</Text>
+                  <Text style={styles.exerciseName}>
+                    {resolveDisplayExerciseName(ex.exerciseName, lang)}
+                  </Text>
                   <Pressable
                     onPress={() =>
                       setExercises((prev) => prev.filter((e) => e.exerciseKey !== ex.exerciseKey))
                     }
                     hitSlop={6}
                   >
-                    <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+                    <Icon name="close-circle" size={20} color={colors.textMuted} />
                   </Pressable>
                 </View>
               ))}
 
               <Pressable style={styles.addExerciseBtn} onPress={() => setPickerVisible(true)}>
-                <Ionicons name="add" size={18} color={colors.textPrimary} />
+                <Icon name="add" size={18} color={colors.textPrimary} />
                 <Text style={styles.addExerciseText}>{t('addExercise', lang)}</Text>
               </Pressable>
             </ScrollView>

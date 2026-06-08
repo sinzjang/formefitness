@@ -2,8 +2,10 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import { colors, typography, layout, fonts } from '../../constants/theme';
+import { resolveDisplayExerciseName } from '../../lib/exerciseKo';
+import { SessionDockIcon } from './SessionDockIcon';
 import { formatSessionTime } from '../../lib/sessionTime';
 import { t } from '../../lib/i18n';
 import { useSessionElapsed } from '../../hooks/useSessionElapsed';
@@ -36,7 +38,9 @@ export function ActiveSessionDock() {
     const current =
       session?.exercises.find((ex) => ex.sets.some((s) => !s.completed)) ??
       session?.exercises[session.exercises.length - 1];
-    return current?.exerciseName[lang] ?? t('workout', lang);
+    return current
+      ? resolveDisplayExerciseName(current.exerciseName, lang)
+      : t('workout', lang);
   }, [restActive, session?.exercises, session, lang]);
 
   if (!isRunning || onWorkoutSessionView) return null;
@@ -54,7 +58,7 @@ export function ActiveSessionDock() {
       onPress={handlePress}
       accessibilityLabel={t('tapToResume', lang)}
     >
-      <Ionicons name="barbell-outline" size={16} color={colors.accent} />
+      <SessionDockIcon resting={restActive} />
       <Text style={styles.title} numberOfLines={1}>
         {title}
       </Text>
@@ -63,7 +67,7 @@ export function ActiveSessionDock() {
         <Text style={styles.sep}>—</Text>
         <Text style={[styles.time, restActive && styles.timeActive]}>{restDisplay}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+      <Icon name="chevron-forward" size={16} color={colors.textMuted} />
     </Pressable>
   );
 }

@@ -3,6 +3,9 @@ import type { CustomExercise, Gear, Language, MuscleGroup, WorkoutExercise } fro
 import { EXERCISES, type ExerciseDef } from '../constants/exercises';
 import { getCatalogExerciseDbId } from '../constants/exerciseDbCatalogIds';
 import { resistanceToGear } from '../constants/gears';
+import { mergeCatalogExerciseMeta, normalizeExerciseMeta } from './exerciseMeta';
+import { resolveExerciseKoName } from './exerciseKo';
+import type { CatalogExercisePref } from '../stores/exerciseCatalogPrefsStore';
 
 /** CustomExercise → ExerciseDef (피커/세션 공통 형식) */
 export function customToExerciseDef(c: CustomExercise): ExerciseDef {
@@ -16,17 +19,28 @@ export function customToExerciseDef(c: CustomExercise): ExerciseDef {
     stabilizer: [],
     isCustom: true,
     customId: c.id,
+    is_active: c.is_active ?? true,
+    is_favorite: c.is_favorite ?? false,
   };
 }
 
-/** 카탈로그(내장) 운동만 */
+/** 카탈로그(내장) 운동만 — JSON 기본 메타 정규화 */
 export function getCatalogExercises(): ExerciseDef[] {
-  return EXERCISES.filter((e) => !e.isCustom);
+  return EXERCISES.filter((e) => !e.isCustom).map(normalizeExerciseMeta);
 }
 
-/** 커스텀 운동 목록 → ExerciseDef */
+/** 카탈로그 + 사용자 prefs 병합 */
+export function getCatalogExercisesWithPrefs(
+  prefs: Record<string, CatalogExercisePref>
+): ExerciseDef[] {
+  return getCatalogExercises().map((ex) => mergeCatalogExerciseMeta(ex, prefs));
+}
+
+/** 커스텀 운동 목록 → ExerciseDef (활성만) */
 export function getCustomExerciseDefs(customs: CustomExercise[]): ExerciseDef[] {
-  return customs.map(customToExerciseDef);
+  return customs
+    .filter((c) => c.is_active !== false)
+    .map(customToExerciseDef);
 }
 
 /** 필터 적용 */
@@ -78,10 +92,20 @@ export function workoutExerciseToDef(
   }
 
   const byEn = EXERCISES.find((e) => e.nameEn === ex.exerciseName.en);
-  if (byEn) return byEn;
+  if (byEn) {
+    return {
+      ...byEn,
+      name: resolveExerciseKoName(byEn),
+    };
+  }
 
   const byKo = EXERCISES.find((e) => e.name === ex.exerciseName.ko);
-  if (byKo) return byKo;
+  if (byKo) {
+    return {
+      ...byKo,
+      name: resolveExerciseKoName(byKo),
+    };
+  }
 
   return {
     name: ex.exerciseName.ko,

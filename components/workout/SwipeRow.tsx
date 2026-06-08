@@ -10,7 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import { colors, typography } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import { useLanguage } from '../../stores/settingsStore';
@@ -78,7 +78,7 @@ export function SwipeRow({ children, onDelete }: SwipeRowProps) {
       {/* 뒤 배경: 삭제 버튼 (열린 상태에서 탭하면 삭제) */}
       <View style={styles.deleteBg}>
         <Pressable style={styles.deleteBtn} onPress={remove}>
-          <Ionicons name="trash-outline" size={18} color={colors.background} />
+          <Icon name="trash" size={18} color={colors.background} />
           <Text style={styles.deleteText}>{t('delete', lang)}</Text>
         </Pressable>
       </View>

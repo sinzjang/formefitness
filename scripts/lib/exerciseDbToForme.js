@@ -123,22 +123,26 @@ function mapGear(equipment) {
   return EQUIPMENT_TO_GEAR[key] ?? 'Machine';
 }
 
-/** ExerciseDB 레코드 → Forme ExerciseDef */
-function toFormeExercise(record) {
+/** ExerciseDB 레코드 → Forme ExerciseDef (ko.json id 키로 한글명 병합) */
+function toFormeExercise(record, koById = {}) {
+  const exerciseDbId = String(record.id ?? '').padStart(4, '0');
   const nameEn = String(record.name ?? '').trim();
+  const ko = koById[exerciseDbId];
   const primaryKo = mapTarget(record.target);
   const synergistKo = mapSecondary(record.secondaryMuscles).filter((m) => m !== primaryKo);
 
   return {
-    name: nameEn,
+    name: String(ko?.name_ko ?? '').trim() || nameEn,
     nameEn,
     muscleGroup: mapBodyPart(record.bodyPart),
     gear: mapGear(record.equipment),
     primary: primaryKo ? [primaryKo] : [],
     synergist: synergistKo.slice(0, 4),
     stabilizer: ['코어'],
-    exerciseDbId: String(record.id ?? '').padStart(4, '0'),
+    exerciseDbId,
     gifUrl: String(record.gifUrl ?? '').trim() || undefined,
+    is_active: record.is_active === true,
+    is_favorite: record.is_favorite === true,
   };
 }
 

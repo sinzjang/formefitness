@@ -10,7 +10,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type { Gear, MuscleGroup } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { MUSCLES, muscleGroupLabel } from '../../constants/muscles';
@@ -60,7 +60,7 @@ export function AddCustomExerciseSheet({ visible, onClose, onCreated }: AddCusto
           <View style={styles.header}>
             <Text style={styles.title}>{t('addCustomExercise', lang)}</Text>
             <Pressable onPress={handleClose} hitSlop={8}>
-              <Ionicons name="close" size={26} color={colors.textPrimary} />
+              <Icon name="close" size={26} color={colors.textPrimary} />
             </Pressable>
           </View>
 

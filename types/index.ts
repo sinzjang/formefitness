@@ -102,6 +102,9 @@ export interface CustomExercise {
   muscleGroup: MuscleGroup;
   gear: Gear;
   createdAt: string;
+  /** false면 Add Exercise 리스트에서 숨김 */
+  is_active?: boolean;
+  is_favorite?: boolean;
 }
 
 export interface RoutineExerciseEntry {
@@ -119,6 +122,8 @@ export interface WorkoutRoutine {
   name: string;
   exercises: RoutineExerciseEntry[];
   createdAt: string;
+  /** false면 루틴 목록에서 숨김(보관) */
+  is_active?: boolean;
 }
 
 export type CoachName = 'Kai' | 'Alex' | 'Jordan';

@@ -1,7 +1,7 @@
 // 장소별 루틴 목록 + 하단 고정 Routine 버튼
 import { useMemo, useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type { WorkoutRoutine } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
@@ -51,7 +51,7 @@ export function RoutineSection({ locationId, onStartRoutine }: RoutineSectionPro
                   {t('routineExerciseSuffix', lang)}
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+              <Icon name="chevron-forward" size={18} color={colors.textMuted} />
             </Pressable>
           ))
         )}
@@ -62,7 +62,7 @@ export function RoutineSection({ locationId, onStartRoutine }: RoutineSectionPro
           style={({ pressed }) => [styles.addRoutineBtn, pressed && styles.addRoutineBtnPressed]}
           onPress={() => setAddVisible(true)}
         >
-          <Ionicons name="add" size={18} color={colors.textPrimary} />
+          <Icon name="add" size={18} color={colors.textPrimary} />
           <Text style={styles.addRoutineText}>{t('addRoutine', lang)}</Text>
         </Pressable>
       </View>

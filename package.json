@@ -1,5 +1,5 @@
 {
-  "name": "forme-workout",
+  "name": "forme-fitness",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
@@ -17,6 +17,7 @@
     "expo-router": "~6.0.24",
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
+    "lucide-react-native": "^1.17.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
@@ -43,6 +44,7 @@
     "exercisedb:fetch": "node scripts/exportExerciseDbMetadata.js",
     "exercisedb:fetch:rapid": "node scripts/exportExerciseDbMetadata.js --rapid",
     "exercisedb:fetch:force": "node scripts/exportExerciseDbMetadata.js --force",
+    "exercisedb:catalog": "node scripts/generateExerciseCatalog.js",
     "exercisedb:catalog:essential": "node scripts/generateEssentialCatalog.js",
     "exercisedb:csv": "node scripts/jsonToExerciseCsv.js",
     "exercisedb:evaluate": "python scripts/evaluate.py",

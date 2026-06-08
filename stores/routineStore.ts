@@ -21,6 +21,8 @@ interface RoutineState {
     }>
   ) => void;
   deleteRoutine: (id: string) => void;
+  /** 목록에서 숨김 — is_active: false */
+  archiveRoutine: (id: string) => void;
   getRoutinesByLocation: (locationId: string) => WorkoutRoutine[];
 }
 
@@ -36,6 +38,7 @@ export const useRoutineStore = create<RoutineState>()(
           name: name.trim(),
           exercises,
           createdAt: new Date().toISOString(),
+          is_active: true,
         };
         set((state) => ({ routines: [...state.routines, routine] }));
         return routine;
@@ -52,6 +55,7 @@ export const useRoutineStore = create<RoutineState>()(
                 name: r.name,
                 exercises: r.exercises,
                 createdAt: r.createdAt,
+                is_active: r.is_active ?? true,
               });
             }
           }
@@ -61,9 +65,16 @@ export const useRoutineStore = create<RoutineState>()(
       deleteRoutine: (id) =>
         set((state) => ({ routines: state.routines.filter((r) => r.id !== id) })),
 
+      archiveRoutine: (id) =>
+        set((state) => ({
+          routines: state.routines.map((r) =>
+            r.id === id ? { ...r, is_active: false } : r
+          ),
+        })),
+
       getRoutinesByLocation: (locationId) =>
         get()
-          .routines.filter((r) => r.locationId === locationId)
+          .routines.filter((r) => r.locationId === locationId && r.is_active !== false)
           .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
     }),
     {

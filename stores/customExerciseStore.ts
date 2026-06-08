@@ -9,6 +9,7 @@ interface CustomExerciseState {
   addExercise: (name: string, muscleGroup: MuscleGroup, gear: Gear) => CustomExercise;
   importBulk: (incoming: CustomExercise[]) => void;
   deleteExercise: (id: string) => void;
+  setActive: (id: string, isActive: boolean) => void;
   findByName: (name: string) => CustomExercise | undefined;
 }
 
@@ -30,6 +31,8 @@ export const useCustomExerciseStore = create<CustomExerciseState>()(
           muscleGroup,
           gear,
           createdAt: new Date().toISOString(),
+          is_active: true,
+          is_favorite: false,
         };
         set((state) => ({ exercises: [...state.exercises, exercise] }));
         return exercise;
@@ -46,6 +49,13 @@ export const useCustomExerciseStore = create<CustomExerciseState>()(
 
       deleteExercise: (id) =>
         set((state) => ({ exercises: state.exercises.filter((e) => e.id !== id) })),
+
+      setActive: (id, isActive) =>
+        set((state) => ({
+          exercises: state.exercises.map((e) =>
+            e.id === id ? { ...e, is_active: isActive } : e
+          ),
+        })),
 
       findByName: (name) =>
         get().exercises.find((e) => e.name.toLowerCase() === name.trim().toLowerCase()),

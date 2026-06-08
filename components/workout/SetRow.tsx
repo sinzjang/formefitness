@@ -3,7 +3,7 @@
 // - 값(무게/밴드/맨몸+)과 횟수를 오른쪽에 하나의 그룹으로 묶음
 // - 삭제는 행을 왼쪽으로 스와이프 (SwipeRow가 담당) → 휴지통 버튼 없음
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type { BandLevel, ResistanceType, SetData } from '../../types';
 import { colors, typography, fonts } from '../../constants/theme';
 import { t } from '../../lib/i18n';
@@ -100,10 +100,11 @@ export function SetRow({ set, resistanceType, onChange }: SetRowProps) {
         hitSlop={6}
         style={styles.check}
       >
-        <Ionicons
-          name={set.completed ? 'checkmark-circle' : 'ellipse-outline'}
+        <Icon
+          name={set.completed ? 'check-circle' : 'circle'}
           size={26}
           color={set.completed ? colors.success : colors.textMuted}
+          active={set.completed}
         />
       </Pressable>
     </View>

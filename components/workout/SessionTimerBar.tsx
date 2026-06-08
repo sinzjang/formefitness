@@ -1,7 +1,7 @@
 // 세션 상단 타이머 — WORKOUT | REST + 각각 컨트롤, 휴식 ±15초
 import { useEffect, useMemo, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon, type IconName } from '../ui/Icon';
 import { colors, typography, layout, fonts } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import { formatSessionMonthDay } from '../../lib/dates';
@@ -23,7 +23,7 @@ function TimerIconBtn({
   disabled,
   variant = 'default',
 }: {
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: IconName;
   label: string;
   onPress: () => void;
   disabled?: boolean;
@@ -42,7 +42,7 @@ function TimerIconBtn({
       hitSlop={4}
       accessibilityLabel={label}
     >
-      <Ionicons
+      <Icon
         name={icon}
         size={variant === 'stop' ? 14 : 16}
         color={variant === 'stop' ? colors.background : colors.textPrimary}

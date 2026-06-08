@@ -10,15 +10,17 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../../components/ui/Icon';
 import type { MuscleGroup, WorkoutRoutine } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import { gearToResistance } from '../../constants/gears';
+import { exerciseLocalizedName } from '../../constants/exercises';
 import { useWorkoutStore } from '../../stores/workoutStore';
 import { useRestTimerStore } from '../../stores/restTimerStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { useLocationStore } from '../../stores/locationStore';
+import { useRoutineStore } from '../../stores/routineStore';
 import { useLanguage } from '../../stores/settingsStore';
 import { Button } from '../../components/ui/Button';
 import { ExercisePicker } from '../../components/workout/ExercisePicker';
@@ -46,6 +48,7 @@ export default function WorkoutScreen() {
   const resetRestTimer = useRestTimerStore((s) => s.reset);
   const saveSession = useHistoryStore((s) => s.saveSession);
   const selectedLocationId = useLocationStore((s) => s.selectedLocationId);
+  const archiveRoutine = useRoutineStore((s) => s.archiveRoutine);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -111,6 +114,21 @@ export default function WorkoutScreen() {
     });
   };
 
+  // 루틴 보관 — 목록에서 숨김 (현재 세션은 유지)
+  const handleArchiveRoutine = () => {
+    const routineId = session?.routineId;
+    if (!routineId) return;
+
+    Alert.alert(t('archiveRoutine', lang), t('archiveRoutineConfirm', lang), [
+      { text: t('cancel', lang), style: 'cancel' },
+      {
+        text: t('archive', lang),
+        style: 'destructive',
+        onPress: () => archiveRoutine(routineId),
+      },
+    ]);
+  };
+
   // X — 뒤로가기 (세션 유지, 화면만 닫음)
   const handleBack = () => {
     if (isRunning) {
@@ -138,9 +156,9 @@ export default function WorkoutScreen() {
             style={({ pressed }) => [styles.activeBanner, pressed && styles.activeBannerPressed]}
             onPress={openSessionScreen}
           >
-            <Ionicons name="barbell" size={16} color={colors.accent} />
+            <Icon name="barbell" size={16} color={colors.accent} active />
             <Text style={styles.activeBannerText}>{t('activeSessionHint', lang)}</Text>
-            <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+            <Icon name="chevron-forward" size={16} color={colors.textMuted} />
           </Pressable>
         )}
         <View style={styles.locationPanel}>
@@ -174,14 +192,26 @@ export default function WorkoutScreen() {
               {t('exerciseCountSuffix', lang)}
             </Text>
           </View>
-          <Pressable
-            style={({ pressed }) => [styles.closeBtn, pressed && styles.closeBtnPressed]}
-            onPress={handleBack}
-            hitSlop={8}
-            accessibilityLabel={t('exitSession', lang)}
-          >
-            <Ionicons name="close" size={26} color={colors.textPrimary} />
-          </Pressable>
+          <View style={styles.headerActions}>
+            {session!.routineId && (
+              <Pressable
+                style={({ pressed }) => [styles.archiveBtn, pressed && styles.archiveBtnPressed]}
+                onPress={handleArchiveRoutine}
+                hitSlop={8}
+                accessibilityLabel={t('archiveRoutine', lang)}
+              >
+                <Icon name="trash" size={22} color={colors.danger} />
+              </Pressable>
+            )}
+            <Pressable
+              style={({ pressed }) => [styles.closeBtn, pressed && styles.closeBtnPressed]}
+              onPress={handleBack}
+              hitSlop={8}
+              accessibilityLabel={t('exitSession', lang)}
+            >
+              <Icon name="close" size={26} color={colors.textPrimary} />
+            </Pressable>
+          </View>
         </View>
 
         {isRunning && session!.runningStartedAt && (
@@ -199,26 +229,28 @@ export default function WorkoutScreen() {
             />
           </View>
         ) : (
-          <SessionExerciseList
-            exercises={session!.exercises}
-            fatigueCounts={fatigueCounts}
-            expandedId={expandedId}
-            onToggleExpand={(id) => setExpandedId((cur) => (cur === id ? null : id))}
-            onReorder={reorderExercises}
-            onSetUpdate={updateSet}
-            onSetAdd={addSet}
-            onSetDelete={deleteSet}
-            onRestChange={setRestSeconds}
-            contentContainerStyle={styles.scroll}
-            listFooter={
-              <Button
-                title={t('addExercise', lang)}
-                variant="secondary"
-                onPress={() => setPickerVisible(true)}
-                style={styles.addBtn}
-              />
-            }
-          />
+          <View style={styles.listPanel}>
+            <SessionExerciseList
+              exercises={session!.exercises}
+              fatigueCounts={fatigueCounts}
+              expandedId={expandedId}
+              onToggleExpand={(id) => setExpandedId((cur) => (cur === id ? null : id))}
+              onReorder={reorderExercises}
+              onSetUpdate={updateSet}
+              onSetAdd={addSet}
+              onSetDelete={deleteSet}
+              onRestChange={setRestSeconds}
+              contentContainerStyle={styles.scroll}
+              listFooter={
+                <Button
+                  title={t('addExercise', lang)}
+                  variant="secondary"
+                  onPress={() => setPickerVisible(true)}
+                  style={styles.addBtn}
+                />
+              }
+            />
+          </View>
         )}
 
         {!isRunning && (
@@ -233,7 +265,7 @@ export default function WorkoutScreen() {
         onClose={() => setPickerVisible(false)}
         onSelect={(ex) => {
           addExercise(
-            { ko: ex.name, en: ex.nameEn },
+            exerciseLocalizedName(ex),
             ex.muscleGroup,
             gearToResistance(ex.gear),
             undefined,
@@ -253,6 +285,11 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
   },
+  // FlatList가 flex 안에서 높이 0이 되지 않도록
+  listPanel: {
+    flex: 1,
+    minHeight: 0,
+  },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -264,12 +301,26 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginLeft: 8,
+  },
+  archiveBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  archiveBtnPressed: {
+    opacity: 0.5,
+  },
   closeBtn: {
     width: 36,
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
   },
   closeBtnPressed: {
     opacity: 0.5,

@@ -19,14 +19,15 @@ export function CoachChat({ lang, coachName }: CoachChatProps) {
   const messages = useCoachStore((s) => s.messages);
   const isLoading = useCoachStore((s) => s.isLoading);
   const sendUserMessage = useCoachStore((s) => s.sendUserMessage);
-  const fetchDailyGreetingIfNeeded = useCoachStore((s) => s.fetchDailyGreetingIfNeeded);
+  const onLanguageChanged = useCoachStore((s) => s.onLanguageChanged);
   const goalImageUrl = useUserStore((s) => s.profile?.goalImageUrl);
 
   const scrollRef = useRef<ScrollView>(null);
 
+  // 언어 변경·앱 진입 시 코치 인사/채팅 언어 동기화
   useEffect(() => {
-    fetchDailyGreetingIfNeeded();
-  }, [fetchDailyGreetingIfNeeded]);
+    onLanguageChanged(lang);
+  }, [lang, onLanguageChanged]);
 
   useEffect(() => {
     scrollRef.current?.scrollToEnd({ animated: true });

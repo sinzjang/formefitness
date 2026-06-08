@@ -9,8 +9,9 @@ import {
   StyleSheet,
   useWindowDimensions,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import type { Language, ResistanceType } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { muscleGroupLabel } from '../../constants/muscles';
@@ -37,9 +38,20 @@ export interface ExerciseDetailSheetProps {
   onClose: () => void;
   /** 미지정 시 하단 "운동 추가" 버튼 숨김 (세션 리스트 조회용) */
   onAdd?: (ex: ExerciseDef) => void;
+  /** picker 내부: Modal 중첩 대신 View 오버레이 (닫기 즉시 반응) */
+  presentation?: 'modal' | 'overlay';
+  /** 리스트에서 숨김(is_active=false) 처리 */
+  onDeactivate?: () => void;
 }
 
-export function ExerciseDetailSheet({ exercise, lang, onClose, onAdd }: ExerciseDetailSheetProps) {
+export function ExerciseDetailSheet({
+  exercise,
+  lang,
+  onClose,
+  onAdd,
+  presentation = 'modal',
+  onDeactivate,
+}: ExerciseDetailSheetProps) {
   const { width } = useWindowDimensions();
   const cardGap = 8;
   const cardWidth = (width - layout.screenPadding * 2 - cardGap * 2) / 3;
@@ -63,6 +75,18 @@ export function ExerciseDetailSheet({ exercise, lang, onClose, onAdd }: Exercise
   const handleCloseInstructions = useCallback(() => {
     setShowInstructions(false);
   }, []);
+
+  const handleDeactivatePress = useCallback(() => {
+    if (!onDeactivate) return;
+    Alert.alert(t('deactivateExercise', lang), t('deactivateExerciseConfirm', lang), [
+      { text: t('cancel', lang), style: 'cancel' },
+      {
+        text: t('deactivate', lang),
+        style: 'destructive',
+        onPress: onDeactivate,
+      },
+    ]);
+  }, [lang, onDeactivate]);
 
   useEffect(() => {
     setShowInstructions(false);
@@ -103,154 +127,171 @@ export function ExerciseDetailSheet({ exercise, lang, onClose, onAdd }: Exercise
     ];
   }, [exercise, lang]);
 
+  if (!exercise) return null;
+
+  const sheetContent = (
+    <Pressable style={styles.sheetOverlay} onPress={onClose}>
+      <Pressable style={styles.sheet} onPress={() => {}}>
+        <View style={styles.sheetTopBar}>
+          <View style={styles.sheetHandle} />
+          {onDeactivate && exercise.is_active !== false && (
+            <Pressable
+              style={({ pressed }) => [styles.sheetTrashBtn, pressed && styles.sheetTrashBtnPressed]}
+              onPress={handleDeactivatePress}
+              hitSlop={8}
+              accessibilityLabel={t('deactivateExercise', lang)}
+            >
+              <Icon name="trash" size={22} color={colors.danger} />
+            </Pressable>
+          )}
+          <Pressable
+            style={({ pressed }) => [styles.sheetCloseBtn, pressed && styles.sheetCloseBtnPressed]}
+            onPress={onClose}
+            hitSlop={8}
+            accessibilityLabel="닫기"
+          >
+            <Icon name="close" size={26} color={colors.textPrimary} />
+          </Pressable>
+        </View>
+
+        <View style={[styles.sheetHeroImage, { height: heroHeight }]}>
+          <ExerciseDbThumb
+            nameEn={exercise.nameEn}
+            exerciseDbId={getExerciseDbId(exercise)}
+            gifUrl={exercise.gifUrl}
+            variant="hero"
+            width={heroWidth}
+            height={heroHeight}
+            borderRadius={12}
+          />
+          <Pressable
+            style={({ pressed }) => [styles.heroInfoBtn, pressed && styles.heroInfoBtnPressed]}
+            onPress={handleOpenInstructions}
+            hitSlop={6}
+            accessibilityLabel={t('exerciseInstructions', lang)}
+          >
+            <Icon name="info" size={28} color={colors.textPrimary} />
+          </Pressable>
+        </View>
+
+        <Text style={styles.sheetTitle}>{exerciseName(exercise, lang)}</Text>
+
+        <View style={styles.sheetMetaRow}>
+          <View style={styles.chip}>
+            <Text style={styles.chipText}>{muscleGroupLabel(exercise.muscleGroup, lang)}</Text>
+          </View>
+          <View style={styles.chip}>
+            <Text style={styles.chipText}>{exercise.gear}</Text>
+          </View>
+          <View style={styles.chip}>
+            <Text style={styles.chipText}>{resistanceLabel(exercise.gear, lang)}</Text>
+          </View>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.muscleCardRow}
+          snapToInterval={cardWidth + cardGap}
+          decelerationRate="fast"
+        >
+          {muscleCards.map((card, index) => (
+            <View key={`${card.role}-${index}`} style={[styles.muscleCard, { width: cardWidth }]}>
+              <Text style={styles.muscleCardRole}>{card.label}</Text>
+              <View style={styles.muscleCardBody}>
+                {card.role === 'primary' ? (
+                  <MuscleBodyView
+                    size="card"
+                    fill
+                    muscleKeys={card.muscleKeys}
+                    muscleGroup={exercise.muscleGroup}
+                  />
+                ) : (
+                  <MuscleBodyView
+                    size="card"
+                    fill
+                    muscleKey={card.muscleKey}
+                    muscleGroup={exercise.muscleGroup}
+                    empty={card.empty}
+                  />
+                )}
+              </View>
+              <Text style={styles.muscleCardName} numberOfLines={2}>
+                {card.name}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
+
+        {onAdd && (
+          <Pressable
+            style={({ pressed }) => [styles.sheetAdd, pressed && styles.sheetAddPressed]}
+            onPress={() => onAdd(exercise)}
+          >
+            <Icon name="add" size={20} color={colors.background} />
+            <Text style={styles.sheetAddText}>{t('addExercise', lang)}</Text>
+          </Pressable>
+        )}
+
+        <Modal
+          visible={showInstructions}
+          transparent
+          animationType="fade"
+          onRequestClose={handleCloseInstructions}
+        >
+          <Pressable style={styles.instructionsOverlay} onPress={handleCloseInstructions}>
+            <Pressable style={styles.instructionsCard} onPress={() => {}}>
+              <View style={styles.instructionsHeader}>
+                <Text style={styles.instructionsTitle}>{t('exerciseInstructions', lang)}</Text>
+                <Pressable onPress={handleCloseInstructions} hitSlop={8}>
+                  <Icon name="close" size={24} color={colors.textPrimary} />
+                </Pressable>
+              </View>
+              {instructionsLoading ? (
+                <ActivityIndicator style={styles.instructionsLoader} color={colors.textPrimary} />
+              ) : (
+                <ScrollView style={styles.instructionsScroll} showsVerticalScrollIndicator={false}>
+                  {instructions && instructions.length > 0 ? (
+                    instructions.map((step, index) => (
+                      <View key={index} style={styles.instructionRow}>
+                        <Text style={styles.instructionNum}>{index + 1}</Text>
+                        <Text style={styles.instructionText}>{step}</Text>
+                      </View>
+                    ))
+                  ) : (
+                    <Text style={styles.instructionsEmpty}>{t('instructionsEmpty', lang)}</Text>
+                  )}
+                </ScrollView>
+              )}
+            </Pressable>
+          </Pressable>
+        </Modal>
+      </Pressable>
+    </Pressable>
+  );
+
+  if (presentation === 'overlay') {
+    return <View style={styles.overlayRoot}>{sheetContent}</View>;
+  }
+
   return (
     <Modal
-      visible={exercise != null}
+      visible
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Pressable style={styles.sheetOverlay} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={() => {}}>
-          {exercise && (
-            <>
-              <View style={styles.sheetTopBar}>
-                <View style={styles.sheetHandle} />
-                <Pressable
-                  style={({ pressed }) => [styles.sheetCloseBtn, pressed && styles.sheetCloseBtnPressed]}
-                  onPress={onClose}
-                  hitSlop={8}
-                  accessibilityLabel="닫기"
-                >
-                  <Ionicons name="close" size={26} color={colors.textPrimary} />
-                </Pressable>
-              </View>
-
-              <View style={[styles.sheetHeroImage, { height: heroHeight }]}>
-                <ExerciseDbThumb
-                  nameEn={exercise.nameEn}
-                  exerciseDbId={getExerciseDbId(exercise)}
-                  gifUrl={exercise.gifUrl}
-                  variant="hero"
-                  width={heroWidth}
-                  height={heroHeight}
-                  borderRadius={12}
-                />
-                <Pressable
-                  style={({ pressed }) => [styles.heroInfoBtn, pressed && styles.heroInfoBtnPressed]}
-                  onPress={handleOpenInstructions}
-                  hitSlop={6}
-                  accessibilityLabel={t('exerciseInstructions', lang)}
-                >
-                  <Ionicons name="information-circle" size={28} color={colors.textPrimary} />
-                </Pressable>
-              </View>
-
-              <Text style={styles.sheetTitle}>{exerciseName(exercise, lang)}</Text>
-
-              <View style={styles.sheetMetaRow}>
-                <View style={styles.chip}>
-                  <Text style={styles.chipText}>{muscleGroupLabel(exercise.muscleGroup, lang)}</Text>
-                </View>
-                <View style={styles.chip}>
-                  <Text style={styles.chipText}>{exercise.gear}</Text>
-                </View>
-                <View style={styles.chip}>
-                  <Text style={styles.chipText}>{resistanceLabel(exercise.gear, lang)}</Text>
-                </View>
-              </View>
-
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.muscleCardRow}
-                snapToInterval={cardWidth + cardGap}
-                decelerationRate="fast"
-              >
-                {muscleCards.map((card, index) => (
-                  <View
-                    key={`${card.role}-${index}`}
-                    style={[styles.muscleCard, { width: cardWidth }]}
-                  >
-                    <Text style={styles.muscleCardRole}>{card.label}</Text>
-                    <View style={styles.muscleCardBody}>
-                      {card.role === 'primary' ? (
-                        <MuscleBodyView
-                          size="card"
-                          fill
-                          muscleKeys={card.muscleKeys}
-                          muscleGroup={exercise.muscleGroup}
-                        />
-                      ) : (
-                        <MuscleBodyView
-                          size="card"
-                          fill
-                          muscleKey={card.muscleKey}
-                          muscleGroup={exercise.muscleGroup}
-                          empty={card.empty}
-                        />
-                      )}
-                    </View>
-                    <Text style={styles.muscleCardName} numberOfLines={2}>
-                      {card.name}
-                    </Text>
-                  </View>
-                ))}
-              </ScrollView>
-
-              {onAdd && (
-                <Pressable
-                  style={({ pressed }) => [styles.sheetAdd, pressed && styles.sheetAddPressed]}
-                  onPress={() => onAdd(exercise)}
-                >
-                  <Ionicons name="add" size={20} color={colors.background} />
-                  <Text style={styles.sheetAddText}>{t('addExercise', lang)}</Text>
-                </Pressable>
-              )}
-
-              <Modal
-                visible={showInstructions}
-                transparent
-                animationType="fade"
-                onRequestClose={handleCloseInstructions}
-              >
-                <Pressable style={styles.instructionsOverlay} onPress={handleCloseInstructions}>
-                  <Pressable style={styles.instructionsCard} onPress={() => {}}>
-                    <View style={styles.instructionsHeader}>
-                      <Text style={styles.instructionsTitle}>{t('exerciseInstructions', lang)}</Text>
-                      <Pressable onPress={handleCloseInstructions} hitSlop={8}>
-                        <Ionicons name="close" size={24} color={colors.textPrimary} />
-                      </Pressable>
-                    </View>
-                    {instructionsLoading ? (
-                      <ActivityIndicator style={styles.instructionsLoader} color={colors.textPrimary} />
-                    ) : (
-                      <ScrollView style={styles.instructionsScroll} showsVerticalScrollIndicator={false}>
-                        {instructions && instructions.length > 0 ? (
-                          instructions.map((step, index) => (
-                            <View key={index} style={styles.instructionRow}>
-                              <Text style={styles.instructionNum}>{index + 1}</Text>
-                              <Text style={styles.instructionText}>{step}</Text>
-                            </View>
-                          ))
-                        ) : (
-                          <Text style={styles.instructionsEmpty}>{t('instructionsEmpty', lang)}</Text>
-                        )}
-                      </ScrollView>
-                    )}
-                  </Pressable>
-                </Pressable>
-              </Modal>
-            </>
-          )}
-        </Pressable>
-      </Pressable>
+      {sheetContent}
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  overlayRoot: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 20,
+  },
   sheetOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -286,6 +327,18 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  sheetTrashBtn: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sheetTrashBtnPressed: {
+    opacity: 0.5,
   },
   sheetCloseBtnPressed: {
     opacity: 0.5,

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../components/ui/Icon';
 import { colors, typography, layout } from '../constants/theme';
 import { ExerciseDbGif } from '../components/workout/ExerciseDbGif';
 import {
@@ -75,7 +75,7 @@ export default function ExerciseDbTestScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name="chevron-back" size={26} color={colors.textPrimary} />
+          <Icon name="chevron-back" size={26} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.title}>ExerciseDB 테스트</Text>
         <View style={{ width: 26 }} />

@@ -10,7 +10,7 @@ import {
   type ImageResizeMode,
 } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import { colors } from '../../constants/theme';
 import { getRapidApiGifUrl } from '../../lib/exerciseDb';
 import type { RapidApiGifResolution } from '../../types/exerciseDb';
@@ -75,7 +75,7 @@ export function ExerciseDbMedia({
   if (!uri || failed) {
     return (
       <View style={[styles.box, { width, height, borderRadius }, style, styles.fallback]}>
-        <Ionicons name="image-outline" size={Math.min(width, height) * 0.45} color={colors.textMuted} />
+        <Icon name="image" size={Math.min(width, height) * 0.45} color={colors.textMuted} />
       </View>
     );
   }

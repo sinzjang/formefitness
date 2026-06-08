@@ -9,7 +9,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import { useLanguage } from '../../stores/settingsStore';
@@ -88,7 +88,7 @@ export function LocationTabs() {
           onPress={() => setModalVisible(true)}
           hitSlop={4}
         >
-          <Ionicons name="add" size={20} color={colors.textSecondary} />
+          <Icon name="add" size={20} color={colors.textSecondary} />
         </Pressable>
       </View>
 

@@ -49,7 +49,14 @@ export const useSettingsStore = create<SettingsState>()(
         });
       },
       setCoachName: (coachName) => set({ coachName }),
-      toggleLanguage: () => set((s) => ({ language: s.language === 'ko' ? 'en' : 'ko' })),
+      toggleLanguage: () =>
+        set((s) => {
+          const next = s.language === 'ko' ? 'en' : 'ko';
+          import('./coachStore').then(({ useCoachStore }) => {
+            useCoachStore.getState().onLanguageChanged(next);
+          });
+          return { language: next };
+        }),
       setDefaultRestSeconds: (defaultRestSeconds) => set({ defaultRestSeconds }),
       setRestAlertsEnabled: (restAlertsEnabled) => set({ restAlertsEnabled }),
       setConditionSleep: (conditionSleep) => set({ conditionSleep }),

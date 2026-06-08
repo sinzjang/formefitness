@@ -1,11 +1,12 @@
 // 휴식 타이머 오버레이: 세트 완료 후 하단 카운트다운
 import { useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../ui/Icon';
 import { colors, typography, layout, fonts } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import { alertRestComplete } from '../../lib/restAlert';
 import { useLanguage, useSettingsStore } from '../../stores/settingsStore';
+import { resolveDisplayExerciseName } from '../../lib/exerciseKo';
 import { useRestTimerStore } from '../../stores/restTimerStore';
 
 // 초 → MM:SS
@@ -60,7 +61,7 @@ export function RestTimer() {
   if (!active || !exerciseName) return null;
 
   const progress = totalSeconds > 0 ? secondsLeft / totalSeconds : 0;
-  const name = exerciseName[lang];
+  const name = resolveDisplayExerciseName(exerciseName, lang);
 
   return (
     <View style={styles.container}>
@@ -85,7 +86,7 @@ export function RestTimer() {
           </Pressable>
 
           <Pressable style={styles.actionBtn} onPress={togglePause} hitSlop={4}>
-            <Ionicons
+            <Icon
               name={isPaused ? 'play' : 'pause'}
               size={16}
               color={colors.textPrimary}

@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "Forme Workout",
-    "slug": "forme-workout",
+    "name": "Forme Fitness",
+    "slug": "forme-fitness",
     "version": "1.0.0",
-    "scheme": "formeworkout",
+    "scheme": "formefitness",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "bundleIdentifier": "com.forme.workout",
+      "bundleIdentifier": "com.forme.fitness",
       "supportsTablet": true
     },
     "android": {
-      "package": "com.forme.workout"
+      "package": "com.forme.fitness"
     },
     "plugins": [
       "expo-router",
