@@ -1,0 +1,96 @@
+/Users/seshin/Desktop/Personal/Private_Projects/Forme/scripts/evaluate.py:206: DeprecationWarning: The model 'claude-sonnet-4-20250514' is deprecated and will reach end-of-life on June 15th, 2026.
+Please migrate to a newer model. Visit https://docs.anthropic.com/en/docs/resources/model-deprecations for more information.
+  response = client.messages.create(
+/Users/seshin/Desktop/Personal/Private_Projects/Forme/scripts/evaluate.py:206: DeprecationWarning: The model 'claude-sonnet-4-20250514' is deprecated and will reach end-of-life on June 15th, 2026.
+Please migrate to a newer model. Visit https://docs.anthropic.com/en/docs/resources/model-deprecations for more information.
+  response = client.messages.create(
+=============================================
+Formé Fitness — Importance Evaluator
+=============================================
+✅ 1324개 운동 로드
+
+총 53개 배치 시작 (25개/배치)
+예상 시간: 약 8~13분
+---------------------------------------------
+  ✅ 배치 1/53 완료 (25개)
+  ✅ 배치 2/53 완료 (25개)
+  ✅ 배치 3/53 완료 (25개)
+  ✅ 배치 4/53 완료 (25개)
+  ✅ 배치 5/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_005.json
+  ✅ 배치 6/53 완료 (25개)
+  ✅ 배치 7/53 완료 (25개)
+  ✅ 배치 8/53 완료 (25개)
+  ✅ 배치 9/53 완료 (25개)
+  ✅ 배치 10/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_010.json
+  ❌ JSON 파싱 실패 (시도 1/3): Expecting ',' delimiter: line 1 column 3930 (char 3929)
+  ✅ 배치 11/53 완료 (25개)
+  ✅ 배치 12/53 완료 (25개)
+  ✅ 배치 13/53 완료 (25개)
+  ✅ 배치 14/53 완료 (25개)
+  ✅ 배치 15/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_015.json
+  ✅ 배치 16/53 완료 (25개)
+  ✅ 배치 17/53 완료 (25개)
+  ✅ 배치 18/53 완료 (25개)
+  ✅ 배치 19/53 완료 (25개)
+  ✅ 배치 20/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_020.json
+  ✅ 배치 21/53 완료 (25개)
+  ✅ 배치 22/53 완료 (25개)
+  ✅ 배치 23/53 완료 (25개)
+  ✅ 배치 24/53 완료 (25개)
+  ✅ 배치 25/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_025.json
+  ✅ 배치 26/53 완료 (25개)
+  ✅ 배치 27/53 완료 (25개)
+  ✅ 배치 28/53 완료 (25개)
+  ✅ 배치 29/53 완료 (25개)
+  ✅ 배치 30/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_030.json
+  ✅ 배치 31/53 완료 (25개)
+  ✅ 배치 32/53 완료 (25개)
+  ✅ 배치 33/53 완료 (25개)
+  ✅ 배치 34/53 완료 (25개)
+  ✅ 배치 35/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_035.json
+  ✅ 배치 36/53 완료 (25개)
+  ✅ 배치 37/53 완료 (25개)
+  ✅ 배치 38/53 완료 (25개)
+  ✅ 배치 39/53 완료 (25개)
+  ✅ 배치 40/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_040.json
+  ✅ 배치 41/53 완료 (25개)
+  ✅ 배치 42/53 완료 (25개)
+  ✅ 배치 43/53 완료 (25개)
+  ✅ 배치 44/53 완료 (25개)
+  ✅ 배치 45/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_045.json
+  ✅ 배치 46/53 완료 (25개)
+  ✅ 배치 47/53 완료 (25개)
+  ✅ 배치 48/53 완료 (25개)
+  ✅ 배치 49/53 완료 (25개)
+  ✅ 배치 50/53 완료 (25개)
+  💾 중간 저장: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/eval_partials/batch_050.json
+  ✅ 배치 51/53 완료 (25개)
+  ✅ 배치 52/53 완료 (25개)
+  ✅ 배치 53/53 완료 (24개)
+
+최종 병합 중...
+
+=============================================
+평가 결과 요약
+=============================================
+  importance 5:    25개  ✅ 포함
+  importance 4:   186개  ✅ 포함
+  importance 3:   404개  ✅ 포함
+  importance 2:   513개  ❌ 제외
+  importance 1:   196개  ❌ 제외
+
+  앱 포함:   615개
+  제외:      709개
+  전체:      1324개
+
+✅ 저장 완료: /Users/seshin/Desktop/Personal/Private_Projects/Forme/src/data/exercises_evaluated.json
+예상 비용: ~$1.32

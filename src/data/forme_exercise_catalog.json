@@ -1,0 +1,1232 @@
+[
+  {
+    "name": "45° side bend",
+    "nameEn": "45° side bend",
+    "muscleGroup": "core",
+    "gear": "Body",
+    "primary": [
+      "복직근"
+    ],
+    "synergist": [
+      "복사근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0002",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0002-Hy9D21L.gif"
+  },
+  {
+    "name": "air bike",
+    "nameEn": "air bike",
+    "muscleGroup": "core",
+    "gear": "Body",
+    "primary": [
+      "복직근"
+    ],
+    "synergist": [
+      "장요근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0003",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0003-1ZFqTDN.gif"
+  },
+  {
+    "name": "assisted pull-up",
+    "nameEn": "assisted pull-up",
+    "muscleGroup": "back",
+    "gear": "Machine",
+    "primary": [
+      "광배근"
+    ],
+    "synergist": [
+      "이두근",
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0017",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0017-kiJ4Z2K.gif"
+  },
+  {
+    "name": "barbell bench press",
+    "nameEn": "barbell bench press",
+    "muscleGroup": "chest",
+    "gear": "Barbell",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼두근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0025",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0025-EIeI8Vf.gif"
+  },
+  {
+    "name": "barbell bent over row",
+    "nameEn": "barbell bent over row",
+    "muscleGroup": "back",
+    "gear": "Barbell",
+    "primary": [
+      "능형근"
+    ],
+    "synergist": [
+      "이두근",
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0027",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0027-eZyBC3j.gif"
+  },
+  {
+    "name": "barbell close-grip bench press",
+    "nameEn": "barbell close-grip bench press",
+    "muscleGroup": "arms",
+    "gear": "Barbell",
+    "primary": [
+      "삼두근"
+    ],
+    "synergist": [
+      "대흉근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0030",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0030-J6Dx1Mu.gif"
+  },
+  {
+    "name": "barbell curl",
+    "nameEn": "barbell curl",
+    "muscleGroup": "arms",
+    "gear": "Barbell",
+    "primary": [
+      "이두근"
+    ],
+    "synergist": [
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0031",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0031-25GPyDY.gif"
+  },
+  {
+    "name": "barbell deadlift",
+    "nameEn": "barbell deadlift",
+    "muscleGroup": "legs",
+    "gear": "Barbell",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "햄스트링",
+      "척추기립근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0032",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0032-ila4NZS.gif"
+  },
+  {
+    "name": "barbell decline bench press",
+    "nameEn": "barbell decline bench press",
+    "muscleGroup": "chest",
+    "gear": "Barbell",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼두근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0033",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0033-GrO65fd.gif"
+  },
+  {
+    "name": "barbell front raise",
+    "nameEn": "barbell front raise",
+    "muscleGroup": "shoulder",
+    "gear": "Barbell",
+    "primary": [
+      "삼각근"
+    ],
+    "synergist": [
+      "이두근",
+      "삼두근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0041",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0041-b2Uoz54.gif"
+  },
+  {
+    "name": "barbell full squat",
+    "nameEn": "barbell full squat",
+    "muscleGroup": "legs",
+    "gear": "Barbell",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "quadriceps",
+      "햄스트링",
+      "비복근",
+      "코어"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0043",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0043-qXTaZnJ.gif"
+  },
+  {
+    "name": "barbell good morning",
+    "nameEn": "barbell good morning",
+    "muscleGroup": "legs",
+    "gear": "Barbell",
+    "primary": [
+      "햄스트링"
+    ],
+    "synergist": [
+      "척추기립근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0044",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0044-XlZ4lAC.gif"
+  },
+  {
+    "name": "barbell incline bench press",
+    "nameEn": "barbell incline bench press",
+    "muscleGroup": "chest",
+    "gear": "Barbell",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼각근",
+      "삼두근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0047",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0047-3TZduzM.gif"
+  },
+  {
+    "name": "barbell lunge",
+    "nameEn": "barbell lunge",
+    "muscleGroup": "legs",
+    "gear": "Barbell",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "quadriceps",
+      "햄스트링",
+      "비복근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0054",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0054-t8iSghb.gif"
+  },
+  {
+    "name": "barbell palms down wrist curl over a bench",
+    "nameEn": "barbell palms down wrist curl over a bench",
+    "muscleGroup": "arms",
+    "gear": "Barbell",
+    "primary": [
+      "전완"
+    ],
+    "synergist": [
+      "이두근",
+      "상완근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1411",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1411-yzYH9pI.gif"
+  },
+  {
+    "name": "barbell palms up wrist curl over a bench",
+    "nameEn": "barbell palms up wrist curl over a bench",
+    "muscleGroup": "arms",
+    "gear": "Barbell",
+    "primary": [
+      "전완"
+    ],
+    "synergist": [
+      "이두근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1412",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1412-SJAA2IQ.gif"
+  },
+  {
+    "name": "barbell romanian deadlift",
+    "nameEn": "barbell romanian deadlift",
+    "muscleGroup": "legs",
+    "gear": "Barbell",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "햄스트링",
+      "척추기립근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0085",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0085-wQ2c4XD.gif"
+  },
+  {
+    "name": "barbell shrug",
+    "nameEn": "barbell shrug",
+    "muscleGroup": "back",
+    "gear": "Barbell",
+    "primary": [
+      "승모근"
+    ],
+    "synergist": [
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0095",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0095-dG7tG5y.gif"
+  },
+  {
+    "name": "bench dip (knees bent)",
+    "nameEn": "bench dip (knees bent)",
+    "muscleGroup": "arms",
+    "gear": "Body",
+    "primary": [
+      "삼두근"
+    ],
+    "synergist": [
+      "대흉근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0129",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0129-RrLske5.gif"
+  },
+  {
+    "name": "bodyweight standing calf raise",
+    "nameEn": "bodyweight standing calf raise",
+    "muscleGroup": "legs",
+    "gear": "Body",
+    "primary": [
+      "비복근"
+    ],
+    "synergist": [
+      "ankles",
+      "feet"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1373",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1373-bJYHBIN.gif"
+  },
+  {
+    "name": "burpee",
+    "nameEn": "burpee",
+    "muscleGroup": "core",
+    "gear": "Body",
+    "primary": [
+      "코어"
+    ],
+    "synergist": [
+      "quadriceps",
+      "햄스트링",
+      "비복근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1160",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1160-dK9394r.gif"
+  },
+  {
+    "name": "cable alternate triceps extension",
+    "nameEn": "cable alternate triceps extension",
+    "muscleGroup": "arms",
+    "gear": "Machine",
+    "primary": [
+      "삼두근"
+    ],
+    "synergist": [
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0149",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0149-Gchi5Tr.gif"
+  },
+  {
+    "name": "cable bar lateral pulldown",
+    "nameEn": "cable bar lateral pulldown",
+    "muscleGroup": "back",
+    "gear": "Machine",
+    "primary": [
+      "광배근"
+    ],
+    "synergist": [
+      "이두근",
+      "능형근",
+      "후면삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0150",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0150-eYnzaCm.gif"
+  },
+  {
+    "name": "cable close grip curl",
+    "nameEn": "cable close grip curl",
+    "muscleGroup": "arms",
+    "gear": "Machine",
+    "primary": [
+      "이두근"
+    ],
+    "synergist": [
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1630",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1630-BCGQ6J5.gif"
+  },
+  {
+    "name": "cable cross-over variation",
+    "nameEn": "cable cross-over variation",
+    "muscleGroup": "chest",
+    "gear": "Machine",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "deltoids",
+      "삼두근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0155",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0155-0CXGHya.gif"
+  },
+  {
+    "name": "cable hip adduction",
+    "nameEn": "cable hip adduction",
+    "muscleGroup": "legs",
+    "gear": "Machine",
+    "primary": [
+      "내전근"
+    ],
+    "synergist": [
+      "둔근",
+      "quadriceps"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0168",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0168-hBGWILP.gif"
+  },
+  {
+    "name": "cable kneeling crunch",
+    "nameEn": "cable kneeling crunch",
+    "muscleGroup": "core",
+    "gear": "Machine",
+    "primary": [
+      "복직근"
+    ],
+    "synergist": [
+      "복사근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0175",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0175-WW95auq.gif"
+  },
+  {
+    "name": "cable lateral raise",
+    "nameEn": "cable lateral raise",
+    "muscleGroup": "shoulder",
+    "gear": "Machine",
+    "primary": [
+      "삼각근"
+    ],
+    "synergist": [
+      "승모근",
+      "삼두근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0178",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0178-goJ6ezq.gif"
+  },
+  {
+    "name": "cable pushdown",
+    "nameEn": "cable pushdown",
+    "muscleGroup": "arms",
+    "gear": "Machine",
+    "primary": [
+      "삼두근"
+    ],
+    "synergist": [
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0201",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0201-3ZflifB.gif"
+  },
+  {
+    "name": "cable seated row",
+    "nameEn": "cable seated row",
+    "muscleGroup": "back",
+    "gear": "Machine",
+    "primary": [
+      "능형근"
+    ],
+    "synergist": [
+      "이두근",
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0861",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0861-fUBheHs.gif"
+  },
+  {
+    "name": "cable straight arm pulldown",
+    "nameEn": "cable straight arm pulldown",
+    "muscleGroup": "back",
+    "gear": "Machine",
+    "primary": [
+      "광배근"
+    ],
+    "synergist": [
+      "삼각근",
+      "이두근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0238",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0238-x69MAlq.gif"
+  },
+  {
+    "name": "chest dip",
+    "nameEn": "chest dip",
+    "muscleGroup": "chest",
+    "gear": "Body",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼두근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0251",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0251-9WTm7dq.gif"
+  },
+  {
+    "name": "chin-up",
+    "nameEn": "chin-up",
+    "muscleGroup": "back",
+    "gear": "Body",
+    "primary": [
+      "광배근"
+    ],
+    "synergist": [
+      "이두근",
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1326",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1326-T2mxWqc.gif"
+  },
+  {
+    "name": "crunch floor",
+    "nameEn": "crunch floor",
+    "muscleGroup": "core",
+    "gear": "Body",
+    "primary": [
+      "복직근"
+    ],
+    "synergist": [
+      "장요근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0274",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0274-TFqbd8t.gif"
+  },
+  {
+    "name": "dumbbell arnold press",
+    "nameEn": "dumbbell arnold press",
+    "muscleGroup": "shoulder",
+    "gear": "Dumbbell",
+    "primary": [
+      "삼각근"
+    ],
+    "synergist": [
+      "삼두근",
+      "upper chest"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "2137",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/2137-Xy4jlWA.gif"
+  },
+  {
+    "name": "dumbbell bench press",
+    "nameEn": "dumbbell bench press",
+    "muscleGroup": "chest",
+    "gear": "Dumbbell",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼두근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0289",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0289-SpYC0Kp.gif"
+  },
+  {
+    "name": "dumbbell bent over row",
+    "nameEn": "dumbbell bent over row",
+    "muscleGroup": "back",
+    "gear": "Dumbbell",
+    "primary": [
+      "능형근"
+    ],
+    "synergist": [
+      "이두근",
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0293",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0293-BJ0Hz5L.gif"
+  },
+  {
+    "name": "dumbbell biceps curl",
+    "nameEn": "dumbbell biceps curl",
+    "muscleGroup": "arms",
+    "gear": "Dumbbell",
+    "primary": [
+      "이두근"
+    ],
+    "synergist": [
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0294",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0294-NbVPDMW.gif"
+  },
+  {
+    "name": "dumbbell close grip press",
+    "nameEn": "dumbbell close grip press",
+    "muscleGroup": "arms",
+    "gear": "Dumbbell",
+    "primary": [
+      "삼두근"
+    ],
+    "synergist": [
+      "대흉근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1731",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1731-7jGOBF3.gif"
+  },
+  {
+    "name": "dumbbell decline shrug",
+    "nameEn": "dumbbell decline shrug",
+    "muscleGroup": "back",
+    "gear": "Dumbbell",
+    "primary": [
+      "승모근"
+    ],
+    "synergist": [
+      "삼각근",
+      "능형근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0305",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0305-cwsAI4G.gif"
+  },
+  {
+    "name": "dumbbell fly",
+    "nameEn": "dumbbell fly",
+    "muscleGroup": "chest",
+    "gear": "Dumbbell",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0308",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0308-yz9nUhF.gif"
+  },
+  {
+    "name": "dumbbell goblet squat",
+    "nameEn": "dumbbell goblet squat",
+    "muscleGroup": "legs",
+    "gear": "Dumbbell",
+    "primary": [
+      "대퇴사두근"
+    ],
+    "synergist": [
+      "둔근",
+      "햄스트링",
+      "비복근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1760",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1760-yn8yg1r.gif"
+  },
+  {
+    "name": "dumbbell hammer curl",
+    "nameEn": "dumbbell hammer curl",
+    "muscleGroup": "arms",
+    "gear": "Dumbbell",
+    "primary": [
+      "이두근"
+    ],
+    "synergist": [
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0313",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0313-slDvUAU.gif"
+  },
+  {
+    "name": "dumbbell incline bench press",
+    "nameEn": "dumbbell incline bench press",
+    "muscleGroup": "chest",
+    "gear": "Dumbbell",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼각근",
+      "삼두근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0314",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0314-ns0SIbU.gif"
+  },
+  {
+    "name": "dumbbell lateral raise",
+    "nameEn": "dumbbell lateral raise",
+    "muscleGroup": "shoulder",
+    "gear": "Dumbbell",
+    "primary": [
+      "삼각근"
+    ],
+    "synergist": [
+      "승모근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0334",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0334-DsgkuIt.gif"
+  },
+  {
+    "name": "dumbbell lunge",
+    "nameEn": "dumbbell lunge",
+    "muscleGroup": "legs",
+    "gear": "Dumbbell",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "quadriceps",
+      "햄스트링",
+      "비복근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0336",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0336-RRWFUcw.gif"
+  },
+  {
+    "name": "dumbbell one arm bent-over row",
+    "nameEn": "dumbbell one arm bent-over row",
+    "muscleGroup": "back",
+    "gear": "Dumbbell",
+    "primary": [
+      "능형근"
+    ],
+    "synergist": [
+      "이두근",
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0292",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0292-C0MA9bC.gif"
+  },
+  {
+    "name": "dumbbell rear lateral raise",
+    "nameEn": "dumbbell rear lateral raise",
+    "muscleGroup": "shoulder",
+    "gear": "Dumbbell",
+    "primary": [
+      "삼각근"
+    ],
+    "synergist": [
+      "승모근",
+      "능형근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0380",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0380-v1qBec9.gif"
+  },
+  {
+    "name": "dumbbell romanian deadlift",
+    "nameEn": "dumbbell romanian deadlift",
+    "muscleGroup": "legs",
+    "gear": "Dumbbell",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "햄스트링",
+      "척추기립근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1459",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1459-rR0LJzx.gif"
+  },
+  {
+    "name": "dumbbell seated shoulder press",
+    "nameEn": "dumbbell seated shoulder press",
+    "muscleGroup": "shoulder",
+    "gear": "Dumbbell",
+    "primary": [
+      "삼각근"
+    ],
+    "synergist": [
+      "삼두근",
+      "능형근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0405",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0405-znQUdHY.gif"
+  },
+  {
+    "name": "dumbbell standing calf raise",
+    "nameEn": "dumbbell standing calf raise",
+    "muscleGroup": "legs",
+    "gear": "Dumbbell",
+    "primary": [
+      "비복근"
+    ],
+    "synergist": [
+      "ankles"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0417",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0417-dPmaUaU.gif"
+  },
+  {
+    "name": "dumbbell standing overhead press",
+    "nameEn": "dumbbell standing overhead press",
+    "muscleGroup": "shoulder",
+    "gear": "Dumbbell",
+    "primary": [
+      "삼각근"
+    ],
+    "synergist": [
+      "삼두근",
+      "능형근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0426",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0426-A6wtbuL.gif"
+  },
+  {
+    "name": "hanging leg raise",
+    "nameEn": "hanging leg raise",
+    "muscleGroup": "core",
+    "gear": "Body",
+    "primary": [
+      "복직근"
+    ],
+    "synergist": [
+      "장요근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0472",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0472-I3tsCnC.gif"
+  },
+  {
+    "name": "hyperextension",
+    "nameEn": "hyperextension",
+    "muscleGroup": "back",
+    "gear": "Body",
+    "primary": [
+      "척추기립근"
+    ],
+    "synergist": [
+      "둔근",
+      "햄스트링"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0489",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0489-zhMwOwE.gif"
+  },
+  {
+    "name": "lever back extension",
+    "nameEn": "lever back extension",
+    "muscleGroup": "back",
+    "gear": "Machine",
+    "primary": [
+      "척추기립근"
+    ],
+    "synergist": [
+      "둔근",
+      "햄스트링"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0573",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0573-rUXfn3R.gif"
+  },
+  {
+    "name": "lever bent-over row with v-bar",
+    "nameEn": "lever bent-over row with v-bar",
+    "muscleGroup": "back",
+    "gear": "Machine",
+    "primary": [
+      "능형근"
+    ],
+    "synergist": [
+      "이두근",
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "3200",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/3200-LuBEORI.gif"
+  },
+  {
+    "name": "lever bicep curl",
+    "nameEn": "lever bicep curl",
+    "muscleGroup": "arms",
+    "gear": "Machine",
+    "primary": [
+      "이두근"
+    ],
+    "synergist": [
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0575",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0575-q6y3OhV.gif"
+  },
+  {
+    "name": "lever chest press",
+    "nameEn": "lever chest press",
+    "muscleGroup": "chest",
+    "gear": "Machine",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼두근",
+      "삼각근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0576",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0576-DOoWcnA.gif"
+  },
+  {
+    "name": "lever deadlift",
+    "nameEn": "lever deadlift",
+    "muscleGroup": "legs",
+    "gear": "Machine",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "햄스트링",
+      "quadriceps"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0578",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0578-GUT8I22.gif"
+  },
+  {
+    "name": "lever kneeling leg curl",
+    "nameEn": "lever kneeling leg curl",
+    "muscleGroup": "legs",
+    "gear": "Machine",
+    "primary": [
+      "햄스트링"
+    ],
+    "synergist": [
+      "둔근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0582",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0582-nnmCTLN.gif"
+  },
+  {
+    "name": "lever leg extension",
+    "nameEn": "lever leg extension",
+    "muscleGroup": "legs",
+    "gear": "Machine",
+    "primary": [
+      "대퇴사두근"
+    ],
+    "synergist": [
+      "햄스트링"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0585",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0585-my33uHU.gif"
+  },
+  {
+    "name": "lever lying leg curl",
+    "nameEn": "lever lying leg curl",
+    "muscleGroup": "legs",
+    "gear": "Machine",
+    "primary": [
+      "햄스트링"
+    ],
+    "synergist": [
+      "비복근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0586",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0586-17lJ1kr.gif"
+  },
+  {
+    "name": "lever military press",
+    "nameEn": "lever military press",
+    "muscleGroup": "shoulder",
+    "gear": "Machine",
+    "primary": [
+      "삼각근"
+    ],
+    "synergist": [
+      "삼두근",
+      "upper chest"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0587",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0587-CggQhII.gif"
+  },
+  {
+    "name": "lever seated calf raise",
+    "nameEn": "lever seated calf raise",
+    "muscleGroup": "legs",
+    "gear": "Machine",
+    "primary": [
+      "비복근"
+    ],
+    "synergist": [
+      "가자미근",
+      "ankle stabilizers"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0594",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0594-bOOdeyc.gif"
+  },
+  {
+    "name": "pull-up",
+    "nameEn": "pull-up",
+    "muscleGroup": "back",
+    "gear": "Body",
+    "primary": [
+      "광배근"
+    ],
+    "synergist": [
+      "이두근",
+      "전완"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0652",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0652-lBDjFxJ.gif"
+  },
+  {
+    "name": "push-up",
+    "nameEn": "push-up",
+    "muscleGroup": "chest",
+    "gear": "Body",
+    "primary": [
+      "대흉근"
+    ],
+    "synergist": [
+      "삼두근",
+      "deltoids",
+      "코어"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0662",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0662-I4hDWkc.gif"
+  },
+  {
+    "name": "russian twist",
+    "nameEn": "russian twist",
+    "muscleGroup": "core",
+    "gear": "Body",
+    "primary": [
+      "복직근"
+    ],
+    "synergist": [
+      "복사근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0687",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0687-XVDdcoj.gif"
+  },
+  {
+    "name": "side hip abduction",
+    "nameEn": "side hip abduction",
+    "muscleGroup": "legs",
+    "gear": "Body",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "quadriceps"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "0710",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/0710-7WaDzyL.gif"
+  },
+  {
+    "name": "walking lunge",
+    "nameEn": "walking lunge",
+    "muscleGroup": "legs",
+    "gear": "Body",
+    "primary": [
+      "둔근"
+    ],
+    "synergist": [
+      "quadriceps",
+      "햄스트링",
+      "비복근"
+    ],
+    "stabilizer": [
+      "코어"
+    ],
+    "exerciseDbId": "1460",
+    "gifUrl": "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/videos/1460-IZVHb27.gif"
+  }
+]

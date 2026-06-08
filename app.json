@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Forme Workout",
+    "slug": "forme-workout",
+    "version": "1.0.0",
+    "scheme": "formeworkout",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "com.forme.workout",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.forme.workout"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-dev-client"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
