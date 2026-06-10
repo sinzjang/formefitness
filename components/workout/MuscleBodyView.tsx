@@ -40,12 +40,13 @@ export function MuscleBodyView({
   const highlightColor = muscleGroup ? muscleColors[muscleGroup] : colors.accent;
 
   const keys = muscleKey ? [muscleKey] : (muscleKeys ?? []);
-  const region = empty ? 'upper' : getBodyRegion(keys, muscleGroup);
-  const viewport = getBodyViewport(region, size);
-
   const highlight = muscleKey
     ? getBodyHighlightForMuscle(muscleKey, muscleGroup, highlightColor)
     : getBodyHighlightForMuscles(muscleKeys ?? [], muscleGroup, highlightColor);
+
+  const region = empty ? 'upper' : getBodyRegion(keys, muscleGroup);
+  const highlightSlug = empty ? undefined : highlight.data[0]?.slug;
+  const viewport = getBodyViewport(region, size, highlightSlug);
 
   const data = empty ? [] : highlight.data;
   const side = empty ? 'front' : highlight.side;

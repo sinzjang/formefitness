@@ -34,9 +34,15 @@ yarn-error.*
 .env
 .env*.local
 !.env.example
+.apple-secret.txt
 
 # typescript
 *.tsbuildinfo
+
+# Python
+.venv/
+__pycache__/
+*.pyc
 
 # generated native folders
 /ios

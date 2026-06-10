@@ -1,6 +1,7 @@
 // 세션/운동별 통계 요약 (e1RM, 볼륨, 횟수)
 import type { ResistanceType, SetData } from '../types';
 import { setLoad, setVolume, epley1RM } from './strength';
+import { normalizeResistanceType } from './workoutHistoryIntegrity';
 
 export interface ExerciseStats {
   bestE1rm: number;
@@ -12,9 +13,10 @@ export interface ExerciseStats {
 
 export const summarizeSets = (
   sets: SetData[],
-  resistanceType: ResistanceType
+  resistanceType: ResistanceType | unknown
 ): ExerciseStats => {
-  const valid = sets.filter((s) => s.reps > 0);
+  const type = normalizeResistanceType(resistanceType);
+  const valid = (Array.isArray(sets) ? sets : []).filter((s) => s && s.reps > 0);
   let bestE1rm = 0;
   let bestReps = 0;
   let totalVolume = 0;
@@ -22,7 +24,7 @@ export const summarizeSets = (
   let hasLoad = false;
 
   for (const s of valid) {
-    const load = setLoad(s, resistanceType);
+    const load = setLoad(s, type);
     if (load > 0) hasLoad = true;
     bestE1rm = Math.max(bestE1rm, epley1RM(load, s.reps));
     bestReps = Math.max(bestReps, s.reps);

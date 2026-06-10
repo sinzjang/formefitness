@@ -1,5 +1,5 @@
 // 운동 추가 피커: 검색 + Gear / Target 필터 + 근육 그룹별 운동 카탈로그
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef, memo } from 'react';
 import {
   Modal,
   View,
@@ -7,10 +7,13 @@ import {
   TextInput,
   Pressable,
   ScrollView,
+  SectionList,
+  FlatList,
   StyleSheet,
+  type ViewToken,
 } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../ui/Icon';
+import { ModalSafeArea } from '../ui/ModalSafeArea';
 import type { Gear, Language, MuscleGroup } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { MUSCLES, muscleGroupLabel } from '../../constants/muscles';
@@ -30,9 +33,12 @@ import { filterActiveExercises } from '../../lib/exerciseMeta';
 import { searchCatalogExercises } from '../../lib/exerciseSearch';
 import { useExerciseCatalogPrefsStore } from '../../stores/exerciseCatalogPrefsStore';
 import { AddCustomExerciseSheet } from './AddCustomExerciseSheet';
-import { MuscleBodyView } from './MuscleBodyView';
-import { ExerciseDbThumb } from './ExerciseDbThumb';
+import { LazyExerciseDbThumb } from './LazyExerciseDbThumb';
+import { LazyMuscleBodyView } from './LazyMuscleBodyView';
 import { ExerciseDetailSheet } from './ExerciseDetailSheet';
+import { seedCatalogMediaCache } from '../../lib/exerciseDbIdCache';
+import { resetThumbLoadScheduler } from '../../lib/thumbLoadScheduler';
+import { useDebouncedValue } from '../../lib/useDebouncedValue';
 
 interface ExercisePickerProps {
   visible: boolean;
@@ -41,6 +47,29 @@ interface ExercisePickerProps {
 }
 
 type OpenFilter = 'gear' | 'target' | null;
+
+type PickerSection = {
+  key: string;
+  title: string;
+  muscleColor?: string;
+  showAddCustom?: boolean;
+  data: ExerciseDef[];
+};
+
+function exerciseRowKey(ex: ExerciseDef): string {
+  if (ex.isCustom && ex.customId) return `custom:${ex.customId}`;
+  return `ex:${ex.exerciseDbId ?? ex.nameEn}`;
+}
+
+const LIST_PERF = {
+  initialNumToRender: 8,
+  maxToRenderPerBatch: 4,
+  windowSize: 5,
+  removeClippedSubviews: true,
+};
+
+const SCROLL_IDLE_MS = 180;
+const VIEWABILITY_DEBOUNCE_MS = 100;
 
 export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerProps) {
   const lang = useLanguage();
@@ -54,19 +83,34 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
   const [detail, setDetail] = useState<ExerciseDef | null>(null);
   const [customSheetVisible, setCustomSheetVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [visibleRowKeys, setVisibleRowKeys] = useState<Set<string>>(() => new Set());
+  const [scrollIdle, setScrollIdle] = useState(true);
+  const scrollIdleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedVisibleRowKeys = useDebouncedValue(visibleRowKeys, VIEWABILITY_DEBOUNCE_MS);
 
   useEffect(() => {
     if (!visible) {
       setSearchQuery('');
       setOpen(null);
       setDetail(null);
+      setVisibleRowKeys(new Set());
+      setScrollIdle(true);
+      if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+      resetThumbLoadScheduler();
     }
   }, [visible]);
 
-  const fullCatalog = useMemo(
-    () => getCatalogExercisesWithPrefs(catalogPrefs),
-    [catalogPrefs]
-  );
+  const fullCatalog = useMemo(() => {
+    const items = getCatalogExercisesWithPrefs(catalogPrefs);
+    seedCatalogMediaCache(
+      items.map((ex) => ({
+        nameEn: ex.nameEn,
+        exerciseDbId: getExerciseDbId(ex),
+        gifUrl: ex.gifUrl,
+      }))
+    );
+    return items;
+  }, [catalogPrefs]);
 
   const isSearching = searchQuery.trim().length > 0;
 
@@ -77,11 +121,85 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
 
   const searchResults = useMemo(() => {
     if (!isSearching) return [];
-    return filterExercises(searchCatalogExercises(fullCatalog, searchQuery, lang), gear, target);
+    return filterExercises(
+      searchCatalogExercises(fullCatalog, searchQuery, lang),
+      gear,
+      target
+    );
   }, [fullCatalog, searchQuery, lang, gear, target, isSearching]);
+
   const customItems = useMemo(
     () => filterExercises(getCustomExerciseDefs(customExercises), gear, target),
     [customExercises, gear, target]
+  );
+
+  const visibleMuscles = useMemo(
+    () => MUSCLES.filter((m) => !target || m.id === target),
+    [target]
+  );
+
+  const sections = useMemo((): PickerSection[] => {
+    const result: PickerSection[] = [
+      {
+        key: 'custom',
+        title: t('exerciseCustom', lang),
+        showAddCustom: true,
+        data: customItems,
+      },
+    ];
+
+    for (const muscle of visibleMuscles) {
+      const items = catalogItems.filter((e) => e.muscleGroup === muscle.id);
+      if (items.length === 0) continue;
+      result.push({
+        key: muscle.id,
+        title: muscleGroupLabel(muscle.id, lang),
+        muscleColor: muscle.color,
+        data: items,
+      });
+    }
+
+    return result;
+  }, [catalogItems, customItems, visibleMuscles, lang]);
+
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      const next = new Set(
+        viewableItems
+          .filter((token) => token.isViewable && token.key)
+          .map((token) => token.key as string)
+      );
+      setVisibleRowKeys((prev) => {
+        if (prev.size === next.size && [...prev].every((k) => next.has(k))) return prev;
+        return next;
+      });
+    }
+  ).current;
+
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 20, minimumViewTime: 80 }).current;
+
+  const handleScrollBegin = useCallback(() => {
+    if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+    setScrollIdle(false);
+  }, []);
+
+  const handleScrollEnd = useCallback(() => {
+    if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+    scrollIdleTimer.current = setTimeout(() => setScrollIdle(true), SCROLL_IDLE_MS);
+  }, []);
+
+  const listScrollHandlers = useMemo(
+    () => ({
+      onScrollBeginDrag: handleScrollBegin,
+      onScrollEndDrag: handleScrollEnd,
+      onMomentumScrollEnd: handleScrollEnd,
+    }),
+    [handleScrollBegin, handleScrollEnd]
+  );
+
+  const firstMuscleSectionKey = useMemo(
+    () => sections.find((s) => s.muscleColor)?.key,
+    [sections]
   );
 
   const handleDeactivate = (ex: ExerciseDef) => {
@@ -94,18 +212,40 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
   };
 
   // 운동 추가 후 피커 닫기
-  const handleAdd = (ex: ExerciseDef) => {
-    onSelect(ex);
-    setDetail(null);
-    onClose();
-  };
+  const handleAdd = useCallback(
+    (ex: ExerciseDef) => {
+      onSelect(ex);
+      setDetail(null);
+      onClose();
+    },
+    [onSelect, onClose]
+  );
 
   const gearLabel = gear ?? t('all', lang);
   const targetLabel = target ? muscleGroupLabel(target, lang) : t('all', lang);
 
   const toggle = (filter: OpenFilter) => setOpen((cur) => (cur === filter ? null : filter));
 
-  const visibleMuscles = MUSCLES.filter((m) => !target || m.id === target);
+  const renderExerciseRow = useCallback(
+    (ex: ExerciseDef, options?: { showCustomBadge?: boolean; showInactiveBadge?: boolean }) => {
+      const loadKey = exerciseRowKey(ex);
+      const thumbEligible = debouncedVisibleRowKeys.has(loadKey);
+      return (
+        <ExerciseListRow
+          loadKey={loadKey}
+          exercise={ex}
+          lang={lang}
+          thumbEligible={thumbEligible}
+          scrollIdle={scrollIdle}
+          showCustomBadge={options?.showCustomBadge}
+          showInactiveBadge={options?.showInactiveBadge}
+          onPressDetail={() => setDetail(ex)}
+          onAdd={() => handleAdd(ex)}
+        />
+      );
+    },
+    [lang, debouncedVisibleRowKeys, scrollIdle, handleAdd]
+  );
 
   return (
     <Modal
@@ -114,9 +254,7 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      {/* Modal은 별도 뷰 계층이라 SafeAreaProvider를 다시 감싸야 인셋이 적용됨 */}
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <ModalSafeArea>
           <View style={styles.header}>
             <Text style={styles.title}>{t('addExercise', lang)}</Text>
             <Pressable onPress={onClose} hitSlop={8}>
@@ -229,9 +367,20 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
             </ScrollView>
           )}
 
-          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-            {isSearching ? (
-              <View style={styles.section}>
+          {isSearching ? (
+            <FlatList
+              data={searchResults}
+              keyExtractor={(ex) => exerciseRowKey(ex)}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scroll}
+              initialNumToRender={LIST_PERF.initialNumToRender}
+              maxToRenderPerBatch={LIST_PERF.maxToRenderPerBatch}
+              windowSize={LIST_PERF.windowSize}
+              removeClippedSubviews={LIST_PERF.removeClippedSubviews}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              {...listScrollHandlers}
+              ListHeaderComponent={
                 <View style={styles.sectionHeader}>
                   <Text style={styles.sectionTitle}>{t('exerciseCatalog', lang)}</Text>
                   <Text style={styles.searchCount}>
@@ -239,83 +388,65 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
                     {t('exerciseSearchCountSuffix', lang)}
                   </Text>
                 </View>
-
-                {searchResults.length === 0 ? (
-                  <Text style={styles.emptyCustom}>{t('exerciseSearchEmpty', lang)}</Text>
-                ) : (
-                  searchResults.map((ex) => (
-                    <ExerciseListRow
-                      key={ex.exerciseDbId ?? ex.nameEn}
-                      exercise={ex}
-                      lang={lang}
-                      showInactiveBadge={ex.is_active !== true}
-                      onPressDetail={() => setDetail(ex)}
-                      onAdd={() => handleAdd(ex)}
-                    />
-                  ))
-                )}
-              </View>
-            ) : (
-              <>
-            {/* MY EXERCISES — 커스텀 */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>{t('exerciseCustom', lang)}</Text>
-                <Pressable
-                  style={styles.addCustomLink}
-                  onPress={() => setCustomSheetVisible(true)}
-                >
-                  <Icon name="add" size={16} color={colors.textPrimary} />
-                  <Text style={styles.addCustomText}>{t('addCustomExercise', lang)}</Text>
-                </Pressable>
-              </View>
-
-              {customItems.length === 0 ? (
-                <Text style={styles.emptyCustom}>{t('customExerciseEmpty', lang)}</Text>
-              ) : (
-                customItems.map((ex) => (
-                  <ExerciseListRow
-                    key={ex.customId ?? ex.name}
-                    exercise={ex}
-                    lang={lang}
-                    showCustomBadge
-                    onPressDetail={() => setDetail(ex)}
-                    onAdd={() => handleAdd(ex)}
-                  />
-                ))
-              )}
-            </View>
-
-            {/* FORMÉ — 내장 카탈로그 */}
-            <View style={styles.catalogHeader}>
-              <Text style={styles.sectionTitle}>{t('exerciseCatalog', lang)}</Text>
-            </View>
-
-            {visibleMuscles.map((muscle) => {
-              const items = catalogItems.filter((e) => e.muscleGroup === muscle.id);
-              if (items.length === 0) return null;
-              return (
-                <View key={muscle.id} style={styles.section}>
+              }
+              ListEmptyComponent={
+                <Text style={styles.emptyCustom}>{t('exerciseSearchEmpty', lang)}</Text>
+              }
+              renderItem={({ item: ex }) =>
+                renderExerciseRow(ex, { showInactiveBadge: ex.is_active !== true })
+              }
+            />
+          ) : (
+            <SectionList
+              sections={sections}
+              keyExtractor={(ex) => exerciseRowKey(ex)}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scroll}
+              stickySectionHeadersEnabled={false}
+              initialNumToRender={LIST_PERF.initialNumToRender}
+              maxToRenderPerBatch={LIST_PERF.maxToRenderPerBatch}
+              windowSize={LIST_PERF.windowSize}
+              removeClippedSubviews={LIST_PERF.removeClippedSubviews}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              {...listScrollHandlers}
+              renderSectionHeader={({ section }) => (
+                <View style={styles.section}>
+                  {section.key === firstMuscleSectionKey ? (
+                    <View style={styles.catalogHeader}>
+                      <Text style={styles.sectionTitle}>{t('exerciseCatalog', lang)}</Text>
+                    </View>
+                  ) : null}
                   <View style={styles.sectionHeader}>
-                    <View style={[styles.muscleDot, { backgroundColor: muscle.color }]} />
-                    <Text style={styles.sectionTitle}>{muscleGroupLabel(muscle.id, lang)}</Text>
+                    {section.muscleColor ? (
+                      <View style={[styles.muscleDot, { backgroundColor: section.muscleColor }]} />
+                    ) : null}
+                    <Text style={styles.sectionTitle}>{section.title}</Text>
+                    {section.showAddCustom ? (
+                      <Pressable
+                        style={styles.addCustomLink}
+                        onPress={() => setCustomSheetVisible(true)}
+                      >
+                        <Icon name="add" size={16} color={colors.textPrimary} />
+                        <Text style={styles.addCustomText}>{t('addCustomExercise', lang)}</Text>
+                      </Pressable>
+                    ) : null}
                   </View>
-
-                  {items.map((ex) => (
-                    <ExerciseListRow
-                      key={ex.exerciseDbId ?? ex.nameEn}
-                      exercise={ex}
-                      lang={lang}
-                      onPressDetail={() => setDetail(ex)}
-                      onAdd={() => handleAdd(ex)}
-                    />
-                  ))}
                 </View>
-              );
-            })}
-              </>
-            )}
-          </ScrollView>
+              )}
+              renderSectionFooter={({ section }) =>
+                section.key === 'custom' && section.data.length === 0 ? (
+                  <Text style={styles.emptyCustom}>{t('customExerciseEmpty', lang)}</Text>
+                ) : null
+              }
+              renderItem={({ item: ex, section }) =>
+                renderExerciseRow(ex, {
+                  showCustomBadge: section.key === 'custom',
+                  showInactiveBadge: section.key !== 'custom' && ex.is_active !== true,
+                })
+              }
+            />
+          )}
 
           {/* 운동 요약 시트 — picker 안에서는 Modal 중첩 없이 오버레이 */}
           <ExerciseDetailSheet
@@ -331,23 +462,28 @@ export function ExercisePicker({ visible, onClose, onSelect }: ExercisePickerPro
             onClose={() => setCustomSheetVisible(false)}
             onCreated={(ex) => handleAdd(ex)}
           />
-        </SafeAreaView>
-      </SafeAreaProvider>
+      </ModalSafeArea>
     </Modal>
   );
 }
 
 // 운동 목록 한 줄 — FORMÉ / MY EXERCISES 공통 레이아웃
-function ExerciseListRow({
+const ExerciseListRow = memo(function ExerciseListRow({
+  loadKey,
   exercise,
   lang,
+  thumbEligible = false,
+  scrollIdle = false,
   showCustomBadge = false,
   showInactiveBadge = false,
   onPressDetail,
   onAdd,
 }: {
+  loadKey: string;
   exercise: ExerciseDef;
   lang: Language;
+  thumbEligible?: boolean;
+  scrollIdle?: boolean;
   showCustomBadge?: boolean;
   showInactiveBadge?: boolean;
   onPressDetail: () => void;
@@ -368,13 +504,21 @@ function ExerciseListRow({
         onPress={onPressDetail}
       >
         <View style={styles.imagePair}>
-          <ExerciseDbThumb
+          <LazyExerciseDbThumb
+            loadKey={loadKey}
+            eligible={thumbEligible}
             nameEn={exercise.nameEn}
             exerciseDbId={getExerciseDbId(exercise)}
             gifUrl={exercise.gifUrl}
             variant="list"
           />
-          <MuscleBodyView muscleKeys={exercise.primary} muscleGroup={exercise.muscleGroup} />
+          <LazyMuscleBodyView
+            loadKey={loadKey}
+            eligible={thumbEligible}
+            scrollIdle={scrollIdle}
+            muscleKeys={exercise.primary}
+            muscleGroup={exercise.muscleGroup}
+          />
         </View>
         <View style={styles.rowDivider} />
         <View style={styles.rowTextCol}>
@@ -410,7 +554,7 @@ function ExerciseListRow({
       </Pressable>
     </View>
   );
-}
+});
 
 // 드롭다운 옵션 한 줄 (이미지 플레이스홀더 / 색 도트 / 체크)
 function OptionRow({
@@ -442,11 +586,6 @@ function OptionRow({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-    backgroundColor: colors.background,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

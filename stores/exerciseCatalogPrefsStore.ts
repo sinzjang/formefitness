@@ -13,6 +13,7 @@ interface ExerciseCatalogPrefsState {
   setPref: (nameEn: string, patch: CatalogExercisePref) => void;
   setActive: (nameEn: string, isActive: boolean) => void;
   setFavorite: (nameEn: string, isFavorite: boolean) => void;
+  replaceAll: (prefs: Record<string, CatalogExercisePref>) => void;
 }
 
 export const useExerciseCatalogPrefsStore = create<ExerciseCatalogPrefsState>()(
@@ -20,29 +21,46 @@ export const useExerciseCatalogPrefsStore = create<ExerciseCatalogPrefsState>()(
     (set) => ({
       prefs: {},
 
-      setPref: (nameEn, patch) =>
-        set((state) => ({
-          prefs: {
-            ...state.prefs,
-            [nameEn]: { ...state.prefs[nameEn], ...patch },
-          },
-        })),
+      setPref: (nameEn, patch) => {
+        let merged: CatalogExercisePref | undefined;
+        set((state) => {
+          merged = { ...state.prefs[nameEn], ...patch };
+          return {
+            prefs: { ...state.prefs, [nameEn]: merged },
+          };
+        });
+        if (merged) {
+          void import('../lib/sync/workoutSync').then((m) => m.pushCatalogPref(nameEn, merged!));
+        }
+      },
 
-      setActive: (nameEn, isActive) =>
-        set((state) => ({
-          prefs: {
-            ...state.prefs,
-            [nameEn]: { ...state.prefs[nameEn], is_active: isActive },
-          },
-        })),
+      setActive: (nameEn, isActive) => {
+        let merged: CatalogExercisePref | undefined;
+        set((state) => {
+          merged = { ...state.prefs[nameEn], is_active: isActive };
+          return {
+            prefs: { ...state.prefs, [nameEn]: merged },
+          };
+        });
+        if (merged) {
+          void import('../lib/sync/workoutSync').then((m) => m.pushCatalogPref(nameEn, merged!));
+        }
+      },
 
-      setFavorite: (nameEn, isFavorite) =>
-        set((state) => ({
-          prefs: {
-            ...state.prefs,
-            [nameEn]: { ...state.prefs[nameEn], is_favorite: isFavorite },
-          },
-        })),
+      setFavorite: (nameEn, isFavorite) => {
+        let merged: CatalogExercisePref | undefined;
+        set((state) => {
+          merged = { ...state.prefs[nameEn], is_favorite: isFavorite };
+          return {
+            prefs: { ...state.prefs, [nameEn]: merged },
+          };
+        });
+        if (merged) {
+          void import('../lib/sync/workoutSync').then((m) => m.pushCatalogPref(nameEn, merged!));
+        }
+      },
+
+      replaceAll: (prefs) => set({ prefs }),
     }),
     {
       name: 'forme-exercise-catalog-prefs',

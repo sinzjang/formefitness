@@ -3,7 +3,6 @@
 // 한국어 표시명: src/data/ko.json (lib/exerciseKo.ts)
 import type { Gear, Language, MuscleGroup } from '../types';
 import catalog from '../src/data/forme_exercise_catalog.json';
-import { resolveExerciseKoName } from '../lib/exerciseKo';
 
 export { exerciseLocalizedName } from '../lib/exerciseKo';
 
@@ -26,10 +25,14 @@ export interface ExerciseDef {
   is_favorite?: boolean;
 }
 
-export const EXERCISES: ExerciseDef[] = catalog as ExerciseDef[];
+export const EXERCISES: ExerciseDef[] = Array.isArray(catalog) ? (catalog as ExerciseDef[]) : [];
 
 export const exercisesByMuscle = (group: MuscleGroup): ExerciseDef[] =>
   EXERCISES.filter((e) => e.muscleGroup === group);
 
-export const exerciseName = (ex: ExerciseDef, lang: Language): string =>
-  lang === 'en' ? ex.nameEn : resolveExerciseKoName(ex);
+export const exerciseName = (ex: ExerciseDef, lang: Language): string => {
+  if (lang === 'en') return ex.nameEn;
+  // 순환 import 방지 — 호출 시점에만 exerciseKo 로드
+  const { resolveExerciseKoName } = require('../lib/exerciseKo') as typeof import('../lib/exerciseKo');
+  return resolveExerciseKoName(ex);
+};

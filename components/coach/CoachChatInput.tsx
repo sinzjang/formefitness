@@ -12,9 +12,11 @@ interface CoachChatInputProps {
   lang: Language;
   disabled?: boolean;
   onSend: (text: string) => void;
+  /** 플로팅 말풍선 — 좁은 패널용 패딩 */
+  compact?: boolean;
 }
 
-export function CoachChatInput({ lang, disabled, onSend }: CoachChatInputProps) {
+export function CoachChatInput({ lang, disabled, onSend, compact }: CoachChatInputProps) {
   const [text, setText] = useState('');
 
   const handleSend = () => {
@@ -25,7 +27,7 @@ export function CoachChatInput({ lang, disabled, onSend }: CoachChatInputProps) 
   };
 
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, compact && styles.wrapCompact]}>
       <TextInput
         style={styles.input}
         placeholder={t('coachInputPlaceholder', lang)}
@@ -59,6 +61,9 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
     backgroundColor: colors.background,
+  },
+  wrapCompact: {
+    paddingHorizontal: 14,
   },
   input: {
     flex: 1,

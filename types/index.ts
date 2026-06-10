@@ -1,4 +1,5 @@
 // Forme 앱 전역 타입 정의
+import type { PlanId, SubscriptionStatus } from './subscription';
 
 export type Language = 'ko' | 'en';
 
@@ -62,9 +63,12 @@ export interface WorkoutSession {
 export interface UserProfile {
   id: string;
   displayName?: string;
+  email?: string;
   goalTier?: number;
   goalImageUrl?: string;
   weightUnit: 'lb' | 'kg';
+  planId?: PlanId;
+  subscriptionStatus?: SubscriptionStatus;
 }
 
 export interface BodyGoalTier {
@@ -83,6 +87,8 @@ export interface SavedExerciseRecord {
 
 export interface SavedWorkoutSession {
   id: string;
+  /** 실제 운동 시작 시각 (미설정 시 endedAt과 동일하게 취급) */
+  startedAt?: string;
   endedAt: string;
   locationId?: string;
   routineId?: string;

@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '../ui/Icon';
 import type { Language, ResistanceType } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
@@ -45,12 +45,37 @@ export interface ExerciseDetailSheetProps {
   onDeactivate?: () => void;
 }
 
-export function ExerciseDetailSheet({
+export function ExerciseDetailSheet(props: ExerciseDetailSheetProps) {
+  if (!props.exercise) return null;
+
+  if (props.presentation === 'overlay') {
+    return (
+      <View style={styles.overlayRoot}>
+        <ExerciseDetailSheetContent {...props} />
+      </View>
+    );
+  }
+
+  return (
+    <Modal
+      visible
+      transparent
+      animationType="fade"
+      onRequestClose={props.onClose}
+      statusBarTranslucent
+    >
+      <SafeAreaProvider>
+        <ExerciseDetailSheetContent {...props} />
+      </SafeAreaProvider>
+    </Modal>
+  );
+}
+
+function ExerciseDetailSheetContent({
   exercise,
   lang,
   onClose,
   onAdd,
-  presentation = 'modal',
   onDeactivate,
 }: ExerciseDetailSheetProps) {
   const { width, height: windowHeight } = useWindowDimensions();
@@ -130,8 +155,6 @@ export function ExerciseDetailSheet({
       },
     ];
   }, [exercise, lang]);
-
-  if (!exercise) return null;
 
   const sheetContent = (
     <Pressable style={styles.sheetOverlay} onPress={onClose}>
@@ -256,51 +279,68 @@ export function ExerciseDetailSheet({
           animationType="fade"
           onRequestClose={handleCloseInstructions}
         >
-          <Pressable style={styles.instructionsOverlay} onPress={handleCloseInstructions}>
-            <Pressable style={styles.instructionsCard} onPress={() => {}}>
-              <View style={styles.instructionsHeader}>
-                <Text style={styles.instructionsTitle}>{t('exerciseInstructions', lang)}</Text>
-                <Pressable onPress={handleCloseInstructions} hitSlop={8}>
-                  <Icon name="close" size={24} color={colors.textPrimary} />
-                </Pressable>
-              </View>
-              {instructionsLoading ? (
-                <ActivityIndicator style={styles.instructionsLoader} color={colors.textPrimary} />
-              ) : (
-                <ScrollView style={styles.instructionsScroll} showsVerticalScrollIndicator={false}>
-                  {instructions && instructions.length > 0 ? (
-                    instructions.map((step, index) => (
-                      <View key={index} style={styles.instructionRow}>
-                        <Text style={styles.instructionNum}>{index + 1}</Text>
-                        <Text style={styles.instructionText}>{step}</Text>
-                      </View>
-                    ))
-                  ) : (
-                    <Text style={styles.instructionsEmpty}>{t('instructionsEmpty', lang)}</Text>
-                  )}
-                </ScrollView>
-              )}
-            </Pressable>
-          </Pressable>
+          <SafeAreaProvider>
+            <InstructionsModal
+              lang={lang}
+              loading={instructionsLoading}
+              instructions={instructions}
+              onClose={handleCloseInstructions}
+            />
+          </SafeAreaProvider>
         </Modal>
       </Pressable>
     </Pressable>
   );
 
-  if (presentation === 'overlay') {
-    return <View style={styles.overlayRoot}>{sheetContent}</View>;
-  }
+  return sheetContent;
+}
+
+function InstructionsModal({
+  lang,
+  loading,
+  instructions,
+  onClose,
+}: {
+  lang: Language;
+  loading: boolean;
+  instructions: string[] | null;
+  onClose: () => void;
+}) {
+  const insets = useSafeAreaInsets();
 
   return (
-    <Modal
-      visible
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-      statusBarTranslucent
+    <Pressable
+      style={[
+        styles.instructionsOverlay,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+      onPress={onClose}
     >
-      {sheetContent}
-    </Modal>
+      <Pressable style={styles.instructionsCard} onPress={() => {}}>
+        <View style={styles.instructionsHeader}>
+          <Text style={styles.instructionsTitle}>{t('exerciseInstructions', lang)}</Text>
+          <Pressable onPress={onClose} hitSlop={8}>
+            <Icon name="close" size={24} color={colors.textPrimary} />
+          </Pressable>
+        </View>
+        {loading ? (
+          <ActivityIndicator style={styles.instructionsLoader} color={colors.textPrimary} />
+        ) : (
+          <ScrollView style={styles.instructionsScroll} showsVerticalScrollIndicator={false}>
+            {instructions && instructions.length > 0 ? (
+              instructions.map((step, index) => (
+                <View key={index} style={styles.instructionRow}>
+                  <Text style={styles.instructionNum}>{index + 1}</Text>
+                  <Text style={styles.instructionText}>{step}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.instructionsEmpty}>{t('instructionsEmpty', lang)}</Text>
+            )}
+          </ScrollView>
+        )}
+      </Pressable>
+    </Pressable>
   );
 }
 

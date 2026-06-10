@@ -1,4 +1,4 @@
-// Progress 탭 — 달력 + Streak / Workout Detail 세그먼트
+// Progress 탭 — 달력 + Streak / Workout Detail 세그먼트 + Goal 배너
 import { useMemo, useState } from 'react';
 import { ScrollView, Text, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +13,10 @@ import {
 } from '../../components/progress/ProgressSegmentTabs';
 import { StreakPanel } from '../../components/progress/StreakPanel';
 import { WorkoutDetailPanel } from '../../components/progress/WorkoutDetailPanel';
+import { GoalBanner } from '../../components/progress/GoalBanner';
+import { GoalWizardModal } from '../../components/goal/GoalWizardModal';
+import { GoalScreen } from '../../components/goal/GoalScreen';
+import { useGoalStore } from '../../stores/goalStore';
 
 export default function ProgressScreen() {
   const lang = useLanguage();
@@ -25,6 +29,19 @@ export default function ProgressScreen() {
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
   const [selectedDate, setSelectedDate] = useState(() => new Date());
+  const [goalWizardOpen, setGoalWizardOpen] = useState(false);
+  const [goalScreenOpen, setGoalScreenOpen] = useState(false);
+  const isGoalSetup = useGoalStore((s) => s.isSetup);
+
+  const handleGoalPress = () => {
+    if (isGoalSetup) setGoalScreenOpen(true);
+    else setGoalWizardOpen(true);
+  };
+
+  const handleEditGoal = () => {
+    useGoalStore.getState().clearGoal();
+    setGoalWizardOpen(true);
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -34,6 +51,8 @@ export default function ProgressScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
+        <GoalBanner lang={lang} onPress={handleGoalPress} />
+
         <ProgressCalendar
           lang={lang}
           viewMonth={viewMonth}
@@ -53,6 +72,19 @@ export default function ProgressScreen() {
           <WorkoutDetailPanel lang={lang} selectedDate={selectedDate} dayMap={dayMap} />
         )}
       </ScrollView>
+
+      <GoalWizardModal
+        visible={goalWizardOpen}
+        lang={lang}
+        onClose={() => setGoalWizardOpen(false)}
+      />
+
+      <GoalScreen
+        visible={goalScreenOpen}
+        lang={lang}
+        onClose={() => setGoalScreenOpen(false)}
+        onEditGoal={handleEditGoal}
+      />
     </SafeAreaView>
   );
 }

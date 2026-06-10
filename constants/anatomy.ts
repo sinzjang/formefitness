@@ -32,6 +32,7 @@ export const MUSCLE_ANATOMY: Record<string, LocalizedText> = {
   장요근: { ko: '장요근', en: 'Hip Flexors' },
   대퇴사두근: { ko: '대퇴사두근', en: 'Quadriceps' },
   내전근: { ko: '내전근', en: 'Adductors' },
+  외전근: { ko: '외전근', en: 'Abductors' },
   비복근: { ko: '비복근', en: 'Gastrocnemius' },
   가자미근: { ko: '가자미근', en: 'Soleus' },
   어깨: { ko: '어깨', en: 'Shoulders' },

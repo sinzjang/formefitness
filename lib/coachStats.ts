@@ -1,9 +1,18 @@
 // AI 코치용 사용자 데이터 집계 (히스토리·루틴 → 컨텍스트)
-import type { FatigueLevel, Language, MuscleGroup, SavedWorkoutSession, WorkoutRoutine } from '../types';
+import type {
+  FatigueLevel,
+  Language,
+  MuscleGroup,
+  RoutineExerciseEntry,
+  SavedWorkoutSession,
+  WorkoutRoutine,
+  WorkoutSession,
+} from '../types';
 import { getFatigueLevel } from './fatigue';
 import { summarizeSets } from './sessionStats';
 import { getCurrentWeekDays, isoToLocalDateKey, toLocalDateKey } from './dates';
 import { resolveDisplayExerciseName } from './exerciseKo';
+import { normalizeMuscleGroup } from './workoutHistoryIntegrity';
 import { muscleGroupLabel } from '../constants/muscles';
 
 const MUSCLE_GROUPS: MuscleGroup[] = ['chest', 'shoulder', 'back', 'arms', 'core', 'legs'];
@@ -20,9 +29,37 @@ export interface CoachCustomRoutine {
   }[];
 }
 
+export interface CoachWorkoutPlan {
+  /** 데이터 출처 — 코치가 어떤 맥락인지 구분 */
+  source: 'active_session' | 'viewing_routine' | 'draft_routine';
+  status?: 'preparing' | 'running' | 'paused';
+  routineId?: string;
+  routineName?: string;
+  locationId?: string;
+  exercises: {
+    name: string;
+    muscleGroup: string;
+    setCount?: number;
+    completedSets?: number;
+  }[];
+  muscleSummary: string[];
+}
+
+/** @deprecated CoachWorkoutPlan 사용 */
+export type CoachActiveSession = CoachWorkoutPlan;
+
+export interface CoachRoutineSnapshot {
+  routineId?: string;
+  routineName: string;
+  exercises: { name: string; muscleGroup: string }[];
+  muscleSummary: string[];
+}
+
 export interface CoachContextData {
   goalTier: number;
   fatigueState: Record<string, FatigueLevel>;
+  /** 오늘 세션 / 열람 중 루틴 / 작성 중 루틴 */
+  activeSession: CoachWorkoutPlan | null;
   lastSession: object | null;
   historyContext: object[];
   prRecords: Record<string, { weight: number; date: string }>;
@@ -38,8 +75,9 @@ export interface CoachContextData {
 }
 
 /** 코치 컨텍스트용 근육 그룹 라벨 */
-function coachMuscleLabel(mg: MuscleGroup, lang: Language): string {
-  return lang === 'ko' ? muscleGroupLabel(mg, 'ko') : mg;
+function coachMuscleLabel(mg: MuscleGroup | unknown, lang: Language): string {
+  const safe = normalizeMuscleGroup(mg);
+  return lang === 'ko' ? muscleGroupLabel(safe, 'ko') : safe;
 }
 
 /** 최근 N일 세션에서 근육별 완료 세트 수 → 피로 상태 (코치용 라벨) */
@@ -62,7 +100,7 @@ function buildFatigueForCoach(
     if (new Date(session.endedAt).getTime() < cutoff) continue;
     for (const ex of session.exercises) {
       const done = ex.sets.filter((s) => s.completed || s.reps > 0).length;
-      counts[ex.muscleGroup] += done;
+      counts[normalizeMuscleGroup(ex.muscleGroup)] += done;
     }
   }
 
@@ -141,7 +179,7 @@ function buildWeeklyStats(sessions: SavedWorkoutSession[], lang: Language) {
     for (const ex of session.exercises) {
       const stats = summarizeSets(ex.sets, ex.resistanceType);
       totalVolume += stats.totalVolume;
-      muscleCounts[ex.muscleGroup] += ex.sets.filter((s) => s.reps > 0).length;
+      muscleCounts[normalizeMuscleGroup(ex.muscleGroup)] += ex.sets.filter((s) => s.reps > 0).length;
     }
   }
 
@@ -162,7 +200,7 @@ function useHistoryDayMap(sessions: SavedWorkoutSession[]) {
   const map: Record<string, { workedOut: boolean; muscles: MuscleGroup[] }> = {};
   for (const session of sessions) {
     const key = isoToLocalDateKey(session.endedAt);
-    const muscles = [...new Set(session.exercises.map((e) => e.muscleGroup))];
+    const muscles = [...new Set(session.exercises.map((e) => normalizeMuscleGroup(e.muscleGroup)))];
     map[key] = { workedOut: true, muscles };
   }
   return map;
@@ -192,11 +230,155 @@ function toCustomRoutines(routines: WorkoutRoutine[], lang: Language): CoachCust
     }));
 }
 
+function buildMuscleSummary(muscleCounts: Record<string, number>): string[] {
+  return Object.entries(muscleCounts).map(([mg, n]) => `${mg} x${n}`);
+}
+
+/** 저장된 루틴 → 코치 스냅샷 */
+export function snapshotFromWorkoutRoutine(
+  routine: WorkoutRoutine,
+  lang: Language
+): CoachRoutineSnapshot {
+  const muscleCounts: Record<string, number> = {};
+  const exercises = routine.exercises.map((ex) => {
+    const mgLabel = coachMuscleLabel(ex.muscleGroup, lang);
+    muscleCounts[mgLabel] = (muscleCounts[mgLabel] ?? 0) + 1;
+    return {
+      name: resolveDisplayExerciseName(ex.exerciseName, lang),
+      muscleGroup: mgLabel,
+    };
+  });
+  return {
+    routineId: routine.id,
+    routineName: routine.name,
+    exercises,
+    muscleSummary: buildMuscleSummary(muscleCounts),
+  };
+}
+
+/** 루틴 작성 중 → 코치 스냅샷 */
+export function snapshotFromRoutineEntries(
+  routineName: string,
+  entries: RoutineExerciseEntry[],
+  lang: Language,
+  routineId?: string
+): CoachRoutineSnapshot {
+  const muscleCounts: Record<string, number> = {};
+  const exercises = entries.map((ex) => {
+    const mgLabel = coachMuscleLabel(ex.muscleGroup, lang);
+    muscleCounts[mgLabel] = (muscleCounts[mgLabel] ?? 0) + 1;
+    return {
+      name: resolveDisplayExerciseName(ex.exerciseName, lang),
+      muscleGroup: mgLabel,
+    };
+  });
+  return {
+    routineId,
+    routineName,
+    exercises,
+    muscleSummary: buildMuscleSummary(muscleCounts),
+  };
+}
+
+/** 진행 중·준비 중 세션 → 코치용 스냅샷 */
+export function summarizeActiveSession(
+  session: WorkoutSession | null | undefined,
+  routines: WorkoutRoutine[],
+  lang: Language,
+  sessionPaused?: boolean
+): CoachWorkoutPlan | null {
+  if (!session || session.exercises.length === 0) return null;
+
+  const routine = session.routineId
+    ? routines.find((r) => r.id === session.routineId)
+    : undefined;
+
+  const muscleCounts: Record<string, number> = {};
+  const exercises = session.exercises.map((ex) => {
+    const mgLabel = coachMuscleLabel(ex.muscleGroup, lang);
+    muscleCounts[mgLabel] = (muscleCounts[mgLabel] ?? 0) + 1;
+    const completedSets = ex.sets.filter((s) => s.completed || s.reps > 0).length;
+    return {
+      name: resolveDisplayExerciseName(ex.exerciseName, lang),
+      muscleGroup: mgLabel,
+      setCount: ex.sets.length,
+      completedSets,
+    };
+  });
+
+  const muscleSummary = buildMuscleSummary(muscleCounts);
+
+  let status: CoachWorkoutPlan['status'] = 'preparing';
+  if (session.runningStartedAt) {
+    status = sessionPaused ? 'paused' : 'running';
+  }
+
+  return {
+    source: 'active_session',
+    status,
+    routineId: session.routineId,
+    routineName: routine?.name,
+    locationId: session.locationId,
+    exercises,
+    muscleSummary,
+  };
+}
+
+/** 세션 > 작성 중 루틴 > 열람 중 루틴 순으로 코치용 플랜 선택 */
+export function buildCoachWorkoutPlan(
+  lang: Language,
+  routines: WorkoutRoutine[],
+  options: {
+    activeSession?: WorkoutSession | null;
+    sessionPaused?: boolean;
+    viewingRoutine?: CoachRoutineSnapshot | null;
+    draftRoutine?: CoachRoutineSnapshot | null;
+  }
+): CoachWorkoutPlan | null {
+  const active = summarizeActiveSession(
+    options.activeSession,
+    routines,
+    lang,
+    options.sessionPaused
+  );
+  if (active) return active;
+
+  if (options.draftRoutine && options.draftRoutine.exercises.length > 0) {
+    return {
+      source: 'draft_routine',
+      routineId: options.draftRoutine.routineId,
+      routineName: options.draftRoutine.routineName,
+      exercises: options.draftRoutine.exercises,
+      muscleSummary: options.draftRoutine.muscleSummary,
+    };
+  }
+
+  if (options.viewingRoutine && options.viewingRoutine.exercises.length > 0) {
+    return {
+      source: 'viewing_routine',
+      routineId: options.viewingRoutine.routineId,
+      routineName: options.viewingRoutine.routineName,
+      exercises: options.viewingRoutine.exercises,
+      muscleSummary: options.viewingRoutine.muscleSummary,
+    };
+  }
+
+  return null;
+}
+
 export function buildCoachContextData(
   sessions: SavedWorkoutSession[],
   routines: WorkoutRoutine[],
   lang: Language,
-  options?: { goalTier?: number; conditionSleep?: number; conditionFatigue?: number }
+  options?: {
+    goalTier?: number;
+    conditionSleep?: number;
+    conditionFatigue?: number;
+    activeSession?: WorkoutSession | null;
+    sessionPaused?: boolean;
+    viewingRoutine?: CoachRoutineSnapshot | null;
+    draftRoutine?: CoachRoutineSnapshot | null;
+  }
 ): CoachContextData {
   const sorted = [...sessions].sort((a, b) => b.endedAt.localeCompare(a.endedAt));
   const lastSession = sorted[0] ? summarizeSession(sorted[0], lang) : null;
@@ -205,6 +387,12 @@ export function buildCoachContextData(
   return {
     goalTier: options?.goalTier ?? 3,
     fatigueState: buildFatigueForCoach(sorted, lang),
+    activeSession: buildCoachWorkoutPlan(lang, routines, {
+      activeSession: options?.activeSession,
+      sessionPaused: options?.sessionPaused,
+      viewingRoutine: options?.viewingRoutine,
+      draftRoutine: options?.draftRoutine,
+    }),
     lastSession,
     historyContext,
     prRecords: buildPrRecords(sorted, lang),

@@ -23,6 +23,7 @@ interface RoutineState {
   deleteRoutine: (id: string) => void;
   /** 목록에서 숨김 — is_active: false */
   archiveRoutine: (id: string) => void;
+  replaceAll: (routines: WorkoutRoutine[]) => void;
   getRoutinesByLocation: (locationId: string) => WorkoutRoutine[];
 }
 
@@ -41,6 +42,7 @@ export const useRoutineStore = create<RoutineState>()(
           is_active: true,
         };
         set((state) => ({ routines: [...state.routines, routine] }));
+        void import('../lib/sync/workoutSync').then((m) => m.pushRoutine(routine));
         return routine;
       },
 
@@ -62,15 +64,28 @@ export const useRoutineStore = create<RoutineState>()(
           return { routines: [...byId.values()] };
         }),
 
-      deleteRoutine: (id) =>
-        set((state) => ({ routines: state.routines.filter((r) => r.id !== id) })),
+      deleteRoutine: (id) => {
+        set((state) => ({ routines: state.routines.filter((r) => r.id !== id) }));
+        void import('../lib/sync/workoutSync').then((m) => m.deleteRoutineFromCloud(id));
+      },
 
-      archiveRoutine: (id) =>
+      archiveRoutine: (id) => {
+        let archived: WorkoutRoutine | undefined;
         set((state) => ({
-          routines: state.routines.map((r) =>
-            r.id === id ? { ...r, is_active: false } : r
-          ),
-        })),
+          routines: state.routines.map((r) => {
+            if (r.id === id) {
+              archived = { ...r, is_active: false };
+              return archived;
+            }
+            return r;
+          }),
+        }));
+        if (archived) {
+          void import('../lib/sync/workoutSync').then((m) => m.pushRoutine(archived!));
+        }
+      },
+
+      replaceAll: (routines) => set({ routines }),
 
       getRoutinesByLocation: (locationId) =>
         get()

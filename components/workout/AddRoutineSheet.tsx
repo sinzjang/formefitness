@@ -1,5 +1,5 @@
 // 루틴 추가 시트: 이름 + 운동 목록 구성
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -9,8 +9,8 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../ui/Icon';
+import { ModalSafeArea } from '../ui/ModalSafeArea';
 import type { RoutineExerciseEntry } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { exerciseLocalizedName, type ExerciseDef } from '../../constants/exercises';
@@ -20,6 +20,7 @@ import { gearToResistance } from '../../constants/gears';
 import { t } from '../../lib/i18n';
 import { useLanguage, useSettingsStore } from '../../stores/settingsStore';
 import { useRoutineStore } from '../../stores/routineStore';
+import { useCoachWorkoutContextStore } from '../../stores/coachWorkoutContextStore';
 import { ExercisePicker } from './ExercisePicker';
 
 interface AddRoutineSheetProps {
@@ -32,10 +33,18 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
   const lang = useLanguage();
   const defaultRest = useSettingsStore((s) => s.defaultRestSeconds);
   const addRoutine = useRoutineStore((s) => s.addRoutine);
+  const setDraftRoutine = useCoachWorkoutContextStore((s) => s.setDraftRoutine);
+  const clearDraftRoutine = useCoachWorkoutContextStore((s) => s.clearDraftRoutine);
 
   const [name, setName] = useState('');
   const [exercises, setExercises] = useState<RoutineExerciseEntry[]>([]);
   const [pickerVisible, setPickerVisible] = useState(false);
+
+  // 작성 중 루틴을 코치 컨텍스트에 동기화
+  useEffect(() => {
+    if (!visible) return;
+    setDraftRoutine(name, exercises);
+  }, [visible, name, exercises, setDraftRoutine]);
 
   const reset = () => {
     setName('');
@@ -43,6 +52,7 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
   };
 
   const handleClose = () => {
+    clearDraftRoutine();
     reset();
     onClose();
   };
@@ -72,11 +82,25 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
     handleClose();
   };
 
+  const handleOpenPicker = () => setPickerVisible(true);
+
+  // iOS: Modal 위에 Modal을 띄우면 두 번째가 뒤에 가려짐 → 피커 열 때 시트 Modal만 숨김
+  const sheetModalVisible = visible && !pickerVisible;
+  const pickerModalVisible = visible && pickerVisible;
+
+  useEffect(() => {
+    if (!visible) setPickerVisible(false);
+  }, [visible]);
+
   return (
     <>
-      <Modal visible={visible} animationType="slide" onRequestClose={handleClose} statusBarTranslucent>
-        <SafeAreaProvider>
-          <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <Modal
+        visible={sheetModalVisible}
+        animationType="slide"
+        onRequestClose={handleClose}
+        statusBarTranslucent
+      >
+        <ModalSafeArea>
             <View style={styles.header}>
               <Text style={styles.title}>{t('addRoutine', lang)}</Text>
               <Pressable onPress={handleClose} hitSlop={8}>
@@ -111,7 +135,7 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
                 </View>
               ))}
 
-              <Pressable style={styles.addExerciseBtn} onPress={() => setPickerVisible(true)}>
+              <Pressable style={styles.addExerciseBtn} onPress={handleOpenPicker}>
                 <Icon name="add" size={18} color={colors.textPrimary} />
                 <Text style={styles.addExerciseText}>{t('addExercise', lang)}</Text>
               </Pressable>
@@ -126,12 +150,11 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
                 <Text style={styles.saveBtnText}>{t('save', lang)}</Text>
               </Pressable>
             </View>
-          </SafeAreaView>
-        </SafeAreaProvider>
+        </ModalSafeArea>
       </Modal>
 
       <ExercisePicker
-        visible={pickerVisible}
+        visible={pickerModalVisible}
         onClose={() => setPickerVisible(false)}
         onSelect={handleAddExercise}
       />
@@ -140,10 +163,6 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

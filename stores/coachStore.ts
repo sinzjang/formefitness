@@ -10,6 +10,9 @@ import { useHistoryStore } from './historyStore';
 import { useRoutineStore } from './routineStore';
 import { useSettingsStore } from './settingsStore';
 import { useUserStore } from './userStore';
+import { useWorkoutStore } from './workoutStore';
+import { useCoachWorkoutContextStore } from './coachWorkoutContextStore';
+import { getCoachUserDisplayName } from './profilePrefsStore';
 import { toLocalDateKey } from '../lib/dates';
 
 const MAX_USER_MESSAGE = 500;
@@ -38,16 +41,23 @@ function buildPromptInput(isAppOpen: boolean): CoachPromptInput {
   const profile = useUserStore.getState().profile;
   const sessions = useHistoryStore.getState().sessions;
   const routines = useRoutineStore.getState().routines;
+  const workout = useWorkoutStore.getState();
+  const workoutCtx = useCoachWorkoutContextStore.getState();
   const ctx = buildCoachContextData(sessions, routines, settings.language, {
     goalTier: profile?.goalTier,
     conditionSleep: settings.conditionSleep,
     conditionFatigue: settings.conditionFatigue,
+    activeSession: workout.session,
+    sessionPaused: workout.sessionPaused,
+    viewingRoutine: workoutCtx.viewingRoutine,
+    draftRoutine: workoutCtx.draftRoutine,
   });
 
   return {
     coachName: settings.coachName,
     language: settings.language,
     isAppOpen,
+    userDisplayName: getCoachUserDisplayName(profile?.displayName),
     ...ctx,
   };
 }
@@ -191,8 +201,8 @@ export const useCoachStore = create<CoachState>()(
           const errText =
             e instanceof Error && e.message === 'API_KEY_MISSING'
               ? lang === 'ko'
-                ? 'AI 코치 연결 설정이 필요해요. API 키를 확인해 주세요.'
-                : 'AI coach needs an API key to connect.'
+                ? 'AI 코치 API 키가 필요해요. 프로필 → 설정에서 키를 입력해 주세요.'
+                : 'AI coach needs an API key. Open Profile → Settings to add one.'
               : lang === 'ko'
                 ? '잠시 연결에 문제가 있어요. 다시 시도해 주세요.'
                 : 'Connection issue. Please try again.';

@@ -1,0 +1,88 @@
+import type { ExpoConfig } from 'expo/config';
+
+/** iOS Google Sign-In URL scheme (REVERSED_CLIENT_ID) */
+function googleIosUrlScheme(iosClientId: string): string {
+  const prefix = iosClientId.replace('.apps.googleusercontent.com', '').trim();
+  return prefix ? `com.googleusercontent.apps.${prefix}` : 'com.googleusercontent.apps.placeholder';
+}
+
+const IS_DEV = process.env.APP_VARIANT === 'development';
+
+export default (): ExpoConfig => ({
+  name: IS_DEV ? 'Forme Dev' : 'Forme Fitness',
+  slug: 'forme-fitness',
+  version: '1.0.0',
+  scheme: 'formefitness',
+  orientation: 'portrait',
+  userInterfaceStyle: 'light',
+  newArchEnabled: true,
+  icon: IS_DEV ? './assets/splash-icon_dev.png' : './assets/splash-icon.png',
+  splash: {
+    image: './assets/splash-icon.png',
+    resizeMode: 'contain',
+    backgroundColor: '#FFFFFF',
+  },
+  ios: {
+    bundleIdentifier: 'com.forme.fitness',
+    supportsTablet: true,
+    usesAppleSignIn: true,
+    infoPlist: {
+      NSAppTransportSecurity: {
+        NSAllowsArbitraryLoads: true,
+      },
+      // Goal 위저드 · 프로필 · 피드 사진 접근 (TCC 크래시 방지)
+      NSPhotoLibraryUsageDescription:
+        'Formé가 Goal 설정, 프로필, 피드에 사진을 선택하기 위해 사진 라이브러리에 접근합니다.',
+      NSCameraUsageDescription:
+        'Formé가 Goal 설정과 프로필 사진을 촬영하기 위해 카메라에 접근합니다.',
+    },
+  },
+  android: {
+    package: 'com.forme.fitness',
+    adaptiveIcon: {
+      foregroundImage: './assets/splash-icon.png',
+      backgroundColor: '#FFFFFF',
+    },
+  },
+  web: {
+    favicon: './assets/favicon.png',
+  },
+  plugins: [
+    'expo-router',
+    'expo-dev-client',
+    'expo-apple-authentication',
+    [
+      'expo-splash-screen',
+      {
+        image: './assets/splash-icon.png',
+        resizeMode: 'contain',
+        backgroundColor: '#FFFFFF',
+      },
+    ],
+    [
+      '@react-native-google-signin/google-signin',
+      {
+        iosUrlScheme: googleIosUrlScheme(process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? ''),
+      },
+    ],
+    [
+      'expo-image-picker',
+      {
+        photosPermission:
+          'Formé가 Goal 설정, 프로필, 피드에 사진을 선택하기 위해 사진 라이브러리에 접근합니다.',
+        cameraPermission:
+          'Formé가 Goal 설정과 프로필 사진을 촬영하기 위해 카메라에 접근합니다.',
+      },
+    ],
+  ],
+  experiments: {
+    typedRoutes: true,
+  },
+  extra: {
+    router: {},
+    eas: {
+      projectId: '8cb3f234-f6d9-4917-a95f-346e83c4d5c4',
+    },
+  },
+  owner: 'sinzjang',
+});

@@ -19,6 +19,7 @@ import {
   Plus,
   RotateCcw,
   Search,
+  Settings,
   Square,
   Timer,
   Trash2,
@@ -51,6 +52,7 @@ export type IconName =
   | 'stop'
   | 'refresh'
   | 'search'
+  | 'settings'
   | 'body'
   | 'check-circle'
   | 'circle';
@@ -78,6 +80,7 @@ const ICONS: Record<IconName, LucideIcon> = {
   stop: Square,
   refresh: RotateCcw,
   search: Search,
+  settings: Settings,
   body: PersonStanding,
   'check-circle': CheckCircle2,
   circle: Circle,

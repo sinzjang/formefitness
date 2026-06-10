@@ -91,6 +91,45 @@ function mergeCache(key: string, partial: ExerciseMediaRef): ExerciseMediaRef {
   return merged;
 }
 
+/** 메모리 캐시 동기 조회 — API 호출 없음 */
+export function getCachedExerciseMedia(
+  nameEn: string,
+  exerciseDbId?: string
+): ExerciseMediaRef | null {
+  if (!nameEn.trim() && !exerciseDbId?.trim()) return null;
+
+  const key = cacheKey(nameEn, exerciseDbId);
+  const cached = mediaCache.get(key);
+  if (cached?.exerciseId || cached?.thumbnailUrl) return cached;
+
+  const catalogId = resolveCatalogId(nameEn, exerciseDbId);
+  if (catalogId) return { exerciseId: catalogId };
+
+  return cached ?? null;
+}
+
+/** 카탈로그 gifUrl·exerciseDbId를 메모리 캐시에 시드 (네트워크 없음) */
+export function seedCatalogMediaCache(
+  items: Array<{ nameEn: string; exerciseDbId?: string; gifUrl?: string }>
+): number {
+  let seeded = 0;
+  for (const item of items) {
+    const nameEn = item.nameEn.trim();
+    if (!nameEn) continue;
+
+    const patch: ExerciseMediaRef = {};
+    const catalogId = resolveCatalogId(nameEn, item.exerciseDbId);
+    if (catalogId) patch.exerciseId = catalogId;
+    if (item.gifUrl?.trim()) patch.thumbnailUrl = item.gifUrl.trim();
+
+    if (!patch.exerciseId && !patch.thumbnailUrl) continue;
+
+    mergeCache(cacheKey(nameEn, item.exerciseDbId), patch);
+    seeded++;
+  }
+  return seeded;
+}
+
 /** 리스트용 — 로컬 id → RapidAPI 180 정지 프레임 (별도 PNG 없음) */
 async function lookupThumbnail(
   nameEn: string,

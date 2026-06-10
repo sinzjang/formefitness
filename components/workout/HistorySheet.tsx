@@ -2,6 +2,7 @@
 // - 오늘 세트: 현재 세션 세트별 막대그래프
 // - 세션 추이: 저장된 과거 세션별 최고 e1RM(또는 횟수) 추이
 import { Modal, View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMemo } from 'react';
 import type { Language, WorkoutExercise } from '../../types';
 import { colors, typography, layout, fonts } from '../../constants/theme';
@@ -28,8 +29,9 @@ const shortDate = (iso: string): string => {
   return `${d.getMonth() + 1}/${d.getDate()}`;
 };
 
-export function HistorySheet({ visible, exercise, onClose }: HistorySheetProps) {
+function HistorySheetContent({ exercise, onClose }: Omit<HistorySheetProps, 'visible'>) {
   const lang = useLanguage();
+  const insets = useSafeAreaInsets();
   const type = exercise.resistanceType;
   const exerciseKey = getExerciseKey(exercise.exerciseName, exercise.customId);
   const sessions = useHistoryStore((s) => s.sessions);
@@ -68,15 +70,11 @@ export function HistorySheet({ visible, exercise, onClose }: HistorySheetProps) 
   const hasTrend = trend.length > 0;
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-      statusBarTranslucent
-    >
-      <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={() => {}}>
+    <Pressable style={styles.overlay} onPress={onClose}>
+      <Pressable
+        style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}
+        onPress={() => {}}
+      >
           <View style={styles.handle} />
 
           <Text style={styles.title}>{resolveDisplayExerciseName(exercise.exerciseName, lang)}</Text>
@@ -135,6 +133,21 @@ export function HistorySheet({ visible, exercise, onClose }: HistorySheetProps) 
           </ScrollView>
         </Pressable>
       </Pressable>
+  );
+}
+
+export function HistorySheet({ visible, exercise, onClose }: HistorySheetProps) {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
+      <SafeAreaProvider>
+        <HistorySheetContent exercise={exercise} onClose={onClose} />
+      </SafeAreaProvider>
     </Modal>
   );
 }
@@ -225,7 +238,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingHorizontal: layout.screenPadding,
     paddingTop: 10,
-    paddingBottom: 36,
     maxHeight: '85%',
   },
   handle: {

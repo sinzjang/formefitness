@@ -23,6 +23,10 @@ interface SettingsState {
   restAlertsEnabled: boolean;
   conditionSleep: number;
   conditionFatigue: number;
+  /** Home 체중 카드 · 프로필 (로컬 저장) */
+  bodyWeight?: number;
+  /** 프로필 신장 (cm) */
+  bodyHeight?: number;
   setLanguage: (lang: Language) => void;
   setCoachName: (name: CoachName) => void;
   toggleLanguage: () => void;
@@ -30,6 +34,8 @@ interface SettingsState {
   setRestAlertsEnabled: (enabled: boolean) => void;
   setConditionSleep: (value: number) => void;
   setConditionFatigue: (value: number) => void;
+  setBodyWeight: (value: number | undefined) => void;
+  setBodyHeight: (value: number | undefined) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -41,6 +47,8 @@ export const useSettingsStore = create<SettingsState>()(
       restAlertsEnabled: true,
       conditionSleep: 3,
       conditionFatigue: 3,
+      bodyWeight: undefined,
+      bodyHeight: undefined,
       setLanguage: (language) => {
         set({ language });
         // 코치 채팅을 선택한 언어로 다시 시작
@@ -61,6 +69,8 @@ export const useSettingsStore = create<SettingsState>()(
       setRestAlertsEnabled: (restAlertsEnabled) => set({ restAlertsEnabled }),
       setConditionSleep: (conditionSleep) => set({ conditionSleep }),
       setConditionFatigue: (conditionFatigue) => set({ conditionFatigue }),
+      setBodyWeight: (bodyWeight) => set({ bodyWeight }),
+      setBodyHeight: (bodyHeight) => set({ bodyHeight }),
     }),
     {
       name: 'forme-settings',
@@ -72,6 +82,8 @@ export const useSettingsStore = create<SettingsState>()(
         restAlertsEnabled: state.restAlertsEnabled,
         conditionSleep: state.conditionSleep,
         conditionFatigue: state.conditionFatigue,
+        bodyWeight: state.bodyWeight,
+        bodyHeight: state.bodyHeight,
       }),
     }
   )

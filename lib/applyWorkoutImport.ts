@@ -2,6 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { StoreApi, UseBoundStore } from 'zustand';
 import type { WorkoutImportPayload } from '../types/workoutImport';
+import { sanitizeWorkoutImportPayload } from './workoutHistoryIntegrity';
 import { useCustomExerciseStore } from '../stores/customExerciseStore';
 import { useHistoryStore } from '../stores/historyStore';
 import { useRoutineStore } from '../stores/routineStore';
@@ -45,6 +46,16 @@ async function waitForAllStoresHydrated(): Promise<void> {
   ]);
 }
 
+/** CSV import 후 로그인 유저면 클라우드 동기화 */
+async function syncAfterImportIfLoggedIn(): Promise<void> {
+  const { isSupabaseConfigured, supabase } = await import('./supabase');
+  if (!isSupabaseConfigured) return;
+  const { data } = await supabase.auth.getSession();
+  if (!data.session?.user?.id) return;
+  const { syncWorkoutOnLogin } = await import('./sync/workoutSync');
+  await syncWorkoutOnLogin(data.session.user.id);
+}
+
 /** CSV 데이터가 아직 import되지 않았으면 스토어에 반영 */
 export async function applyWorkoutImportIfNeeded(): Promise<WorkoutImportPayload['stats'] | null> {
   const done = await AsyncStorage.getItem(IMPORT_KEY);
@@ -52,12 +63,13 @@ export async function applyWorkoutImportIfNeeded(): Promise<WorkoutImportPayload
 
   await waitForAllStoresHydrated();
 
-  const workoutImport = getWorkoutImport();
+  const workoutImport = sanitizeWorkoutImportPayload(getWorkoutImport());
   useCustomExerciseStore.getState().importBulk(workoutImport.customExercises);
   useRoutineStore.getState().importBulk(workoutImport.routines);
   useHistoryStore.getState().importBulk(workoutImport.sessions);
 
   await AsyncStorage.setItem(IMPORT_KEY, String(workoutImport.version));
+  await syncAfterImportIfLoggedIn();
   return workoutImport.stats;
 }
 
@@ -66,12 +78,13 @@ export async function resetAndReimportWorkoutData(): Promise<WorkoutImportPayloa
   await AsyncStorage.removeItem(IMPORT_KEY);
   await waitForAllStoresHydrated();
 
-  const workoutImport = getWorkoutImport();
+  const workoutImport = sanitizeWorkoutImportPayload(getWorkoutImport());
   useCustomExerciseStore.getState().importBulk(workoutImport.customExercises);
   useRoutineStore.getState().importBulk(workoutImport.routines);
   useHistoryStore.getState().importBulk(workoutImport.sessions);
 
   await AsyncStorage.setItem(IMPORT_KEY, String(workoutImport.version));
+  await syncAfterImportIfLoggedIn();
   return workoutImport.stats;
 }
 

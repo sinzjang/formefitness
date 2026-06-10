@@ -7,9 +7,8 @@ import {
   Image as RNImage,
   type ViewStyle,
   type ImageStyle,
-  type ImageResizeMode,
 } from 'react-native';
-import { Image as ExpoImage } from 'expo-image';
+import { SafeImage, isExpoImageAvailable } from '../../lib/safeExpoImage';
 import { Icon } from '../ui/Icon';
 import { colors } from '../../constants/theme';
 import { getRapidApiGifUrl } from '../../lib/exerciseDb';
@@ -43,7 +42,7 @@ export function ExerciseDbMedia({
 }: ExerciseDbMediaProps) {
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
-  const [useRnFallback, setUseRnFallback] = useState(false);
+  const [useRnFallback, setUseRnFallback] = useState(!isExpoImageAvailable);
   const [useGifFallback, setUseGifFallback] = useState(false);
 
   const thumb = thumbnailUrl ?? gifUrl;
@@ -114,7 +113,7 @@ export function ExerciseDbMedia({
           onError={handleError}
         />
       ) : (
-        <ExpoImage
+        <SafeImage
           key={uri}
           source={{ uri }}
           style={imageStyle}

@@ -14,6 +14,7 @@ interface LocationState {
   selectedLocationId: string;
   setSelectedLocation: (id: string) => void;
   addLocation: (name: string) => void;
+  replaceAll: (locations: WorkoutLocation[], keepSelectedId?: string) => void;
   getSelectedLocation: () => WorkoutLocation | undefined;
 }
 
@@ -29,11 +30,25 @@ export const useLocationStore = create<LocationState>()(
         const trimmed = name.trim();
         if (!trimmed) return;
         const id = `loc_${Date.now()}`;
+        const location: WorkoutLocation = { id, name: trimmed.toUpperCase() };
         set((state) => ({
-          locations: [...state.locations, { id, name: trimmed.toUpperCase() }],
+          locations: [...state.locations, location],
           selectedLocationId: id,
         }));
+        void import('../lib/sync/workoutSync').then((m) => m.pushLocation(location));
       },
+
+      replaceAll: (locations, keepSelectedId) =>
+        set((state) => {
+          const nextLocations = locations.length > 0 ? locations : DEFAULT_LOCATIONS;
+          const selectedStillExists = nextLocations.some((l) => l.id === keepSelectedId);
+          return {
+            locations: nextLocations,
+            selectedLocationId: selectedStillExists
+              ? keepSelectedId!
+              : (nextLocations[0]?.id ?? 'loc_gym'),
+          };
+        }),
 
       getSelectedLocation: () =>
         get().locations.find((l) => l.id === get().selectedLocationId),

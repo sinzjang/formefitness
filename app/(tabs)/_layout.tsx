@@ -1,10 +1,13 @@
+import { View, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
 import { colors, fonts } from '../../constants/theme';
 import { FormeTabBar } from '../../components/workout/FormeTabBar';
+import { CoachFloatingChat } from '../../components/coach/CoachFloatingChat';
 import { Icon } from '../../components/ui/Icon';
 
 export default function TabsLayout() {
   return (
+    <View style={styles.root}>
     <Tabs
       tabBar={(props) => <FormeTabBar {...props} />}
       screenOptions={{
@@ -61,5 +64,13 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    <CoachFloatingChat />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});

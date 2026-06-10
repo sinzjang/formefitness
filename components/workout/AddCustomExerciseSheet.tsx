@@ -9,8 +9,8 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../ui/Icon';
+import { ModalSafeArea } from '../ui/ModalSafeArea';
 import type { Gear, MuscleGroup } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { MUSCLES, muscleGroupLabel } from '../../constants/muscles';
@@ -55,8 +55,7 @@ export function AddCustomExerciseSheet({ visible, onClose, onCreated }: AddCusto
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={handleClose} statusBarTranslucent>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <ModalSafeArea>
           <View style={styles.header}>
             <Text style={styles.title}>{t('addCustomExercise', lang)}</Text>
             <Pressable onPress={handleClose} hitSlop={8}>
@@ -115,17 +114,12 @@ export function AddCustomExerciseSheet({ visible, onClose, onCreated }: AddCusto
               <Text style={styles.saveBtnText}>{t('save', lang)}</Text>
             </Pressable>
           </View>
-        </SafeAreaView>
-      </SafeAreaProvider>
+      </ModalSafeArea>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

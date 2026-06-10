@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { ViewStyle } from 'react-native';
 import {
+  getCachedExerciseMedia,
   resolveExerciseGifMedia,
   resolveExerciseThumbnail,
 } from '../../lib/exerciseDbIdCache';
@@ -45,9 +46,16 @@ export function ExerciseDbThumb({
 }: ExerciseDbThumbProps) {
   const defaults = VARIANT_DEFAULTS[variant];
   const catalogId = exerciseDbId ?? getCatalogExerciseDbId(nameEn);
-  const [resolvedId, setResolvedId] = useState<string | undefined>(catalogId);
-  const [resolvedGifUrl, setResolvedGifUrl] = useState<string | undefined>(gifUrl);
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>();
+  const cachedMedia = getCachedExerciseMedia(nameEn, exerciseDbId);
+  const [resolvedId, setResolvedId] = useState<string | undefined>(
+    cachedMedia?.exerciseId ?? catalogId
+  );
+  const [resolvedGifUrl, setResolvedGifUrl] = useState<string | undefined>(
+    gifUrl ?? cachedMedia?.thumbnailUrl
+  );
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(
+    cachedMedia?.thumbnailUrl
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -56,8 +64,8 @@ export function ExerciseDbThumb({
     if (gifUrl) setResolvedGifUrl(gifUrl);
 
     if (variant === 'list') {
-      // 리스트: gifUrl만 있으면 즉시 정지 썸네일 표시
-      if (gifUrl) return;
+      // 캐시·gifUrl 있으면 네트워크 조회 생략
+      if (gifUrl || cachedMedia?.thumbnailUrl || cachedMedia?.exerciseId) return;
 
       resolveExerciseThumbnail(nameEn, exerciseDbId)
         .then((media) => {

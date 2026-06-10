@@ -9,9 +9,11 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '../ui/Icon';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
+import type { Language } from '../../types';
 import { useLanguage } from '../../stores/settingsStore';
 import { useLocationStore } from '../../stores/locationStore';
 
@@ -99,30 +101,67 @@ export function LocationTabs() {
         animationType="fade"
         onRequestClose={() => setModalVisible(false)}
       >
-        <Pressable style={styles.overlay} onPress={() => setModalVisible(false)}>
-          <Pressable style={styles.sheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('addLocation', lang)}</Text>
-            <TextInput
-              style={styles.input}
-              placeholder={t('locationNamePlaceholder', lang)}
-              placeholderTextColor={colors.textMuted}
-              value={newName}
-              onChangeText={setNewName}
-              autoCapitalize="characters"
-              autoFocus
-            />
-            <View style={styles.modalActions}>
-              <Pressable style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelText}>{t('cancel', lang)}</Text>
-              </Pressable>
-              <Pressable style={styles.saveBtn} onPress={handleAdd}>
-                <Text style={styles.saveText}>{t('save', lang)}</Text>
-              </Pressable>
-            </View>
-          </Pressable>
-        </Pressable>
+        <SafeAreaProvider>
+          <AddLocationModal
+            lang={lang}
+            name={newName}
+            onChangeName={setNewName}
+            onClose={() => setModalVisible(false)}
+            onSave={handleAdd}
+          />
+        </SafeAreaProvider>
       </Modal>
     </>
+  );
+}
+
+function AddLocationModal({
+  lang,
+  name,
+  onChangeName,
+  onClose,
+  onSave,
+}: {
+  lang: Language;
+  name: string;
+  onChangeName: (v: string) => void;
+  onClose: () => void;
+  onSave: () => void;
+}) {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <Pressable
+      style={[
+        styles.overlay,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+        },
+      ]}
+      onPress={onClose}
+    >
+      <Pressable style={styles.sheet} onPress={() => {}}>
+        <Text style={styles.modalTitle}>{t('addLocation', lang)}</Text>
+        <TextInput
+          style={styles.input}
+          placeholder={t('locationNamePlaceholder', lang)}
+          placeholderTextColor={colors.textMuted}
+          value={name}
+          onChangeText={onChangeName}
+          autoCapitalize="characters"
+          autoFocus
+        />
+        <View style={styles.modalActions}>
+          <Pressable style={styles.cancelBtn} onPress={onClose}>
+            <Text style={styles.cancelText}>{t('cancel', lang)}</Text>
+          </Pressable>
+          <Pressable style={styles.saveBtn} onPress={onSave}>
+            <Text style={styles.saveText}>{t('save', lang)}</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </Pressable>
   );
 }
 

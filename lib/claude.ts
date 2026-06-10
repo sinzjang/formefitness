@@ -3,6 +3,8 @@
 //       프로덕션에서는 Supabase Edge Function으로 프록시하여 키를 숨겨야 함 (MD 보안 노트 참고)
 import type { CoachChartData, CoachRecommendedRoutine, CoachResponse, FatigueLevel, WorkoutSession } from '../types';
 import { buildCoachSystemPrompt, type CoachPromptInput } from './coachPrompt';
+import { sendChatCompletion } from './aiProvider';
+import { getActiveAiConfig } from '../stores/aiSettingsStore';
 
 const CLAUDE_MODEL = process.env.EXPO_PUBLIC_ANTHROPIC_MODEL ?? 'claude-sonnet-4-6';
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
@@ -180,15 +182,14 @@ export const parseCoachResponse = (text: string): CoachResponse => {
   return { type: 'text', message: text.trim() };
 };
 
-/** AI 코치 메시지 전송 */
+/** AI 코치 메시지 전송 — 설정된 프로바이더(OpenAI/Claude/Gemini) 사용 */
 export const sendCoachMessage = async (
   input: CoachPromptInput,
   userMessage: string,
   history: CoachChatTurn[] = []
 ): Promise<CoachResponse> => {
-  if (!ANTHROPIC_API_KEY) {
-    throw new Error('API_KEY_MISSING');
-  }
+  const { apiKey } = getActiveAiConfig();
+  if (!apiKey) throw new Error('API_KEY_MISSING');
 
   const system = buildCoachSystemPrompt(input);
   const langNote =
@@ -201,24 +202,7 @@ export const sendCoachMessage = async (
     { role: 'user' as const, content: `${langNote}\n\n${userMessage}` },
   ];
 
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method: 'POST',
-    headers: buildHeaders(),
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: 1024,
-      system,
-      messages,
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(err || `HTTP ${response.status}`);
-  }
-
-  const data = await response.json();
-  const raw = data.content?.[0]?.text ?? '';
+  const raw = await sendChatCompletion(system, messages, 1024);
   return parseCoachResponse(raw);
 };
 

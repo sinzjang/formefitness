@@ -21,7 +21,7 @@ export const muscleColors = {
   back: '#22C55E',
   arms: '#3B82F6',
   core: '#8B5CF6',
-  legs: '#111111',
+  legs: '#14B8A6',
 } as const;
 
 export const fonts = {

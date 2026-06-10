@@ -26,7 +26,7 @@ export function customToExerciseDef(c: CustomExercise): ExerciseDef {
 
 /** 카탈로그(내장) 운동만 — JSON 기본 메타 정규화 */
 export function getCatalogExercises(): ExerciseDef[] {
-  return EXERCISES.filter((e) => !e.isCustom).map(normalizeExerciseMeta);
+  return (EXERCISES ?? []).filter((e) => !e.isCustom).map(normalizeExerciseMeta);
 }
 
 /** 카탈로그 + 사용자 prefs 병합 */

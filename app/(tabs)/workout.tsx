@@ -28,6 +28,7 @@ import { SessionExerciseList } from '../../components/workout/SessionExerciseLis
 import { SessionTimerBar } from '../../components/workout/SessionTimerBar';
 import { LocationTabs } from '../../components/workout/LocationTabs';
 import { RoutineSection } from '../../components/workout/RoutineSection';
+import { SessionTimeEditModal } from '../../components/workout/SessionTimeEditModal';
 
 export default function WorkoutScreen() {
   const lang = useLanguage();
@@ -52,6 +53,7 @@ export default function WorkoutScreen() {
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [timeEditSessionId, setTimeEditSessionId] = useState<string | null>(null);
 
   const isRunning = Boolean(session?.runningStartedAt);
   const showSessionScreen = Boolean(session && sessionScreenOpen);
@@ -67,7 +69,10 @@ export default function WorkoutScreen() {
     if (session) {
       endSession();
       const ended = useWorkoutStore.getState().session;
-      if (ended) saveSession(ended);
+      if (ended) {
+        saveSession(ended);
+        setTimeEditSessionId(ended.id);
+      }
     }
     clearSession();
   };
@@ -146,6 +151,15 @@ export default function WorkoutScreen() {
     ]);
   };
 
+  const timeEditModal = (
+    <SessionTimeEditModal
+      visible={!!timeEditSessionId}
+      sessionId={timeEditSessionId}
+      lang={lang}
+      onClose={() => setTimeEditSessionId(null)}
+    />
+  );
+
   // 세션 화면 밖: 장소 탭 + 루틴 목록
   if (!showSessionScreen) {
     return (
@@ -167,6 +181,7 @@ export default function WorkoutScreen() {
             <RoutineSection locationId={selectedLocationId} onStartRoutine={handleStartRoutine} />
           </View>
         </View>
+        {timeEditModal}
       </SafeAreaView>
     );
   }
@@ -260,19 +275,22 @@ export default function WorkoutScreen() {
         )}
       </KeyboardAvoidingView>
 
-      <ExercisePicker
-        visible={pickerVisible}
-        onClose={() => setPickerVisible(false)}
-        onSelect={(ex) => {
-          addExercise(
-            exerciseLocalizedName(ex),
-            ex.muscleGroup,
-            gearToResistance(ex.gear),
-            undefined,
-            ex.customId
-          );
-        }}
-      />
+      {pickerVisible ? (
+        <ExercisePicker
+          visible={pickerVisible}
+          onClose={() => setPickerVisible(false)}
+          onSelect={(ex) => {
+            addExercise(
+              exerciseLocalizedName(ex),
+              ex.muscleGroup,
+              gearToResistance(ex.gear),
+              undefined,
+              ex.customId
+            );
+          }}
+        />
+      ) : null}
+      {timeEditModal}
     </SafeAreaView>
   );
 }

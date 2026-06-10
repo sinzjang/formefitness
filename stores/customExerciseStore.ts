@@ -8,6 +8,7 @@ interface CustomExerciseState {
   exercises: CustomExercise[];
   addExercise: (name: string, muscleGroup: MuscleGroup, gear: Gear) => CustomExercise;
   importBulk: (incoming: CustomExercise[]) => void;
+  replaceAll: (exercises: CustomExercise[]) => void;
   deleteExercise: (id: string) => void;
   setActive: (id: string, isActive: boolean) => void;
   findByName: (name: string) => CustomExercise | undefined;
@@ -35,6 +36,7 @@ export const useCustomExerciseStore = create<CustomExerciseState>()(
           is_favorite: false,
         };
         set((state) => ({ exercises: [...state.exercises, exercise] }));
+        void import('../lib/sync/workoutSync').then((m) => m.pushCustomExercise(exercise));
         return exercise;
       },
 
@@ -47,15 +49,28 @@ export const useCustomExerciseStore = create<CustomExerciseState>()(
           return { exercises: [...byId.values()] };
         }),
 
-      deleteExercise: (id) =>
-        set((state) => ({ exercises: state.exercises.filter((e) => e.id !== id) })),
+      deleteExercise: (id) => {
+        set((state) => ({ exercises: state.exercises.filter((e) => e.id !== id) }));
+        void import('../lib/sync/workoutSync').then((m) => m.deleteCustomExerciseFromCloud(id));
+      },
 
-      setActive: (id, isActive) =>
+      setActive: (id, isActive) => {
+        let updated: CustomExercise | undefined;
         set((state) => ({
-          exercises: state.exercises.map((e) =>
-            e.id === id ? { ...e, is_active: isActive } : e
-          ),
-        })),
+          exercises: state.exercises.map((e) => {
+            if (e.id === id) {
+              updated = { ...e, is_active: isActive };
+              return updated;
+            }
+            return e;
+          }),
+        }));
+        if (updated) {
+          void import('../lib/sync/workoutSync').then((m) => m.pushCustomExercise(updated!));
+        }
+      },
+
+      replaceAll: (exercises) => set({ exercises }),
 
       findByName: (name) =>
         get().exercises.find((e) => e.name.toLowerCase() === name.trim().toLowerCase()),

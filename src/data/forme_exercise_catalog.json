@@ -124,9 +124,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankle stabilizers"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -186,7 +184,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -206,7 +204,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -226,7 +224,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -403,7 +401,7 @@
     ],
     "synergist": [
       "장요근",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -502,7 +500,7 @@
       "복직근"
     ],
     "synergist": [
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -699,7 +697,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -720,7 +718,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근",
       "비복근"
@@ -1123,7 +1121,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -1221,7 +1219,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -1437,7 +1435,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -1532,10 +1530,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles",
-      "feet"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -1593,7 +1588,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -1615,8 +1610,8 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
-      "back"
+      "대퇴사두근",
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -1694,7 +1689,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -1794,10 +1789,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles",
-      "feet"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -2076,7 +2068,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -2315,7 +2307,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -2377,7 +2369,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -2399,7 +2391,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -2421,7 +2413,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -2443,7 +2435,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -2465,7 +2457,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -2566,7 +2558,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -2587,7 +2579,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -2709,7 +2701,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -2750,7 +2742,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -2771,7 +2763,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -2792,7 +2784,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -2813,7 +2805,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -2912,7 +2904,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -2988,7 +2980,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -3050,7 +3042,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "척추기립근"
     ],
     "stabilizer": [
@@ -3373,7 +3365,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -3394,7 +3386,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -3712,7 +3704,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -4009,7 +4001,7 @@
     ],
     "synergist": [
       "장요근",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -4048,7 +4040,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -4349,7 +4341,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -4447,7 +4439,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -4509,7 +4501,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "척추기립근"
     ],
     "stabilizer": [
@@ -4529,7 +4521,7 @@
       "삼각근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "둔근",
       "햄스트링",
       "코어"
@@ -4732,7 +4724,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -5012,7 +5004,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -5131,10 +5123,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles",
-      "feet"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -5292,7 +5281,7 @@
       "비복근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근"
     ],
@@ -5314,7 +5303,7 @@
     ],
     "synergist": [
       "둔근",
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "삼각근"
     ],
@@ -5335,7 +5324,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "삼각근"
@@ -5634,7 +5623,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "척추기립근"
     ],
     "stabilizer": [
@@ -5892,7 +5881,7 @@
     ],
     "synergist": [
       "둔근",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -6960,7 +6949,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -7841,7 +7830,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -7917,10 +7906,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles",
-      "feet"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -8731,7 +8717,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -9005,7 +8991,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -9026,7 +9012,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근"
     ],
@@ -9460,7 +9446,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -9656,7 +9642,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "삼각근"
@@ -9679,7 +9665,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -9758,7 +9744,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -10958,7 +10944,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -11035,7 +11021,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -11056,7 +11042,7 @@
       "이두근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링"
     ],
     "stabilizer": [
@@ -11373,7 +11359,7 @@
     "synergist": [
       "삼두근",
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -12118,7 +12104,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "코어"
     ],
     "stabilizer": [
@@ -12451,7 +12437,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -12788,7 +12774,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -13165,7 +13151,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -13185,7 +13171,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -13787,9 +13773,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -13868,7 +13852,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -13889,7 +13873,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -14010,7 +13994,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -14030,7 +14014,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -14067,9 +14051,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -14395,7 +14377,7 @@
       "이두근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "둔근",
       "햄스트링"
     ],
@@ -14416,7 +14398,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -14540,7 +14522,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "코어"
     ],
     "stabilizer": [
@@ -15015,7 +14997,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링"
     ],
     "stabilizer": [
@@ -15116,7 +15098,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -15136,7 +15118,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -15155,7 +15137,7 @@
       "비복근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링"
     ],
     "stabilizer": [
@@ -15176,7 +15158,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "코어"
     ],
     "stabilizer": [
@@ -15839,7 +15821,7 @@
     ],
     "synergist": [
       "장요근",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -15879,7 +15861,7 @@
     ],
     "synergist": [
       "장요근",
-      "lower abs"
+      "복직근 하부"
     ],
     "stabilizer": [
       "코어"
@@ -15919,7 +15901,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -15940,7 +15922,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -16146,7 +16128,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -16285,7 +16267,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근"
     ],
@@ -16365,7 +16347,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -16386,7 +16368,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -16583,7 +16565,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근",
       "비복근"
@@ -16626,7 +16608,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -17084,7 +17066,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -17144,7 +17126,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "삼각근"
@@ -17166,7 +17148,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -17226,7 +17208,7 @@
     ],
     "synergist": [
       "비복근",
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근"
     ],
@@ -17247,7 +17229,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -17268,7 +17250,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -17612,7 +17594,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -17633,7 +17615,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -17655,7 +17637,7 @@
     ],
     "synergist": [
       "둔근",
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -17675,7 +17657,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -17857,7 +17839,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -18000,7 +17982,7 @@
       "삼각근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "둔근",
       "코어"
     ],
@@ -18021,7 +18003,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "코어"
     ],
@@ -18122,7 +18104,7 @@
       "햄스트링"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "둔근"
     ],
     "stabilizer": [
@@ -18183,7 +18165,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -18324,7 +18306,7 @@
     ],
     "synergist": [
       "복사근",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -18643,7 +18625,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -18841,7 +18823,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -19317,8 +19299,7 @@
       "비복근"
     ],
     "synergist": [
-      "가자미근",
-      "ankle stabilizers"
+      "가자미근"
     ],
     "stabilizer": [
       "코어"
@@ -19357,8 +19338,7 @@
       "비복근"
     ],
     "synergist": [
-      "가자미근",
-      "ankle stabilizers"
+      "가자미근"
     ],
     "stabilizer": [
       "코어"
@@ -19492,9 +19472,10 @@
     "muscleGroup": "legs",
     "gear": "Machine",
     "primary": [
-      "둔근"
+      "외전근"
     ],
     "synergist": [
+      "둔근",
       "햄스트링"
     ],
     "stabilizer": [
@@ -19632,7 +19613,7 @@
       "비복근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근"
     ],
@@ -19732,8 +19713,7 @@
       "비복근"
     ],
     "synergist": [
-      "가자미근",
-      "ankle stabilizers"
+      "가자미근"
     ],
     "stabilizer": [
       "코어"
@@ -19912,7 +19892,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -19933,7 +19913,7 @@
       "복직근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "둔근",
       "햄스트링"
     ],
@@ -20051,7 +20031,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -20316,7 +20296,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -20594,7 +20574,7 @@
     ],
     "synergist": [
       "삼각근",
-      "back"
+      "척추기립근"
     ],
     "stabilizer": [
       "코어"
@@ -20652,10 +20632,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles",
-      "feet"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -20673,7 +20650,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -20714,7 +20691,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -20792,10 +20769,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles",
-      "feet"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -20857,7 +20831,7 @@
     "synergist": [
       "둔근",
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "삼각근"
     ],
     "stabilizer": [
@@ -20878,7 +20852,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -20897,7 +20871,7 @@
       "복직근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "둔근"
     ],
     "stabilizer": [
@@ -20917,7 +20891,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -20939,7 +20913,7 @@
     ],
     "synergist": [
       "둔근",
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -21098,7 +21072,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -21284,7 +21258,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -21549,7 +21523,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -21623,9 +21597,10 @@
     "muscleGroup": "legs",
     "gear": "Band",
     "primary": [
-      "둔근"
+      "외전근"
     ],
     "synergist": [
+      "둔근",
       "햄스트링"
     ],
     "stabilizer": [
@@ -21846,7 +21821,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -21927,7 +21902,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -21947,7 +21922,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -22066,7 +22041,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -22087,7 +22062,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -22109,7 +22084,7 @@
     ],
     "synergist": [
       "비복근",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -22208,7 +22183,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -22344,7 +22319,7 @@
       "햄스트링"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -22424,7 +22399,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -22445,7 +22420,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -22523,9 +22498,10 @@
     "muscleGroup": "legs",
     "gear": "Body",
     "primary": [
-      "둔근"
+      "외전근"
     ],
     "synergist": [
+      "둔근",
       "복사근"
     ],
     "stabilizer": [
@@ -22582,10 +22558,11 @@
     "muscleGroup": "legs",
     "gear": "Body",
     "primary": [
-      "둔근"
+      "외전근"
     ],
     "synergist": [
-      "quadriceps"
+      "둔근",
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -22787,7 +22764,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -22805,10 +22782,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles",
-      "feet"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -22827,7 +22801,7 @@
     ],
     "synergist": [
       "둔근",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -22846,7 +22820,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -22925,7 +22899,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근",
       "비복근"
@@ -22967,7 +22941,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근",
       "비복근"
@@ -23009,7 +22983,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23030,7 +23004,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23070,7 +23044,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23091,7 +23065,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23112,7 +23086,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23134,7 +23108,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps"
+      "대퇴사두근"
     ],
     "stabilizer": [
       "코어"
@@ -23153,7 +23127,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23194,7 +23168,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23235,7 +23209,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23437,7 +23411,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "척추기립근"
     ],
     "stabilizer": [
@@ -23497,7 +23471,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근",
       "코어"
@@ -23519,7 +23493,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23540,7 +23514,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23641,7 +23615,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -23662,7 +23636,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -24038,7 +24012,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -24059,7 +24033,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -24160,7 +24134,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -24180,9 +24154,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -24567,10 +24539,7 @@
     "primary": [
       "비복근"
     ],
-    "synergist": [
-      "ankles",
-      "feet"
-    ],
+    "synergist": [],
     "stabilizer": [
       "코어"
     ],
@@ -24725,7 +24694,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -24746,7 +24715,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -24767,7 +24736,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -24826,9 +24795,10 @@
     "muscleGroup": "legs",
     "gear": "Body",
     "primary": [
-      "둔근"
+      "외전근"
     ],
     "synergist": [
+      "둔근",
       "햄스트링"
     ],
     "stabilizer": [
@@ -24970,7 +24940,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [
@@ -25030,7 +25000,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "코어"
     ],
     "stabilizer": [
@@ -25051,7 +25021,7 @@
     ],
     "synergist": [
       "햄스트링",
-      "quadriceps",
+      "대퇴사두근",
       "척추기립근"
     ],
     "stabilizer": [
@@ -25386,7 +25356,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근",
       "비복근"
@@ -25408,7 +25378,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근",
       "비복근"
@@ -25430,7 +25400,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -25451,7 +25421,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -25472,7 +25442,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "둔근",
       "비복근"
@@ -25534,7 +25504,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -25734,7 +25704,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -26019,7 +25989,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -26099,7 +26069,7 @@
       "둔근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -26219,7 +26189,7 @@
       "코어"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -26320,7 +26290,7 @@
       "복직근"
     ],
     "synergist": [
-      "quadriceps",
+      "대퇴사두근",
       "햄스트링",
       "비복근"
     ],
@@ -26342,7 +26312,7 @@
     ],
     "synergist": [
       "둔근",
-      "quadriceps",
+      "대퇴사두근",
       "비복근"
     ],
     "stabilizer": [

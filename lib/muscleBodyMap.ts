@@ -40,10 +40,38 @@ const ANATOMY_TO_BODY: Record<string, MuscleMapping> = {
   장요근: { slug: 'abs', view: 'front' },
   대퇴사두근: { slug: 'quadriceps', view: 'front' },
   내전근: { slug: 'adductors', view: 'front' },
-  비복근: { slug: 'calves', view: 'back' },
-  가자미근: { slug: 'calves', view: 'back' },
+  /** SVG abductors 미지원 → gluteal(후면)로 근사 */
+  외전근: { slug: 'gluteal', view: 'back' },
+  비복근: { slug: 'calves', view: 'front' },
+  가자미근: { slug: 'calves', view: 'front' },
   어깨: { slug: 'deltoids', view: 'front' },
 };
+
+/** 카탈로그에 남은 ExerciseDB 영문 근육명 → 한글 키 */
+const ENGLISH_TO_ANATOMY: Record<string, string> = {
+  quadriceps: '대퇴사두근',
+  quads: '대퇴사두근',
+  glutes: '둔근',
+  hamstrings: '햄스트링',
+  calves: '비복근',
+  gastrocnemius: '비복근',
+  soleus: '가자미근',
+  adductors: '내전근',
+  abductors: '외전근',
+  ankles: '비복근',
+  feet: '비복근',
+  'ankle stabilizers': '비복근',
+  'lower abs': '복직근 하부',
+  back: '척추기립근',
+  core: '코어',
+};
+
+function normalizeMuscleKey(key: string): string {
+  const trimmed = key.trim();
+  if (ANATOMY_TO_BODY[trimmed]) return trimmed;
+  const alias = ENGLISH_TO_ANATOMY[trimmed.toLowerCase()];
+  return alias ?? trimmed;
+}
 
 /** 커스텀 운동 등 — 근육 그룹만 있을 때 기본 부위 */
 const MUSCLE_GROUP_DEFAULT: Record<MuscleGroup, MuscleMapping> = {
@@ -57,7 +85,10 @@ const MUSCLE_GROUP_DEFAULT: Record<MuscleGroup, MuscleMapping> = {
 
 function resolveMappings(keys: string[], fallbackGroup?: MuscleGroup): MuscleMapping[] {
   if (keys.length > 0) {
-    return keys.map((k) => ANATOMY_TO_BODY[k]).filter((m): m is MuscleMapping => m != null);
+    return keys
+      .map((k) => normalizeMuscleKey(k))
+      .map((k) => ANATOMY_TO_BODY[k])
+      .filter((m): m is MuscleMapping => m != null);
   }
   if (fallbackGroup) return [MUSCLE_GROUP_DEFAULT[fallbackGroup]];
   return [];
@@ -90,8 +121,8 @@ export interface BodyHighlightResult {
   data: ExtendedBodyPart[];
 }
 
-/** 크롭 영역 — 상체 / 코어 / 하체 */
-export type BodyRegion = 'upper' | 'core' | 'lower';
+/** 크롭 영역 — 상체 / 팔 / 코어 / 하체 */
+export type BodyRegion = 'upper' | 'arms' | 'core' | 'lower';
 
 const LOWER_SLUGS: Slug[] = [
   'quadriceps',
@@ -107,11 +138,13 @@ const LOWER_SLUGS: Slug[] = [
 
 const CORE_SLUGS: Slug[] = ['abs', 'obliques', 'lower-back'];
 
+const ARM_SLUGS: Slug[] = ['biceps', 'triceps', 'forearm'];
+
 const GROUP_REGION: Record<MuscleGroup, BodyRegion> = {
   chest: 'upper',
   shoulder: 'upper',
   back: 'upper',
-  arms: 'upper',
+  arms: 'arms',
   core: 'core',
   legs: 'lower',
 };
@@ -119,6 +152,7 @@ const GROUP_REGION: Record<MuscleGroup, BodyRegion> = {
 function slugToRegion(slug: Slug): BodyRegion {
   if (LOWER_SLUGS.includes(slug)) return 'lower';
   if (CORE_SLUGS.includes(slug)) return 'core';
+  if (ARM_SLUGS.includes(slug)) return 'arms';
   return 'upper';
 }
 
@@ -160,4 +194,44 @@ export function getBodyHighlightForMuscle(
 ): BodyHighlightResult {
   if (!muscleKey) return { side: 'front', data: [] };
   return getBodyHighlightForMuscles([muscleKey], fallbackGroup, highlightColor);
+}
+
+/** MuscleGroup → 전·후면 SVG slug */
+const MUSCLE_GROUP_SLUGS: Record<MuscleGroup, { front: Slug[]; back: Slug[] }> = {
+  chest: { front: ['chest'], back: [] },
+  shoulder: { front: ['deltoids'], back: ['deltoids', 'trapezius'] },
+  back: { front: [], back: ['upper-back', 'trapezius', 'lower-back'] },
+  arms: { front: ['biceps', 'forearm'], back: ['triceps', 'forearm'] },
+  core: { front: ['abs', 'obliques'], back: ['lower-back'] },
+  legs: { front: ['quadriceps', 'adductors'], back: ['hamstring', 'gluteal', 'calves'] },
+};
+
+/** 홈 대시보드 — 최근 운동 부위 여러 그룹 하이라이트 */
+export function getBodyHighlightForMuscleGroups(
+  groups: MuscleGroup[],
+  side: BodyView,
+  colorForGroup: (group: MuscleGroup) => string
+): ExtendedBodyPart[] {
+  const unique = [...new Set(groups)];
+  const parts: ExtendedBodyPart[] = [];
+
+  for (const group of unique) {
+    const slugs = MUSCLE_GROUP_SLUGS[group][side];
+    const color = colorForGroup(group);
+    for (const slug of slugs) {
+      parts.push({ slug, intensity: 1, color });
+    }
+  }
+
+  if (parts.length > 0) return parts;
+
+  // 선택 면에 slug 없으면 반대 면 포함
+  for (const group of unique) {
+    const color = colorForGroup(group);
+    for (const slug of [...MUSCLE_GROUP_SLUGS[group].front, ...MUSCLE_GROUP_SLUGS[group].back]) {
+      parts.push({ slug, intensity: 1, color });
+    }
+  }
+
+  return parts;
 }

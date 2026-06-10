@@ -1,19 +1,19 @@
-// Home 탭: 위클리 캘린더 + AI 코치 채팅
+// Home 탭: 위클리 캘린더
 import { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { HomeDashboardGrid } from '../../components/home/HomeDashboardGrid';
+import { RecentWorkoutHistory } from '../../components/home/RecentWorkoutHistory';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
-import { useLanguage, useSettingsStore } from '../../stores/settingsStore';
+import { useLanguage } from '../../stores/settingsStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { WeeklyCalendar, countWorkoutsThisWeek } from '../../components/calendar/WeeklyCalendar';
-import { CoachChat } from '../../components/coach/CoachChat';
 
 const WEEKLY_GOAL = 5;
 
 export default function HomeScreen() {
   const lang = useLanguage();
-  const coachName = useSettingsStore((s) => s.coachName);
   const sessions = useHistoryStore((s) => s.sessions);
 
   const weekCount = useMemo(() => {
@@ -23,29 +23,33 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.body}>
-        <View style={styles.topSection}>
-          <View style={styles.header}>
-            <Text style={styles.logo}>FORMÉ</Text>
-            <Text style={styles.subtitle}>{t('homeTagline', lang)}</Text>
-          </View>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.header}>
+          <Text style={styles.logo}>FORMÉ</Text>
+          <Text style={styles.subtitle}>{t('homeTagline', lang)}</Text>
+        </View>
 
-          <View style={styles.card}>
-            <Text style={styles.cardLabel}>{t('thisWeek', lang)}</Text>
-            <View style={styles.cardRow}>
-              <Text style={styles.cardValue}>
-                {weekCount} / {WEEKLY_GOAL}
-              </Text>
-              <View style={styles.cardCalendar}>
-                <WeeklyCalendar lang={lang} variant="compact" />
-              </View>
+        <View style={styles.card}>
+          <Text style={styles.cardLabel}>{t('thisWeek', lang)}</Text>
+          <View style={styles.cardRow}>
+            <Text style={styles.cardValue}>
+              {weekCount} / {WEEKLY_GOAL}
+            </Text>
+            <View style={styles.cardCalendar}>
+              <WeeklyCalendar lang={lang} variant="compact" />
             </View>
-            <Text style={styles.cardHint}>{t('homeCardHint', lang)}</Text>
           </View>
         </View>
 
-        <CoachChat lang={lang} coachName={coachName} />
-      </View>
+        <HomeDashboardGrid lang={lang} />
+
+        <RecentWorkoutHistory lang={lang} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -55,17 +59,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  body: {
+  scroll: {
     flex: 1,
-    paddingHorizontal: layout.screenPadding,
-    paddingBottom: 8,
   },
-  topSection: {
-    flexShrink: 0,
+  body: {
+    paddingHorizontal: layout.screenPadding,
+    paddingBottom: 100,
   },
   header: {
     paddingTop: 16,
-    paddingBottom: 16,
+    paddingBottom: 20,
   },
   logo: {
     ...typography.heroTitle,
@@ -101,8 +104,5 @@ const styles = StyleSheet.create({
   cardCalendar: {
     flex: 1,
     minWidth: 0,
-  },
-  cardHint: {
-    ...typography.body,
   },
 });
