@@ -1,4 +1,4 @@
-// Home — 모티베이션 이미지 + 문구 (좌측 큰 패널)
+// Home — 모티베이션 이미지 + 문구 (좌측 2/3 패널, 랜덤 슬라이드)
 import { useEffect, useMemo, useState } from 'react';
 import {
   View,
@@ -9,10 +9,11 @@ import {
   type ImageSourcePropType,
 } from 'react-native';
 import { colors, typography, layout } from '../../constants/theme';
-import { MOTIVATION_SLIDES } from '../../constants/motivation';
+import { buildRandomMotivationSlides } from '../../constants/motivation';
 import type { Language } from '../../types';
 
 const ROTATE_MS = 7000;
+const SLIDE_COUNT = 6;
 
 interface MotivationCardProps {
   lang: Language;
@@ -20,22 +21,33 @@ interface MotivationCardProps {
 }
 
 export function MotivationCard({ lang, goalImageUrl }: MotivationCardProps) {
-  const slides = useMemo((): { image: ImageSourcePropType; quote: { ko: string; en: string } }[] => {
-    const base = MOTIVATION_SLIDES.map((s) => ({ image: s.image as ImageSourcePropType, quote: s.quote }));
+  const slides = useMemo(() => {
+    const base = buildRandomMotivationSlides(SLIDE_COUNT).map((s) => ({
+      image: s.image as ImageSourcePropType,
+      quote: s.quote,
+    }));
+
     if (goalImageUrl) {
-      base.unshift({
-        image: { uri: goalImageUrl },
-        quote: {
-          ko: '나의 목표를 떠올리며 오늘도 한 세트.',
-          en: 'Picture your goal. One more set today.',
+      return [
+        {
+          image: { uri: goalImageUrl } as ImageSourcePropType,
+          quote: {
+            ko: '나의 목표를 떠올리며 오늘도 한 세트.',
+            en: 'Picture your goal. One more set today.',
+          },
         },
-      });
+        ...base,
+      ];
     }
     return base;
   }, [goalImageUrl]);
 
   const [index, setIndex] = useState(0);
   const slide = slides[index % slides.length];
+
+  useEffect(() => {
+    setIndex(0);
+  }, [slides.length, goalImageUrl]);
 
   useEffect(() => {
     const timer = setInterval(() => {

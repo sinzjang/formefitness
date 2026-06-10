@@ -12,6 +12,7 @@ import { useSettingsStore } from './settingsStore';
 import { useUserStore } from './userStore';
 import { useWorkoutStore } from './workoutStore';
 import { useCoachWorkoutContextStore } from './coachWorkoutContextStore';
+import { useBodyProfileStore } from './bodyProfileStore';
 import { getCoachUserDisplayName } from './profilePrefsStore';
 import { toLocalDateKey } from '../lib/dates';
 
@@ -43,6 +44,7 @@ function buildPromptInput(isAppOpen: boolean): CoachPromptInput {
   const routines = useRoutineStore.getState().routines;
   const workout = useWorkoutStore.getState();
   const workoutCtx = useCoachWorkoutContextStore.getState();
+  const bodyProfile = useBodyProfileStore.getState().latest ?? null;
   const ctx = buildCoachContextData(sessions, routines, settings.language, {
     goalTier: profile?.goalTier,
     conditionSleep: settings.conditionSleep,
@@ -51,6 +53,7 @@ function buildPromptInput(isAppOpen: boolean): CoachPromptInput {
     sessionPaused: workout.sessionPaused,
     viewingRoutine: workoutCtx.viewingRoutine,
     draftRoutine: workoutCtx.draftRoutine,
+    bodyProfile,
   });
 
   return {
@@ -65,7 +68,7 @@ function buildPromptInput(isAppOpen: boolean): CoachPromptInput {
 function toHistory(messages: CoachMessage[]): CoachChatTurn[] {
   return messages
     .filter((m) => m.text.trim().length > 0)
-    .slice(-12)
+    .slice(-8)
     .map((m) => ({
       role: m.role === 'user' ? 'user' : 'assistant',
       content: m.text,

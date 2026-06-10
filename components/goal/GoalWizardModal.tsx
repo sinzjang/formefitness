@@ -26,8 +26,10 @@ import {
 import { colors, layout, typography } from '../../constants/theme';
 import { getTierName } from '../../constants/tiers';
 import { analyzeGoalWithOpenAi, generateGoalImagesWithOpenAi } from '../../lib/goalOpenAi';
+import { buildBodyProfileFromGoalAnalysis } from '../../lib/bodyProfile';
 import { t } from '../../lib/i18n';
 import { pickImageFromCamera, pickImageFromLibrary } from '../../lib/pickImage';
+import { useBodyProfileStore } from '../../stores/bodyProfileStore';
 import { useGoalStore } from '../../stores/goalStore';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
@@ -54,6 +56,7 @@ function isAnswersComplete(a: PartialAnswers): a is GoalWizardAnswers {
 
 export function GoalWizardModal({ visible, lang, onClose }: GoalWizardModalProps) {
   const saveGoal = useGoalStore((s) => s.saveGoal);
+  const saveBodyAnalysis = useBodyProfileStore((s) => s.saveAnalysis);
 
   const [questionIndex, setQuestionIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('focusArea');
@@ -185,6 +188,11 @@ export function GoalWizardModal({ visible, lang, onClose }: GoalWizardModalProps
   const handleFinish = () => {
     if (!isAnswersComplete(answers) || !analysis) return;
     const dualMode = !photoUri && (generatedImages.male || generatedImages.female);
+
+    if (photoUri) {
+      saveBodyAnalysis(buildBodyProfileFromGoalAnalysis(answers, analysis, photoUri));
+    }
+
     saveGoal({
       answers,
       analysis,

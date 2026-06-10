@@ -8,6 +8,7 @@ import type {
   WorkoutRoutine,
   WorkoutSession,
 } from '../types';
+import type { BodyProfileAnalysis } from '../types/bodyProfile';
 import { getFatigueLevel } from './fatigue';
 import { summarizeSets } from './sessionStats';
 import { getCurrentWeekDays, isoToLocalDateKey, toLocalDateKey } from './dates';
@@ -69,6 +70,7 @@ export interface CoachContextData {
     totalVolume: number;
     mostWorkedMuscle: string | null;
   };
+  bodyProfile: BodyProfileAnalysis | null;
   customRoutines: CoachCustomRoutine[];
   conditionSleep: number;
   conditionFatigue: number;
@@ -378,6 +380,7 @@ export function buildCoachContextData(
     sessionPaused?: boolean;
     viewingRoutine?: CoachRoutineSnapshot | null;
     draftRoutine?: CoachRoutineSnapshot | null;
+    bodyProfile?: BodyProfileAnalysis | null;
   }
 ): CoachContextData {
   const sorted = [...sessions].sort((a, b) => b.endedAt.localeCompare(a.endedAt));
@@ -397,6 +400,7 @@ export function buildCoachContextData(
     historyContext,
     prRecords: buildPrRecords(sorted, lang),
     weeklyStats: buildWeeklyStats(sorted, lang),
+    bodyProfile: options?.bodyProfile ?? null,
     customRoutines: toCustomRoutines(routines, lang),
     conditionSleep: options?.conditionSleep ?? 3,
     conditionFatigue: options?.conditionFatigue ?? 3,

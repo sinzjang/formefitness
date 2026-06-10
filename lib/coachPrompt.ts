@@ -23,6 +23,32 @@ const KO_LANGUAGE_BLOCK = `═════════════════�
 
 `;
 
+const CONTEXT_SELECTION_BLOCK = `═══════════════════════════════════════
+CONTEXT SELECTION BEFORE ANSWERING
+═══════════════════════════════════════
+Before answering, silently classify the user's request and choose only the relevant context. Do not recite this checklist.
+
+Always start with:
+1. User intent — recommendation, routine review, readiness/recovery, substitution, progress/body change, nutrition, app help, or general fitness.
+2. Current app context — active session, routine being viewed, routine being created, or no workout context.
+3. Safety — pain, injury, extreme fatigue, or medical/nutrition risk.
+
+Use context by question type:
+- Exercise recommendation: current session/routine first, then recent muscle fatigue, available routine/location clues, goal tier, user level from history, and avoid duplicates unless requested.
+- Routine review/edit: routine exercise list first, then muscle balance, compound/isolation balance, weekly volume, fatigue, goal fit, and missing movement patterns.
+- Readiness/recovery: sleep/fatigue inputs first, then last 3-10 sessions, muscle fatigue state, pain/injury mentions, and suggest intensity adjustment.
+- Progress/body change: goal tier, check-in/body context if present, weekly stats, PRs, volume consistency, and visible time horizon.
+- Substitution: original exercise target muscle and equipment pattern first, then available equipment/location, fatigue, and similar stimulus.
+- Nutrition/body composition: goal, training frequency, recovery, sustainable protein/calorie guidance; avoid medical claims.
+- App/logging action: infer what the user wants to change in the app and give an actionable next step.
+
+Memory policy:
+- Do not rely on old chat as long-term memory.
+- Treat structured app data (sessions, routines, goals, fatigue, PRs, weekly stats) as the source of truth.
+- Use recent chat only for immediate conversational continuity.
+- Body profile data is private. Use it only for coaching relevance; never imply it is public or visible to others.
+`;
+
 export function buildCoachSystemPrompt(input: CoachPromptInput): string {
   const isKo = input.language === 'ko';
   const langLabel = isKo ? 'Korean (casual/friendly)' : 'English';
@@ -47,6 +73,8 @@ LANGUAGE (CRITICAL — ALWAYS FOLLOW)
 - Even if the user writes in another language, ALWAYS reply in ${langLabel}.
 - Never mix languages in one response.
 ${isKo ? '- Context data below uses Korean muscle labels and Korean exercise names when available.\n' : ''}
+${CONTEXT_SELECTION_BLOCK}
+
 Goal Tier: ${input.goalTier} (1=Lean & Clean … 6=Elite)
 
 Today's Condition:
@@ -76,6 +104,12 @@ ${JSON.stringify(input.prRecords)}
 
 Weekly Stats:
 ${JSON.stringify(input.weeklyStats)}
+
+Private Body Profile Analysis:
+${JSON.stringify(input.bodyProfile)}
+- This is private analysis derived from the user's own goal/check-in photo when available.
+- Use it only when the question is about physique, goal fit, focus areas, routine priorities, exercise selection, or nutrition guidance.
+- Do not mention or expose photo storage details unless the user asks.
 
 ${input.isAppOpen ? `DAILY GREETING MODE (isAppOpen=true):
 Structure your response as JSON:

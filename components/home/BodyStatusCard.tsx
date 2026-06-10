@@ -1,9 +1,8 @@
 // Home — 전신 SVG + 최근 운동 부위 + 주간 게이지
 import { useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { colors, typography, layout, muscleColors } from '../../constants/theme';
+import { colors, typography, layout, muscleColors, fonts } from '../../constants/theme';
 import { t } from '../../lib/i18n';
-import { muscleGroupLabel } from '../../constants/muscles';
 import { getBodyHighlightForMuscleGroups } from '../../lib/muscleBodyMap';
 import {
   getLastSessionMuscleGroups,
@@ -33,37 +32,26 @@ export function BodyStatusCard({ lang }: BodyStatusCardProps) {
     [lastMuscles, side]
   );
 
-  const lastLabel =
-    lastMuscles.length > 0
-      ? lastMuscles.map((m) => muscleGroupLabel(m, lang)).join(', ')
-      : t('homeLastWorkoutEmpty', lang);
-
   return (
     <View style={styles.card}>
+      <Text style={styles.lastLabel}>{t('homeLastWorkout', lang)}</Text>
+
       <View style={styles.toggleRow}>
-        <Pressable
-          style={[styles.toggleBtn, side === 'front' && styles.toggleBtnActive]}
-          onPress={() => setSide('front')}
-        >
+        <Pressable style={styles.toggleTab} onPress={() => setSide('front')}>
           <Text style={[styles.toggleText, side === 'front' && styles.toggleTextActive]}>
             {t('homeBodyFront', lang)}
           </Text>
+          {side === 'front' ? <View style={styles.toggleUnderline} /> : <View style={styles.toggleUnderlineSpacer} />}
         </Pressable>
-        <Pressable
-          style={[styles.toggleBtn, side === 'back' && styles.toggleBtnActive]}
-          onPress={() => setSide('back')}
-        >
+        <Pressable style={styles.toggleTab} onPress={() => setSide('back')}>
           <Text style={[styles.toggleText, side === 'back' && styles.toggleTextActive]}>
             {t('homeBodyBack', lang)}
           </Text>
+          {side === 'back' ? <View style={styles.toggleUnderline} /> : <View style={styles.toggleUnderlineSpacer} />}
         </Pressable>
       </View>
 
       <HomeBodyMap side={side} data={bodyData} />
-
-      <Text style={styles.lastLabel} numberOfLines={1}>
-        {t('homeLastWorkout', lang)}: {lastLabel}
-      </Text>
 
       <View style={styles.gaugeGrid}>
         {HOME_MUSCLE_GROUPS.map((group) => (
@@ -94,36 +82,48 @@ const styles = StyleSheet.create({
   },
   toggleRow: {
     flexDirection: 'row',
-    gap: 4,
+    gap: 12,
     alignSelf: 'center',
+    marginBottom: 4,
   },
-  toggleBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  toggleBtnActive: {
-    backgroundColor: colors.textPrimary,
-    borderColor: colors.textPrimary,
+  toggleTab: {
+    alignItems: 'center',
+    paddingHorizontal: 2,
   },
   toggleText: {
     ...typography.caption,
-    fontSize: 10,
-    color: colors.textSecondary,
+    fontSize: 8,
+    color: colors.textMuted,
     textTransform: 'uppercase',
-    letterSpacing: 0.6,
+    letterSpacing: 0.4,
   },
   toggleTextActive: {
-    color: colors.background,
+    color: colors.textPrimary,
+    fontFamily: fonts.bold700,
+    fontWeight: '700',
+  },
+  toggleUnderline: {
+    marginTop: 3,
+    width: '100%',
+    height: 1.5,
+    backgroundColor: colors.textPrimary,
+    borderRadius: 1,
+  },
+  toggleUnderlineSpacer: {
+    marginTop: 3,
+    height: 1.5,
   },
   lastLabel: {
     ...typography.caption,
-    fontSize: 9,
-    color: colors.textMuted,
+    fontFamily: fonts.bold700,
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 6,
+    lineHeight: 14,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   gaugeGrid: {
     flexDirection: 'row',

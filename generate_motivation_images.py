@@ -33,7 +33,7 @@ def load_openai_api_key() -> str:
 OPENAI_API_KEY = load_openai_api_key()
 OUTPUT_DIR     = "./motivation_images"
 SIZE           = "1024x1536"   # 세로 2:3 (gpt-image는 가로·세로 16의 배수 필요)
-QUALITY        = "medium"      # $0.041/장
+QUALITY        = "low"      # $0.041/장
 SLEEP          = 1             # API 호출 간격 (초)
 
 # ── 프롬프트 ──────────────────────────────────────

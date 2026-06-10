@@ -5,6 +5,7 @@ import { useRoutineStore } from '../../stores/routineStore';
 import { useHistoryStore } from '../../stores/historyStore';
 import { useCustomExerciseStore } from '../../stores/customExerciseStore';
 import { useExerciseCatalogPrefsStore } from '../../stores/exerciseCatalogPrefsStore';
+import { useBodyProfileStore } from '../../stores/bodyProfileStore';
 
 export const SYNC_USER_KEY = 'forme-workout-sync-user-id';
 
@@ -22,6 +23,7 @@ export async function clearLocalWorkoutData(): Promise<void> {
   useHistoryStore.setState({ sessions: [] });
   useCustomExerciseStore.setState({ exercises: [] });
   useExerciseCatalogPrefsStore.setState({ prefs: {} });
+  useBodyProfileStore.setState({ latest: undefined, history: [] });
 
   await AsyncStorage.removeItem(SYNC_USER_KEY);
 }

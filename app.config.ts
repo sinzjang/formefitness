@@ -6,7 +6,11 @@ function googleIosUrlScheme(iosClientId: string): string {
   return prefix ? `com.googleusercontent.apps.${prefix}` : 'com.googleusercontent.apps.placeholder';
 }
 
-const IS_DEV = process.env.APP_VARIANT === 'development';
+const IS_DEV =
+  process.env.APP_VARIANT === 'development' ||
+  process.env.EAS_BUILD_PROFILE === 'development';
+const SPLASH_LOGO = './src/imgs/app_esse/Forme_Logo_only.png';
+const APP_ICON = IS_DEV ? './assets/splash-icon_dev.png' : './assets/splash-icon.png';
 
 export default (): ExpoConfig => ({
   name: IS_DEV ? 'Forme Dev' : 'Forme Fitness',
@@ -16,9 +20,9 @@ export default (): ExpoConfig => ({
   orientation: 'portrait',
   userInterfaceStyle: 'light',
   newArchEnabled: true,
-  icon: IS_DEV ? './assets/splash-icon_dev.png' : './assets/splash-icon.png',
+  icon: APP_ICON,
   splash: {
-    image: './assets/splash-icon.png',
+    image: SPLASH_LOGO,
     resizeMode: 'contain',
     backgroundColor: '#FFFFFF',
   },
@@ -40,7 +44,7 @@ export default (): ExpoConfig => ({
   android: {
     package: 'com.forme.fitness',
     adaptiveIcon: {
-      foregroundImage: './assets/splash-icon.png',
+      foregroundImage: APP_ICON,
       backgroundColor: '#FFFFFF',
     },
   },
@@ -54,7 +58,7 @@ export default (): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        image: './assets/splash-icon.png',
+        image: SPLASH_LOGO,
         resizeMode: 'contain',
         backgroundColor: '#FFFFFF',
       },

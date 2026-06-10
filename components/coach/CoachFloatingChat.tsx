@@ -11,6 +11,7 @@ import {
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
+import type { CoachName } from '../../types';
 import { useLanguage, useSettingsStore } from '../../stores/settingsStore';
 import { useCoachStore } from '../../stores/coachStore';
 import { useWorkoutStore } from '../../stores/workoutStore';
@@ -89,7 +90,7 @@ function CoachChatModal({
   onClose,
 }: {
   lang: ReturnType<typeof useLanguage>;
-  coachName: string;
+  coachName: CoachName;
   fabBottom: number;
   panelMaxHeight: number;
   onClose: () => void;

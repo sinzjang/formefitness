@@ -11,6 +11,10 @@ interface RoutineState {
     name: string,
     exercises: RoutineExerciseEntry[]
   ) => WorkoutRoutine;
+  addExerciseToRoutine: (
+    routineId: string,
+    exercise: RoutineExerciseEntry
+  ) => WorkoutRoutine | null;
   importBulk: (
     incoming: Array<{
       id: string;
@@ -44,6 +48,30 @@ export const useRoutineStore = create<RoutineState>()(
         set((state) => ({ routines: [...state.routines, routine] }));
         void import('../lib/sync/workoutSync').then((m) => m.pushRoutine(routine));
         return routine;
+      },
+
+      addExerciseToRoutine: (routineId, exercise) => {
+        let updated: WorkoutRoutine | null = null;
+        set((state) => ({
+          routines: state.routines.map((routine) => {
+            if (routine.id !== routineId) return routine;
+            if (routine.exercises.some((ex) => ex.exerciseKey === exercise.exerciseKey)) {
+              updated = routine;
+              return routine;
+            }
+
+            updated = {
+              ...routine,
+              exercises: [...routine.exercises, exercise],
+            };
+            return updated;
+          }),
+        }));
+
+        if (updated) {
+          void import('../lib/sync/workoutSync').then((m) => m.pushRoutine(updated!));
+        }
+        return updated;
       },
 
       importBulk: (incoming) =>
