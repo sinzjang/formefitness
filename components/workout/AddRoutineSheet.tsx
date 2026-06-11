@@ -16,7 +16,7 @@ import { colors, typography, layout } from '../../constants/theme';
 import { exerciseLocalizedName, type ExerciseDef } from '../../constants/exercises';
 import { resolveDisplayExerciseName } from '../../lib/exerciseKo';
 import { getExerciseKey } from '../../lib/exerciseKey';
-import { gearToResistance } from '../../constants/gears';
+import { exerciseResistanceType } from '../../lib/exerciseCatalog';
 import { t } from '../../lib/i18n';
 import { useLanguage, useSettingsStore } from '../../stores/settingsStore';
 import { useRoutineStore } from '../../stores/routineStore';
@@ -68,7 +68,7 @@ export function AddRoutineSheet({ visible, locationId, onClose }: AddRoutineShee
         exerciseKey: key,
         exerciseName: localized,
         muscleGroup: ex.muscleGroup,
-        resistanceType: gearToResistance(ex.gear),
+        resistanceType: exerciseResistanceType(ex),
         defaultRestSeconds: defaultRest,
         isCustom: ex.isCustom,
         customId: ex.customId,

@@ -2,3 +2,8 @@
 export type AiProvider = 'openai' | 'claude' | 'gemini';
 
 export const AI_PROVIDERS: AiProvider[] = ['openai', 'claude', 'gemini'];
+
+export interface AiModelOption {
+  id: string;
+  label: string;
+}

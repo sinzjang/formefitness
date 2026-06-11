@@ -23,7 +23,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { useProfilePrefsStore } from '../../stores/profilePrefsStore';
 import { pickImageFromLibrary } from '../../lib/pickImage';
 import { ImageCropModal } from '../ui/ImageCropModal';
-import { syncNicknameToRemote } from '../../lib/profileSync';
+import { syncPublicProfileToRemote } from '../../lib/profileSync';
 
 const LANGUAGES: { id: Language; label: string }[] = [
   { id: 'ko', label: '한국어' },
@@ -39,6 +39,7 @@ interface ProfileEditModalProps {
 interface EditDraft {
   avatarUri?: string;
   nickname: string;
+  bio: string;
   hideEmail: boolean;
   country: string;
   region: string;
@@ -62,6 +63,7 @@ export function ProfileEditModal({ visible, lang, onClose }: ProfileEditModalPro
   const [draft, setDraft] = useState<EditDraft>({
     avatarUri: undefined,
     nickname: '',
+    bio: '',
     hideEmail: false,
     country: '',
     region: '',
@@ -78,6 +80,7 @@ export function ProfileEditModal({ visible, lang, onClose }: ProfileEditModalPro
     setDraft({
       avatarUri: p.avatarUri,
       nickname: p.nickname || profile?.displayName || '',
+      bio: p.bio ?? '',
       hideEmail: p.hideEmail,
       country: p.country,
       region: p.region,
@@ -100,6 +103,7 @@ export function ProfileEditModal({ visible, lang, onClose }: ProfileEditModalPro
     const p = useProfilePrefsStore.getState();
     p.setAvatarUri(draft.avatarUri);
     p.setNickname(draft.nickname);
+    p.setBio(draft.bio);
     p.setHideEmail(draft.hideEmail);
     p.setCountry(draft.country);
     p.setRegion(draft.region);
@@ -121,7 +125,10 @@ export function ProfileEditModal({ visible, lang, onClose }: ProfileEditModalPro
       useSettingsStore.getState().setBodyWeight(Math.round(w * 10) / 10);
     }
 
-    void syncNicknameToRemote(draft.nickname).catch(() => {});
+    void syncPublicProfileToRemote({
+      nickname: draft.nickname,
+      bio: draft.bio,
+    }).catch(() => {});
     onClose();
   };
 
@@ -173,6 +180,19 @@ export function ProfileEditModal({ visible, lang, onClose }: ProfileEditModalPro
                 maxLength={32}
               />
               <Text style={styles.hint}>{t('profileNicknameHint', lang)}</Text>
+            </FieldBlock>
+
+            <FieldBlock label={`${t('profileBio', lang)} ${t('profileOptional', lang)}`}>
+              <TextInput
+                style={[styles.input, styles.bioInput]}
+                value={draft.bio}
+                onChangeText={(bio) => patch({ bio })}
+                placeholder={t('profileBioPlaceholder', lang)}
+                placeholderTextColor={colors.textMuted}
+                maxLength={120}
+                multiline
+                textAlignVertical="top"
+              />
             </FieldBlock>
 
             {/* 이메일 공개 */}
@@ -396,6 +416,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: colors.surface,
+  },
+  bioInput: {
+    minHeight: 84,
   },
   hint: {
     ...typography.caption,

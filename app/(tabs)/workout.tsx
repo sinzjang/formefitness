@@ -14,8 +14,8 @@ import { Icon } from '../../components/ui/Icon';
 import type { MuscleGroup, WorkoutRoutine } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
-import { gearToResistance } from '../../constants/gears';
 import { exerciseLocalizedName } from '../../constants/exercises';
+import { exerciseResistanceType } from '../../lib/exerciseCatalog';
 import { useWorkoutStore } from '../../stores/workoutStore';
 import { useRestTimerStore } from '../../stores/restTimerStore';
 import { useHistoryStore } from '../../stores/historyStore';
@@ -283,7 +283,7 @@ export default function WorkoutScreen() {
             addExercise(
               exerciseLocalizedName(ex),
               ex.muscleGroup,
-              gearToResistance(ex.gear),
+              exerciseResistanceType(ex),
               undefined,
               ex.customId
             );

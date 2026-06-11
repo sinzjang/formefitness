@@ -10,7 +10,9 @@ import {
   ChevronUp,
   Circle,
   Dumbbell,
+  Grid3X3,
   Home,
+  Heart,
   Image as ImageIcon,
   Info,
   Pause,
@@ -18,12 +20,14 @@ import {
   Play,
   Plus,
   RotateCcw,
+  Rows3,
   Search,
   Settings,
   Square,
   Timer,
   Trash2,
   User,
+  Video,
   X,
   XCircle,
   type LucideIcon,
@@ -31,6 +35,9 @@ import {
 
 export type IconName =
   | 'home'
+  | 'heart'
+  | 'grid'
+  | 'feed'
   | 'barbell'
   | 'stats-chart'
   | 'person'
@@ -54,11 +61,15 @@ export type IconName =
   | 'search'
   | 'settings'
   | 'body'
+  | 'video'
   | 'check-circle'
   | 'circle';
 
 const ICONS: Record<IconName, LucideIcon> = {
   home: Home,
+  heart: Heart,
+  grid: Grid3X3,
+  feed: Rows3,
   barbell: Dumbbell,
   'stats-chart': BarChart2,
   person: User,
@@ -82,6 +93,7 @@ const ICONS: Record<IconName, LucideIcon> = {
   search: Search,
   settings: Settings,
   body: PersonStanding,
+  video: Video,
   'check-circle': CheckCircle2,
   circle: Circle,
 };

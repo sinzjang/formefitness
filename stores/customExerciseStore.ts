@@ -2,11 +2,26 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { CustomExercise, Gear, MuscleGroup } from '../types';
+import type {
+  CustomExercise,
+  ExerciseMeasurementType,
+  ExerciseMediaType,
+  Gear,
+  MuscleGroup,
+} from '../types';
 
 interface CustomExerciseState {
   exercises: CustomExercise[];
-  addExercise: (name: string, muscleGroup: MuscleGroup, gear: Gear) => CustomExercise;
+  addExercise: (
+    name: string,
+    muscleGroup: MuscleGroup,
+    gear: Gear,
+    options?: {
+      measurementType?: ExerciseMeasurementType;
+      mediaUri?: string;
+      mediaType?: ExerciseMediaType;
+    }
+  ) => CustomExercise;
   importBulk: (incoming: CustomExercise[]) => void;
   replaceAll: (exercises: CustomExercise[]) => void;
   deleteExercise: (id: string) => void;
@@ -19,7 +34,7 @@ export const useCustomExerciseStore = create<CustomExerciseState>()(
     (set, get) => ({
       exercises: [],
 
-      addExercise: (name, muscleGroup, gear) => {
+      addExercise: (name, muscleGroup, gear, options) => {
         const trimmed = name.trim();
         const existing = get().exercises.find(
           (e) => e.name.toLowerCase() === trimmed.toLowerCase()
@@ -31,6 +46,9 @@ export const useCustomExerciseStore = create<CustomExerciseState>()(
           name: trimmed,
           muscleGroup,
           gear,
+          measurementType: options?.measurementType ?? 'weight',
+          mediaUri: options?.mediaUri,
+          mediaType: options?.mediaType,
           createdAt: new Date().toISOString(),
           is_active: true,
           is_favorite: false,

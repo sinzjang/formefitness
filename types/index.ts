@@ -12,7 +12,20 @@ export type MuscleGroup = 'chest' | 'shoulder' | 'back' | 'arms' | 'core' | 'leg
 
 export type ResistanceType = 'weight' | 'band' | 'bodyweight';
 
-export type Gear = 'Body' | 'Barbell' | 'Dumbbell' | 'Kettlebell' | 'Machine' | 'Plate' | 'Band';
+export type Gear =
+  | 'Body'
+  | 'Barbell'
+  | 'Dumbbell'
+  | 'Kettlebell'
+  | 'Machine'
+  | 'Plate'
+  | 'Band'
+  | 'Nova'
+  | 'Other';
+
+export type ExerciseMeasurementType = 'weight' | 'level' | 'bodyweight' | 'repsOnly';
+
+export type ExerciseMediaType = 'gif' | 'image';
 
 export type BandLevel = 'Light' | 'Medium' | 'Heavy' | 'X-Heavy';
 
@@ -107,6 +120,9 @@ export interface CustomExercise {
   name: string;
   muscleGroup: MuscleGroup;
   gear: Gear;
+  measurementType?: ExerciseMeasurementType;
+  mediaUri?: string;
+  mediaType?: ExerciseMediaType;
   createdAt: string;
   /** false면 Add Exercise 리스트에서 숨김 */
   is_active?: boolean;

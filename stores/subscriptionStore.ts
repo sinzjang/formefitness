@@ -1,4 +1,4 @@
-// 구독 플랜 · 기능 한도 상태 (Supabase profiles + plan_entitlements)
+// 구독 플랜 · 기능 한도 상태 (user_subscriptions 원장 + plan_entitlements)
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
 import type {
@@ -8,6 +8,7 @@ import type {
   PlanId,
   SubscriptionStatus,
 } from '../types/subscription';
+import { normalizePlanId } from '../lib/planIds';
 
 interface EntitlementRow {
   feature_key: string;
@@ -24,7 +25,9 @@ interface SubscriptionState {
   isReady: boolean;
   refresh: (userId: string) => Promise<void>;
   reset: () => void;
-  isPro: () => boolean;
+  isAdmin: () => boolean;
+  isPlus: () => boolean;
+  isPrime: () => boolean;
   canUse: (feature: FeatureKey) => boolean;
   getRemaining: (feature: FeatureKey) => number | null;
 }
@@ -43,17 +46,39 @@ function currentPeriodKey(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function isEntitledStatus(status: SubscriptionStatus): boolean {
+  return status === 'active' || status === 'trialing' || status === 'grace_period';
+}
+
 export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   ...INITIAL,
 
   reset: () => set({ ...INITIAL }),
 
-  isPro: () => {
+  isAdmin: () => {
     const { planId, status } = get();
-    return planId === 'pro' && (status === 'active' || status === 'trialing');
+    return planId === 'admin' && isEntitledStatus(status);
+  },
+
+  isPlus: () => {
+    const { planId, status } = get();
+    return (
+      planId === 'plus' ||
+      planId === 'prime' ||
+      planId === 'admin'
+    ) && isEntitledStatus(status);
+  },
+
+  isPrime: () => {
+    const { planId, status } = get();
+    return (
+      planId === 'prime' ||
+      planId === 'admin'
+    ) && isEntitledStatus(status);
   },
 
   canUse: (feature) => {
+    if (get().isAdmin()) return true;
     const limit = get().limits[feature];
     if (limit === null || limit === undefined) return true;
     if (limit === 0) return false;
@@ -62,6 +87,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   },
 
   getRemaining: (feature) => {
+    if (get().isAdmin()) return null;
     const limit = get().limits[feature];
     if (limit === null || limit === undefined) return null;
     const used = get().usage[feature]?.used ?? 0;
@@ -71,30 +97,65 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   refresh: async (userId) => {
     const periodKey = currentPeriodKey();
 
-    const profileRes = await supabase
-      .from('profiles')
-      .select('plan_id, subscription_status')
-      .eq('id', userId)
-      .maybeSingle();
-
-    const planId = (profileRes.data?.plan_id as PlanId | undefined) ?? 'free';
-
-    const [subRes, entRes, usageRes] = await Promise.all([
-      supabase.from('user_subscriptions').select('*').eq('user_id', userId).maybeSingle(),
+    const [profileRes, subRes, usageRes] = await Promise.all([
       supabase
-        .from('plan_entitlements')
-        .select('feature_key, limit_value, period')
-        .eq('plan_id', planId),
+        .from('profiles')
+        .select('plan_id, subscription_status')
+        .eq('id', userId)
+        .maybeSingle(),
+      supabase.from('user_subscriptions').select('*').eq('user_id', userId).maybeSingle(),
       supabase
         .from('usage_events')
         .select('feature_key, quantity')
         .eq('user_id', userId)
         .eq('period_key', periodKey),
     ]);
+
+    if (profileRes.error) throw profileRes.error;
+    if (subRes.error) throw subRes.error;
+    if (usageRes.error) throw usageRes.error;
+
+    const subscription = subRes.data as DbUserSubscription | null;
+    const planId = normalizePlanId(
+      (subscription?.plan_id as PlanId | undefined) ??
+      (profileRes.data?.plan_id as PlanId | undefined) ??
+      'free'
+    );
     const status =
+      (subscription?.status as SubscriptionStatus | undefined) ??
       (profileRes.data?.subscription_status as SubscriptionStatus | undefined) ??
-      (subRes.data as DbUserSubscription | null)?.status ??
       'active';
+
+    const entRes = await supabase
+      .from('plan_entitlements')
+      .select('feature_key, limit_value, period')
+      .eq('plan_id', planId);
+
+    /*
+     * user_subscriptions is the authority. profiles keeps a denormalized copy
+     * for display and older queries; the DB trigger in migration 010 also keeps
+     * it aligned, but this repair covers clients opened before that trigger ran.
+     */
+    if (
+      profileRes.data &&
+      (
+        profileRes.data.plan_id !== planId ||
+        profileRes.data.subscription_status !== status
+      )
+    ) {
+      void supabase
+        .from('profiles')
+        .update({ plan_id: planId, subscription_status: status })
+        .eq('id', userId);
+    }
+
+    if (!subscription) {
+      void supabase
+        .from('user_subscriptions')
+        .insert({ user_id: userId, plan_id: planId, status });
+    }
+
+    if (entRes.error) throw entRes.error;
 
     const limits: Partial<Record<FeatureKey, number | null>> = {};
     for (const row of (entRes.data ?? []) as EntitlementRow[]) {
@@ -125,7 +186,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     set({
       planId,
       status,
-      expiresAt: (subRes.data as DbUserSubscription | null)?.expires_at ?? null,
+      expiresAt: subscription?.expires_at ?? null,
       limits,
       usage,
       isReady: true,

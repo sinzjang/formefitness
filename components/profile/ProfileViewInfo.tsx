@@ -1,4 +1,4 @@
-// 프로필 정보 — 읽기 전용 (단일 박스 · 2행)
+// 프로필 정보 — 읽기 전용 (단일 박스 · 1행)
 import { View, Text, StyleSheet } from 'react-native';
 import type { Language } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
@@ -40,60 +40,44 @@ export function ProfileViewInfo({ lang }: ProfileViewInfoProps) {
 
   return (
     <View style={styles.card}>
-      <View style={styles.row}>
-        <InfoCell label={t('profileCountry', lang)} value={countryVal} muted={!country.trim()} />
-        <Divider />
-        <InfoCell label={t('profileCity', lang)} value={cityVal} muted={!region.trim()} />
-        <Divider />
-        <InfoCell label={t('language', lang)} value={langVal} />
-      </View>
-
-      <View style={styles.rowDivider} />
-
-      <View style={styles.row}>
-        <InfoCell
-          label={t('profileHeight', lang)}
-          value={heightVal}
-          muted={bodyHeight == null}
-          wide
-        />
-        <Divider />
-        <InfoCell
+      <View style={styles.metaRow}>
+        <MetaItem label={t('profileCountry', lang)} value={countryVal} muted={!country.trim()} />
+        <Text style={styles.metaPipe}>|</Text>
+        <MetaItem label={t('profileCity', lang)} value={cityVal} muted={!region.trim()} />
+        <Text style={styles.metaPipe}>|</Text>
+        <MetaItem label={t('language', lang)} value={langVal} />
+        <Text style={styles.metaPipe}>|</Text>
+        <MetaItem label={t('profileHeight', lang)} value={heightVal} muted={bodyHeight == null} />
+        <Text style={styles.metaPipe}>|</Text>
+        <MetaItem
           label={t('profileWeight', lang)}
           value={weightVal}
           muted={hideWeight || bodyWeight == null}
-          wide
         />
       </View>
     </View>
   );
 }
 
-function InfoCell({
+function MetaItem({
   label,
   value,
   muted,
-  wide,
 }: {
   label: string;
   value: string;
   muted?: boolean;
-  wide?: boolean;
 }) {
   return (
-    <View style={[styles.cell, wide && styles.cellWide]}>
-      <Text style={styles.cellLabel} numberOfLines={1}>
+    <View style={styles.metaItem}>
+      <Text style={styles.metaLabel} numberOfLines={1}>
         {label}
       </Text>
-      <Text style={[styles.cellValue, muted && styles.cellValueMuted]} numberOfLines={1}>
+      <Text style={[styles.metaValue, muted && styles.cellValueMuted]} numberOfLines={1}>
         {value}
       </Text>
     </View>
   );
-}
-
-function Divider() {
-  return <View style={styles.pipe} />;
 }
 
 const styles = StyleSheet.create({
@@ -101,51 +85,44 @@ const styles = StyleSheet.create({
     borderWidth: layout.borderWidth,
     borderColor: colors.border,
     borderRadius: layout.cardRadius,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
     backgroundColor: colors.surface,
     marginBottom: 20,
   },
-  row: {
+  metaRow: {
     flexDirection: 'row',
-    alignItems: 'stretch',
+    alignItems: 'center',
   },
-  rowDivider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.border,
-    marginVertical: 10,
-  },
-  cell: {
+  metaItem: {
     flex: 1,
     minWidth: 0,
     alignItems: 'center',
-    paddingHorizontal: 4,
   },
-  cellWide: {
-    flex: 1,
-  },
-  cellLabel: {
+  metaLabel: {
     ...typography.caption,
     textTransform: 'uppercase',
-    letterSpacing: 0.4,
+    fontSize: 7,
+    lineHeight: 9,
+    letterSpacing: 0,
     color: colors.textMuted,
-    marginBottom: 4,
+    marginBottom: 2,
     textAlign: 'center',
   },
-  cellValue: {
+  metaValue: {
     ...typography.listItem,
-    fontSize: 13,
+    fontSize: 9,
+    lineHeight: 11,
     color: colors.textPrimary,
     textAlign: 'center',
+  },
+  metaPipe: {
+    ...typography.caption,
+    color: colors.textMuted,
+    marginHorizontal: 2,
   },
   cellValueMuted: {
     color: colors.textMuted,
     fontStyle: 'italic',
-  },
-  pipe: {
-    width: StyleSheet.hairlineWidth,
-    backgroundColor: colors.border,
-    marginHorizontal: 6,
-    alignSelf: 'stretch',
   },
 });

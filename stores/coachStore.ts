@@ -15,6 +15,7 @@ import { useCoachWorkoutContextStore } from './coachWorkoutContextStore';
 import { useBodyProfileStore } from './bodyProfileStore';
 import { getCoachUserDisplayName } from './profilePrefsStore';
 import { toLocalDateKey } from '../lib/dates';
+import { analyzeFormCheck, type FormCheckFrame } from '../lib/formCheck';
 
 const MAX_USER_MESSAGE = 500;
 
@@ -83,6 +84,13 @@ interface CoachState {
   error: string | null;
   appendMessage: (msg: CoachMessage) => void;
   sendUserMessage: (text: string) => Promise<void>;
+  sendFormCheck: (params: {
+    mediaKind: 'photo' | 'video';
+    frames: FormCheckFrame[];
+    exerciseName?: string;
+    target?: string;
+    userQuestion?: string;
+  }) => Promise<void>;
   fetchDailyGreetingIfNeeded: () => Promise<void>;
   onLanguageChanged: (lang: Language) => void;
   clearError: () => void;
@@ -209,6 +217,69 @@ export const useCoachStore = create<CoachState>()(
               : lang === 'ko'
                 ? '잠시 연결에 문제가 있어요. 다시 시도해 주세요.'
                 : 'Connection issue. Please try again.';
+
+          set((state) => ({
+            messages: [
+              ...state.messages,
+              {
+                id: makeId(),
+                role: 'coach',
+                text: errText,
+                createdAt: new Date().toISOString(),
+              },
+            ],
+            isLoading: false,
+            error: e instanceof Error ? e.message : 'unknown',
+          }));
+        }
+      },
+
+      sendFormCheck: async (params) => {
+        if (get().isLoading || params.frames.length === 0) return;
+
+        const lang = useSettingsStore.getState().language;
+        const userText =
+          lang === 'ko'
+            ? `📎 Form Check ${params.mediaKind === 'video' ? `영상 프레임 ${params.frames.length}개` : '사진'}를 보냈어요.`
+            : `📎 Sent a Form Check ${params.mediaKind === 'video' ? `${params.frames.length} video frames` : 'photo'}.`;
+
+        const userMsg: CoachMessage = {
+          id: makeId(),
+          role: 'user',
+          text: userText,
+          createdAt: new Date().toISOString(),
+        };
+
+        set((state) => ({
+          messages: [...state.messages, userMsg],
+          isLoading: true,
+          error: null,
+        }));
+
+        try {
+          const result = await analyzeFormCheck({
+            language: lang,
+            ...params,
+          });
+          const coachMsg: CoachMessage = {
+            id: makeId(),
+            role: 'coach',
+            text: result,
+            createdAt: new Date().toISOString(),
+          };
+          set((state) => ({
+            messages: [...state.messages, coachMsg],
+            isLoading: false,
+          }));
+        } catch (e) {
+          const errText =
+            e instanceof Error && e.message === 'API_KEY_MISSING'
+              ? lang === 'ko'
+                ? 'Form Check를 분석하려면 AI 코치 API 키가 필요해요. 프로필 → 설정에서 키를 입력해 주세요.'
+                : 'Form Check needs an AI coach API key. Open Profile → Settings to add one.'
+              : lang === 'ko'
+                ? 'Form Check 분석 중 문제가 있었어요. 프레임 수를 줄이거나 다시 시도해 주세요.'
+                : 'There was a problem analyzing this Form Check. Try fewer frames or try again.';
 
           set((state) => ({
             messages: [

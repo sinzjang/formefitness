@@ -7,6 +7,11 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface VisionImageInput {
+  base64: string;
+  mediaType?: 'image/jpeg' | 'image/png' | 'image/webp';
+}
+
 async function callOpenAi(
   apiKey: string,
   model: string,
@@ -111,6 +116,115 @@ export async function sendChatCompletion(
   const { provider, apiKey, model } = getActiveAiConfig();
   if (!apiKey) throw new Error('API_KEY_MISSING');
   return dispatch(provider, apiKey, model, system, messages, maxTokens);
+}
+
+export async function sendVisionCompletion(
+  system: string,
+  prompt: string,
+  images: VisionImageInput[],
+  maxTokens = 1200
+): Promise<string> {
+  const { provider, apiKey, model } = getActiveAiConfig();
+  if (!apiKey) throw new Error('API_KEY_MISSING');
+
+  switch (provider) {
+    case 'claude': {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: maxTokens,
+          system,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                ...images.map((image) => ({
+                  type: 'image',
+                  source: {
+                    type: 'base64',
+                    media_type: image.mediaType ?? 'image/jpeg',
+                    data: image.base64,
+                  },
+                })),
+                { type: 'text', text: prompt },
+              ],
+            },
+          ],
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      return String(data.content?.[0]?.text ?? '');
+    }
+    case 'openai': {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: maxTokens,
+          messages: [
+            { role: 'system', content: system },
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                ...images.map((image) => ({
+                  type: 'image_url',
+                  image_url: {
+                    url: `data:${image.mediaType ?? 'image/jpeg'};base64,${image.base64}`,
+                    detail: 'low',
+                  },
+                })),
+              ],
+            },
+          ],
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      return String(data.choices?.[0]?.message?.content ?? '');
+    }
+    case 'gemini': {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: system }] },
+            contents: [
+              {
+                role: 'user',
+                parts: [
+                  { text: prompt },
+                  ...images.map((image) => ({
+                    inlineData: {
+                      mimeType: image.mediaType ?? 'image/jpeg',
+                      data: image.base64,
+                    },
+                  })),
+                ],
+              },
+            ],
+            generationConfig: { maxOutputTokens: maxTokens },
+          }),
+        }
+      );
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      return String(data.candidates?.[0]?.content?.parts?.[0]?.text ?? '');
+    }
+  }
 }
 
 /** 설정 화면 — 특정 프로바이더 키 유효성 간단 체크 */

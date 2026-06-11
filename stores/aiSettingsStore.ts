@@ -2,12 +2,31 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { AiProvider } from '../types/ai';
+import type { AiModelOption, AiProvider } from '../types/ai';
 
 const DEFAULT_MODELS: Record<AiProvider, string> = {
-  openai: 'gpt-4o-mini',
+  openai: 'gpt-4.1-mini',
   claude: process.env.EXPO_PUBLIC_ANTHROPIC_MODEL ?? 'claude-sonnet-4-6',
-  gemini: 'gemini-2.0-flash',
+  gemini: 'gemini-2.5-flash',
+};
+
+export const AI_MODEL_OPTIONS: Record<AiProvider, AiModelOption[]> = {
+  openai: [
+    { id: 'gpt-4.1-mini', label: 'GPT-4.1 mini' },
+    { id: 'gpt-4.1', label: 'GPT-4.1' },
+    { id: 'gpt-4o-mini', label: 'GPT-4o mini' },
+    { id: 'gpt-4o', label: 'GPT-4o' },
+  ],
+  claude: [
+    { id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
+    { id: 'claude-haiku-4-5', label: 'Claude Haiku 4.5' },
+    { id: 'claude-opus-4-1', label: 'Claude Opus 4.1' },
+  ],
+  gemini: [
+    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+    { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
+    { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
+  ],
 };
 
 const ENV_KEYS: Record<AiProvider, string | undefined> = {
@@ -56,6 +75,10 @@ export function resolveApiKey(provider: AiProvider): string {
 export function resolveModel(provider: AiProvider): string {
   const { models } = useAiSettingsStore.getState();
   return models[provider]?.trim() || DEFAULT_MODELS[provider];
+}
+
+export function isPresetModel(provider: AiProvider, model: string): boolean {
+  return AI_MODEL_OPTIONS[provider].some((option) => option.id === model.trim());
 }
 
 export function getActiveAiConfig() {

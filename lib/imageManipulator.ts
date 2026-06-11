@@ -77,6 +77,26 @@ export async function cropImageRect(
   return result.uri;
 }
 
+/** 선택한 원본 이미지를 앱 캐시의 JPEG로 정규화 — iOS PhotoKit representation 오류 완화 */
+export async function normalizeImageToJpeg(
+  uri: string,
+  options?: { maxWidth?: number; showAlert?: boolean }
+): Promise<string | null> {
+  const ImageManipulator = getImageManipulatorModule();
+  if (!ImageManipulator) {
+    if (options?.showAlert) showManipulatorUnavailableAlert();
+    return null;
+  }
+
+  const actions = options?.maxWidth ? [{ resize: { width: options.maxWidth } }] : [];
+  const result = await ImageManipulator.manipulateAsync(uri, actions, {
+    compress: 0.9,
+    format: ImageManipulator.SaveFormat.JPEG,
+  });
+
+  return result.uri;
+}
+
 /** URI → JPEG base64 (리사이즈 가능 시 800px, 모듈 없으면 원본) */
 export async function imageUriToBase64Jpeg(
   uri: string,

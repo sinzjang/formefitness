@@ -1,8 +1,8 @@
 // 운동 카탈로그 + 커스텀 운동 통합 헬퍼
-import type { CustomExercise, Gear, Language, MuscleGroup, WorkoutExercise } from '../types';
+import type { CustomExercise, Gear, Language, MuscleGroup, ResistanceType, WorkoutExercise } from '../types';
 import { EXERCISES, type ExerciseDef } from '../constants/exercises';
 import { getCatalogExerciseDbId } from '../constants/exerciseDbCatalogIds';
-import { resistanceToGear } from '../constants/gears';
+import { gearToResistance, resistanceToGear } from '../constants/gears';
 import { mergeCatalogExerciseMeta, normalizeExerciseMeta } from './exerciseMeta';
 import { resolveExerciseKoName } from './exerciseKo';
 import type { CatalogExercisePref } from '../stores/exerciseCatalogPrefsStore';
@@ -19,6 +19,10 @@ export function customToExerciseDef(c: CustomExercise): ExerciseDef {
     stabilizer: [],
     isCustom: true,
     customId: c.id,
+    gifUrl: c.mediaUri,
+    mediaUri: c.mediaUri,
+    mediaType: c.mediaType,
+    measurementType: c.measurementType ?? 'weight',
     is_active: c.is_active ?? true,
     is_favorite: c.is_favorite ?? false,
   };
@@ -74,6 +78,13 @@ export function isCatalogExercise(ex: ExerciseDef): boolean {
 export function exerciseDisplayName(ex: ExerciseDef, lang: Language): string {
   if (ex.isCustom) return ex.name;
   return lang === 'en' ? ex.nameEn : ex.name;
+}
+
+export function exerciseResistanceType(ex: ExerciseDef): ResistanceType {
+  if (ex.measurementType === 'weight') return 'weight';
+  if (ex.measurementType === 'bodyweight') return 'bodyweight';
+  if (ex.measurementType === 'level') return 'band';
+  return gearToResistance(ex.gear);
 }
 
 /** RapidAPI GIF id — ExerciseDef.exerciseDbId 우선 */

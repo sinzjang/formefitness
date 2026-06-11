@@ -1,6 +1,7 @@
 // AI 코치 채팅 (플로팅 말풍선 / 인라인)
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   View,
   Text,
   ScrollView,
@@ -19,6 +20,9 @@ import { CoachMessageBubble, CoachTypingIndicator } from './CoachMessageBubble';
 import { CoachChatInput } from './CoachChatInput';
 import { CoachQuickPrompts } from './CoachQuickPrompts';
 import { CoachAvatar } from './CoachAvatar';
+import { VideoFrameSelectorModal } from './VideoFrameSelectorModal';
+import { pickImageFromLibrary, pickVideoFromLibrary, type PickedVideo } from '../../lib/pickImage';
+import type { FormCheckFrame } from '../../lib/formCheck';
 
 interface CoachChatProps {
   lang: Language;
@@ -36,8 +40,10 @@ export function CoachChat({
   const messages = useCoachStore((s) => s.messages);
   const isLoading = useCoachStore((s) => s.isLoading);
   const sendUserMessage = useCoachStore((s) => s.sendUserMessage);
+  const sendFormCheck = useCoachStore((s) => s.sendFormCheck);
   const onLanguageChanged = useCoachStore((s) => s.onLanguageChanged);
   const goalImageUrl = useUserStore((s) => s.profile?.goalImageUrl);
+  const [videoTarget, setVideoTarget] = useState<PickedVideo | null>(null);
 
   const scrollRef = useRef<ScrollView>(null);
   const isFloating = variant === 'floating';
@@ -53,6 +59,43 @@ export function CoachChat({
 
   const handleQuickPrompt = (text: string) => {
     void sendUserMessage(text);
+  };
+
+  const handleAttachPhoto = async () => {
+    const picked = await pickImageFromLibrary();
+    if (!picked) return;
+    void sendFormCheck({
+      mediaKind: 'photo',
+      frames: [{ uri: picked.uri, label: 'Photo' }],
+    });
+  };
+
+  const handleAttachVideo = async () => {
+    const picked = await pickVideoFromLibrary();
+    if (!picked) return;
+    setVideoTarget(picked);
+  };
+
+  const handleAttach = () => {
+    Alert.alert(
+      'Form Check',
+      lang === 'ko'
+        ? '코치에게 보낼 미디어를 선택하세요.'
+        : 'Choose media to send to your coach.',
+      [
+        { text: lang === 'ko' ? '사진' : 'Photo', onPress: () => void handleAttachPhoto() },
+        { text: lang === 'ko' ? '영상' : 'Video', onPress: () => void handleAttachVideo() },
+        { text: t('cancel', lang), style: 'cancel' },
+      ]
+    );
+  };
+
+  const handleVideoFramesSend = (frames: FormCheckFrame[]) => {
+    setVideoTarget(null);
+    void sendFormCheck({
+      mediaKind: 'video',
+      frames,
+    });
   };
 
   return (
@@ -104,7 +147,17 @@ export function CoachChat({
         lang={lang}
         disabled={isLoading}
         onSend={sendUserMessage}
+        onAttach={handleAttach}
         compact={isFloating}
+      />
+
+      <VideoFrameSelectorModal
+        visible={!!videoTarget}
+        videoUri={videoTarget?.uri ?? null}
+        durationMs={videoTarget?.durationMs}
+        lang={lang}
+        onClose={() => setVideoTarget(null)}
+        onSend={handleVideoFramesSend}
       />
     </KeyboardAvoidingView>
   );

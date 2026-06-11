@@ -40,6 +40,9 @@ export interface DbCustomExerciseRow {
   name: string;
   muscle_group: string;
   gear: string;
+  measurement_type?: string | null;
+  media_uri?: string | null;
+  media_type?: string | null;
   is_active: boolean | null;
   is_favorite: boolean | null;
   created_at: string;
@@ -159,6 +162,9 @@ export function dbCustomExerciseToApp(row: DbCustomExerciseRow): CustomExercise 
     name: row.name,
     muscleGroup: row.muscle_group as CustomExercise['muscleGroup'],
     gear: row.gear as CustomExercise['gear'],
+    measurementType: row.measurement_type as CustomExercise['measurementType'],
+    mediaUri: row.media_uri ?? undefined,
+    mediaType: row.media_type as CustomExercise['mediaType'],
     createdAt: row.created_at,
     is_active: row.is_active ?? true,
     is_favorite: row.is_favorite ?? false,
@@ -175,6 +181,9 @@ export function appCustomExerciseToDb(
     name: exercise.name,
     muscle_group: exercise.muscleGroup,
     gear: exercise.gear,
+    measurement_type: exercise.measurementType ?? 'weight',
+    media_uri: exercise.mediaUri ?? null,
+    media_type: exercise.mediaType ?? null,
     is_active: exercise.is_active ?? true,
     is_favorite: exercise.is_favorite ?? false,
     created_at: exercise.createdAt,

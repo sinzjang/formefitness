@@ -1,22 +1,22 @@
 // 채팅 메시지 버블
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   View,
   Text,
   StyleSheet,
-  ActivityIndicator,
   Pressable,
   Modal,
   ScrollView,
   TextInput,
+  Animated,
 } from 'react-native';
 import type { CoachMessage, CoachName, Language, RestSeconds, RoutineExerciseEntry } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
 import { EXERCISES, exerciseLocalizedName, exerciseName, type ExerciseDef } from '../../constants/exercises';
-import { gearToResistance } from '../../constants/gears';
 import { getExerciseKey } from '../../lib/exerciseKey';
 import { resolveExerciseKoName } from '../../lib/exerciseKo';
+import { exerciseResistanceType } from '../../lib/exerciseCatalog';
 import { t } from '../../lib/i18n';
 import { CoachAvatar } from './CoachAvatar';
 import { GoalImageCard } from './GoalImageCard';
@@ -199,7 +199,7 @@ function buildRoutineExerciseEntry(
     exerciseKey: getExerciseKey(localized, exercise.customId),
     exerciseName: localized,
     muscleGroup: exercise.muscleGroup,
-    resistanceType: gearToResistance(exercise.gear),
+    resistanceType: exerciseResistanceType(exercise),
     defaultRestSeconds,
     customId: exercise.customId,
   };
@@ -556,11 +556,50 @@ function CoachExerciseSuggestionActions({ messageText }: { messageText: string }
 }
 
 export function CoachTypingIndicator({ coachName }: { coachName: CoachName }) {
+  const dotOpacities = useRef([
+    new Animated.Value(0.35),
+    new Animated.Value(0.35),
+    new Animated.Value(0.35),
+  ]).current;
+
+  useEffect(() => {
+    const loops = dotOpacities.map((opacity, index) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(index * 140),
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 260,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacity, {
+            toValue: 0.35,
+            duration: 260,
+            useNativeDriver: true,
+          }),
+          Animated.delay((dotOpacities.length - index - 1) * 140),
+        ])
+      )
+    );
+
+    loops.forEach((loop) => loop.start());
+    return () => {
+      loops.forEach((loop) => loop.stop());
+    };
+  }, [dotOpacities]);
+
   return (
     <View style={styles.row}>
       <CoachAvatar coachName={coachName} size={32} />
       <View style={[styles.bubble, styles.bubbleCoach, styles.typing]}>
-        <ActivityIndicator size="small" color={colors.textSecondary} />
+        <View style={styles.typingDots}>
+          {dotOpacities.map((opacity, index) => (
+            <Animated.View
+              key={`typing-dot-${index}`}
+              style={[styles.typingDot, { opacity }]}
+            />
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -740,8 +779,21 @@ const styles = StyleSheet.create({
     color: colors.background,
   },
   typing: {
-    paddingVertical: 14,
+    flex: 0,
+    paddingHorizontal: 13,
+    paddingVertical: 12,
     alignItems: 'center',
-    minWidth: 56,
+    minWidth: 58,
+  },
+  typingDots: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  typingDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.textSecondary,
   },
 });

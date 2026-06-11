@@ -39,10 +39,13 @@ export default (): ExpoConfig => ({
         'Formé가 Goal 설정, 프로필, 피드에 사진을 선택하기 위해 사진 라이브러리에 접근합니다.',
       NSCameraUsageDescription:
         'Formé가 Goal 설정과 프로필 사진을 촬영하기 위해 카메라에 접근합니다.',
+      NSMicrophoneUsageDescription:
+        'Formé가 자세 확인 영상을 촬영할 때 오디오 권한이 필요할 수 있습니다.',
     },
   },
   android: {
     package: 'com.forme.fitness',
+    permissions: ['com.android.vending.BILLING'],
     adaptiveIcon: {
       foregroundImage: APP_ICON,
       backgroundColor: '#FFFFFF',
@@ -55,6 +58,7 @@ export default (): ExpoConfig => ({
     'expo-router',
     'expo-dev-client',
     'expo-apple-authentication',
+    'expo-video',
     [
       'expo-splash-screen',
       {

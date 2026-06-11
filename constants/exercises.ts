@@ -1,7 +1,7 @@
 // 운동 종목 카탈로그 — exercisedb_full.json → forme_exercise_catalog.json
 // 갱신: npm run exercisedb:catalog
 // 한국어 표시명: src/data/ko.json (lib/exerciseKo.ts)
-import type { Gear, Language, MuscleGroup } from '../types';
+import type { ExerciseMeasurementType, ExerciseMediaType, Gear, Language, MuscleGroup } from '../types';
 import catalog from '../src/data/forme_exercise_catalog.json';
 
 export { exerciseLocalizedName } from '../lib/exerciseKo';
@@ -20,6 +20,9 @@ export interface ExerciseDef {
   exerciseDbId?: string;
   /** GitHub CDN GIF — 모달 재생용 (RapidAPI 실패 시 fallback) */
   gifUrl?: string;
+  measurementType?: ExerciseMeasurementType;
+  mediaUri?: string;
+  mediaType?: ExerciseMediaType;
   /** false면 Add Exercise 리스트에서 숨김 */
   is_active?: boolean;
   is_favorite?: boolean;

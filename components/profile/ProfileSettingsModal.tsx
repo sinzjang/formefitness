@@ -19,7 +19,11 @@ import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import { Icon } from '../ui/Icon';
 import { useSettingsStore } from '../../stores/settingsStore';
-import { useAiSettingsStore } from '../../stores/aiSettingsStore';
+import {
+  AI_MODEL_OPTIONS,
+  isPresetModel,
+  useAiSettingsStore,
+} from '../../stores/aiSettingsStore';
 import { testProviderConnection } from '../../lib/aiProvider';
 
 const PROVIDER_LABEL: Record<AiProvider, string> = {
@@ -127,15 +131,51 @@ export function ProfileSettingsModal({ visible, lang, onClose }: ProfileSettings
                 secureTextEntry
               />
               <Text style={styles.fieldLabel}>{t('settingsApiModel', lang)}</Text>
-              <TextInput
-                style={styles.input}
-                value={models[p]}
-                onChangeText={(v) => setModel(p, v)}
-                placeholder="model-id"
-                placeholderTextColor={colors.textMuted}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
+              <View style={styles.modelGrid}>
+                {AI_MODEL_OPTIONS[p].map((option) => {
+                  const active = models[p] === option.id;
+                  return (
+                    <Pressable
+                      key={option.id}
+                      style={[styles.modelChip, active && styles.modelChipActive]}
+                      onPress={() => setModel(p, option.id)}
+                    >
+                      <Text style={[styles.modelChipText, active && styles.modelChipTextActive]}>
+                        {option.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+                <Pressable
+                  style={[
+                    styles.modelChip,
+                    !isPresetModel(p, models[p]) && styles.modelChipActive,
+                  ]}
+                  onPress={() => {
+                    if (isPresetModel(p, models[p])) setModel(p, '');
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.modelChipText,
+                      !isPresetModel(p, models[p]) && styles.modelChipTextActive,
+                    ]}
+                  >
+                    Custom
+                  </Text>
+                </Pressable>
+              </View>
+              {!isPresetModel(p, models[p]) && (
+                <TextInput
+                  style={styles.input}
+                  value={models[p]}
+                  onChangeText={(v) => setModel(p, v)}
+                  placeholder="custom-model-id"
+                  placeholderTextColor={colors.textMuted}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+              )}
               <Pressable
                 style={styles.testBtn}
                 onPress={() => void handleTest(p)}
@@ -273,6 +313,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: colors.background,
+  },
+  modelGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  modelChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+  },
+  modelChipActive: {
+    backgroundColor: colors.textPrimary,
+    borderColor: colors.textPrimary,
+  },
+  modelChipText: {
+    ...typography.caption,
+    fontFamily: typography.listItem.fontFamily,
+    color: colors.textSecondary,
+  },
+  modelChipTextActive: {
+    color: colors.background,
   },
   testBtn: {
     alignSelf: 'flex-start',

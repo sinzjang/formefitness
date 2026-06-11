@@ -12,11 +12,12 @@ interface CoachChatInputProps {
   lang: Language;
   disabled?: boolean;
   onSend: (text: string) => void;
+  onAttach?: () => void;
   /** 플로팅 말풍선 — 좁은 패널용 패딩 */
   compact?: boolean;
 }
 
-export function CoachChatInput({ lang, disabled, onSend, compact }: CoachChatInputProps) {
+export function CoachChatInput({ lang, disabled, onSend, onAttach, compact }: CoachChatInputProps) {
   const [text, setText] = useState('');
 
   const handleSend = () => {
@@ -28,6 +29,15 @@ export function CoachChatInput({ lang, disabled, onSend, compact }: CoachChatInp
 
   return (
     <View style={[styles.wrap, compact && styles.wrapCompact]}>
+      {onAttach ? (
+        <Pressable
+          style={[styles.attachBtn, disabled && styles.sendBtnDisabled]}
+          onPress={onAttach}
+          disabled={disabled}
+        >
+          <Icon name="add" size={20} color={colors.textPrimary} />
+        </Pressable>
+      ) : null}
       <TextInput
         style={styles.input}
         placeholder={t('coachInputPlaceholder', lang)}
@@ -76,6 +86,16 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 20,
     backgroundColor: colors.surface,
+  },
+  attachBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sendBtn: {
     width: 36,

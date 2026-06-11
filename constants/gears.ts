@@ -16,12 +16,14 @@ export const GEARS: GearDef[] = [
   { id: 'Machine', label: 'Machine' },
   { id: 'Plate', label: 'Plate' },
   { id: 'Band', label: 'Band' },
+  { id: 'Nova', label: 'Nova' },
+  { id: 'Other', label: 'Other' },
 ];
 
 // Gear → 저항 타입 파생 (운동 입력 방식 결정)
 export const gearToResistance = (gear: Gear): ResistanceType => {
   if (gear === 'Body') return 'bodyweight';
-  if (gear === 'Band') return 'band';
+  if (gear === 'Band' || gear === 'Nova') return 'band';
   return 'weight';
 };
 
