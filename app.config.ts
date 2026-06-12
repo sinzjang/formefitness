@@ -62,6 +62,18 @@ export default (): ExpoConfig => ({
     'expo-apple-authentication',
     'expo-video',
     [
+      'expo-build-properties',
+      {
+        ios: {
+          // AppCheckCore(GoogleSignIn 의존) Swift pod의 modular headers 활성화
+          extraPods: [
+            { name: 'GoogleUtilities', modular_headers: true },
+            { name: 'RecaptchaInterop', modular_headers: true },
+          ],
+        },
+      },
+    ],
+    [
       'expo-splash-screen',
       {
         image: SPLASH_LOGO,
