@@ -16,9 +16,13 @@ import {
 } from '@expo-google-fonts/barlow';
 import { colors } from '../constants/theme';
 import { useAuthStore } from '../stores/authStore';
+import { configureRevenueCat } from '../lib/revenueCat';
 
 // 폰트 로딩 전까지 스플래시 유지
 SplashScreen.preventAutoHideAsync();
+
+// RevenueCat SDK는 모듈 로드 시 1회 초기화
+configureRevenueCat();
 
 export default function RootLayout() {
   const authReady = useAuthStore((s) => s.isReady);

@@ -63,6 +63,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         await useSubscriptionStore.getState().refresh(user.id);
         const { syncWorkoutOnLogin } = await import('../lib/sync/workoutSync');
         await syncWorkoutOnLogin(user.id);
+        const { rcLogIn } = await import('../lib/revenueCat');
+        void rcLogIn(user.id);
       }
 
       set({ session, user, profile, isReady: true, error: null });
@@ -80,6 +82,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
               await useSubscriptionStore.getState().refresh(nextUser.id);
               const { syncWorkoutOnLogin } = await import('../lib/sync/workoutSync');
               await syncWorkoutOnLogin(nextUser.id);
+              const { rcLogIn } = await import('../lib/revenueCat');
+              void rcLogIn(nextUser.id);
             } catch (e) {
               const msg = e instanceof Error ? e.message : '프로필 로드 실패';
               set({ error: msg });
@@ -89,6 +93,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             await clearLocalWorkoutData();
             useUserStore.getState().clear();
             useSubscriptionStore.getState().reset();
+            const { rcLogOut } = await import('../lib/revenueCat');
+            void rcLogOut();
           }
 
           set({
@@ -124,6 +130,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await clearLocalWorkoutData();
     useUserStore.getState().clear();
     useSubscriptionStore.getState().reset();
+    const { rcLogOut } = await import('../lib/revenueCat');
+    void rcLogOut();
     set({ session: null, user: null, profile: null });
   },
 }));

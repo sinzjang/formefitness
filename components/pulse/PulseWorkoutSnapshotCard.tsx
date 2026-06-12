@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, typography } from '../../constants/theme';
 import { useRoutineStore } from '../../stores/routineStore';
@@ -27,12 +28,17 @@ function toRoutineExercise(exercise: PulseWorkoutExerciseSummary): RoutineExerci
 }
 
 export function PulseWorkoutSnapshotCard({ snapshot, lang }: PulseWorkoutSnapshotCardProps) {
-  const routines = useRoutineStore((state) =>
-    state.routines
-      .filter((routine) => routine.is_active !== false)
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-  );
+  // 원본 배열만 구독하고 filter/sort는 useMemo로 처리 — 셀렉터에서 새 배열 반환 시 무한루프 방지
+  const rawRoutines = useRoutineStore((state) => state.routines);
   const addExerciseToRoutine = useRoutineStore((state) => state.addExerciseToRoutine);
+
+  const routines = useMemo(
+    () =>
+      rawRoutines
+        .filter((r) => r.is_active !== false)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [rawRoutines]
+  );
 
   if (!snapshot?.exercises.length) return null;
 

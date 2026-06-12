@@ -9,6 +9,7 @@ import {
   ChevronRight,
   ChevronUp,
   Circle,
+  Crown,
   Dumbbell,
   Grid3X3,
   Home,
@@ -63,7 +64,8 @@ export type IconName =
   | 'body'
   | 'video'
   | 'check-circle'
-  | 'circle';
+  | 'circle'
+  | 'crown';
 
 const ICONS: Record<IconName, LucideIcon> = {
   home: Home,
@@ -96,6 +98,7 @@ const ICONS: Record<IconName, LucideIcon> = {
   video: Video,
   'check-circle': CheckCircle2,
   circle: Circle,
+  crown: Crown,
 };
 
 export interface IconProps {
