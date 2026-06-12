@@ -41,6 +41,8 @@ export default (): ExpoConfig => ({
         'Formé가 Goal 설정과 프로필 사진을 촬영하기 위해 카메라에 접근합니다.',
       NSMicrophoneUsageDescription:
         'Formé가 자세 확인 영상을 촬영할 때 오디오 권한이 필요할 수 있습니다.',
+      // 표준 Apple 암호화만 사용 — App Store 수출 규정 준수 선언
+      ITSAppUsesNonExemptEncryption: false,
     },
   },
   android: {
