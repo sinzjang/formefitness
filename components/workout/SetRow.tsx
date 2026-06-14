@@ -9,7 +9,7 @@ import { colors, typography, fonts } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import { useLanguage } from '../../stores/settingsStore';
 
-const BAND_LEVELS: BandLevel[] = ['Light', 'Medium', 'Heavy', 'X-Heavy'];
+const BAND_LEVELS: BandLevel[] = ['Lvl 1', 'Lvl 2', 'Lvl 3', 'Lvl 4'];
 
 interface SetRowProps {
   set: SetData;

@@ -185,6 +185,17 @@ function ExerciseDetailSheetContent({
           </Pressable>
         </View>
 
+        {/* Add 버튼 — 스크롤 밖 상단 고정 */}
+        {onAdd && (
+          <Pressable
+            style={({ pressed }) => [styles.sheetAdd, pressed && styles.sheetAddPressed]}
+            onPress={() => onAdd(exercise)}
+          >
+            <Icon name="add" size={20} color={colors.background} />
+            <Text style={styles.sheetAddText}>{t('addExercise', lang)}</Text>
+          </Pressable>
+        )}
+
         <ScrollView
           style={styles.sheetScroll}
           contentContainerStyle={styles.sheetScrollContent}
@@ -261,16 +272,6 @@ function ExerciseDetailSheetContent({
               </View>
             ))}
           </ScrollView>
-
-          {onAdd && (
-            <Pressable
-              style={({ pressed }) => [styles.sheetAdd, pressed && styles.sheetAddPressed]}
-              onPress={() => onAdd(exercise)}
-            >
-              <Icon name="add" size={20} color={colors.background} />
-              <Text style={styles.sheetAddText}>{t('addExercise', lang)}</Text>
-            </Pressable>
-          )}
         </ScrollView>
 
         <Modal
@@ -539,7 +540,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     borderRadius: 12,
     paddingVertical: 14,
-    marginTop: 20,
+    marginBottom: 12,
   },
   sheetAddPressed: {
     opacity: 0.85,

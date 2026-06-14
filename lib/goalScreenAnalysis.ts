@@ -9,7 +9,7 @@ import { filterSessionsBetween, getTopMuscleGroups } from './goalProgress';
 const CLAUDE_MODEL = process.env.EXPO_PUBLIC_ANTHROPIC_MODEL ?? 'claude-sonnet-4-6';
 const ANTHROPIC_API_KEY = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY ?? '';
 
-const GOAL_SCREEN_SYSTEM = `당신은 Formé Fitness AI 코치입니다.
+const GOAL_SCREEN_SYSTEM = `당신은 Kyne Fitness AI 코치입니다.
 유저의 Goal 설정과 운동 히스토리를 바탕으로 진행 상황을 분석하고 구체적인 조언을 제공합니다.
 
 규칙:

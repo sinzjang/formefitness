@@ -30,7 +30,7 @@ const TIER_PROMPTS: Record<number, string> = {
   6: 'bodybuilder physique, maximum muscle definition',
 };
 
-const ANALYSIS_SYSTEM = `You are Formé Fitness AI coach analyzing a user's goal setting.
+const ANALYSIS_SYSTEM = `You are Kyne Fitness AI coach analyzing a user's goal setting.
 Return ONLY valid JSON in this exact format:
 {
   "recommendedTier": 1,

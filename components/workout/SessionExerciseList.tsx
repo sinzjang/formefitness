@@ -67,6 +67,8 @@ export function SessionExerciseList({
       onDragEnd={({ data }) => onReorder(data)}
       activationDistance={8}
       keyboardShouldPersistTaps="handled"
+      // iOS 15+: 키보드가 올라오면 자동으로 스크롤 조정
+      automaticallyAdjustKeyboardInsets
       contentContainerStyle={contentContainerStyle}
       ListFooterComponent={listFooter ? () => <>{listFooter}</> : undefined}
     />

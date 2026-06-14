@@ -19,6 +19,7 @@ interface ProgressCalendarProps {
   dayMap: Record<string, WorkoutDayInfo>;
   onViewMonthChange: (date: Date) => void;
   onSelectDate: (date: Date) => void;
+  onAddWorkout?: (date: Date) => void;
 }
 
 export function ProgressCalendar({
@@ -28,6 +29,7 @@ export function ProgressCalendar({
   dayMap,
   onViewMonthChange,
   onSelectDate,
+  onAddWorkout,
 }: ProgressCalendarProps) {
   const matrix = getMonthMatrix(viewMonth);
   const today = new Date();
@@ -41,23 +43,37 @@ export function ProgressCalendar({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Pressable
-          style={({ pressed }) => [styles.navBtn, pressed && styles.navBtnPressed]}
-          onPress={() => shiftMonth(-1)}
-          hitSlop={8}
-          accessibilityLabel="Previous month"
-        >
-          <Icon name="chevron-back" size={20} color={colors.textPrimary} />
-        </Pressable>
-        <Text style={styles.monthLabel}>{formatMonthYear(viewMonth, lang)}</Text>
-        <Pressable
-          style={({ pressed }) => [styles.navBtn, pressed && styles.navBtnPressed]}
-          onPress={() => shiftMonth(1)}
-          hitSlop={8}
-          accessibilityLabel="Next month"
-        >
-          <Icon name="chevron-forward" size={20} color={colors.textPrimary} />
-        </Pressable>
+        {/* 왼쪽: 이전/다음 화살표 + 월 표시 */}
+        <View style={styles.headerLeft}>
+          <Pressable
+            style={({ pressed }) => [styles.navBtn, pressed && styles.navBtnPressed]}
+            onPress={() => shiftMonth(-1)}
+            hitSlop={8}
+            accessibilityLabel="Previous month"
+          >
+            <Icon name="chevron-back" size={20} color={colors.textPrimary} />
+          </Pressable>
+          <Text style={styles.monthLabel}>{formatMonthYear(viewMonth, lang)}</Text>
+          <Pressable
+            style={({ pressed }) => [styles.navBtn, pressed && styles.navBtnPressed]}
+            onPress={() => shiftMonth(1)}
+            hitSlop={8}
+            accessibilityLabel="Next month"
+          >
+            <Icon name="chevron-forward" size={20} color={colors.textPrimary} />
+          </Pressable>
+        </View>
+        {/* 오른쪽: 선택된 날짜에 운동 추가 */}
+        {onAddWorkout && (
+          <Pressable
+            style={({ pressed }) => [styles.addBtn, pressed && styles.navBtnPressed]}
+            onPress={() => onAddWorkout(selectedDate)}
+            hitSlop={8}
+            accessibilityLabel="Add workout for selected date"
+          >
+            <Icon name="add" size={22} color={colors.textPrimary} />
+          </Pressable>
+        )}
       </View>
 
       <View style={styles.weekRow}>
@@ -125,6 +141,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 12,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  addBtn: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   navBtn: {
     width: 32,

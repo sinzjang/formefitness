@@ -1,17 +1,14 @@
 // Progress 탭 — 달력 + Streak / Workout Detail 세그먼트 + Goal 배너
 import { useMemo, useState } from 'react';
-import { ScrollView, Text, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, Text, StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, typography, layout } from '../../constants/theme';
 import { t } from '../../lib/i18n';
 import { useLanguage } from '../../stores/settingsStore';
 import { useHistoryStore } from '../../stores/historyStore';
+import { useWorkoutStore } from '../../stores/workoutStore';
 import { ProgressCalendar } from '../../components/progress/ProgressCalendar';
-import {
-  ProgressSegmentTabs,
-  type ProgressPanel,
-} from '../../components/progress/ProgressSegmentTabs';
-import { StreakPanel } from '../../components/progress/StreakPanel';
 import { WorkoutDetailPanel } from '../../components/progress/WorkoutDetailPanel';
 import { GoalBanner } from '../../components/progress/GoalBanner';
 import { GoalWizardModal } from '../../components/goal/GoalWizardModal';
@@ -21,9 +18,11 @@ import { useGoalStore } from '../../stores/goalStore';
 export default function ProgressScreen() {
   const lang = useLanguage();
   const sessions = useHistoryStore((s) => s.sessions);
+  const saveManualSession = useHistoryStore((s) => s.saveManualSession);
+  const startManualSession = useWorkoutStore((s) => s.startManualSession);
+  const router = useRouter();
   const dayMap = useMemo(() => useHistoryStore.getState().getWorkoutDayMap(), [sessions]);
 
-  const [panel, setPanel] = useState<ProgressPanel>('streak');
   const [viewMonth, setViewMonth] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -36,6 +35,26 @@ export default function ProgressScreen() {
   const handleGoalPress = () => {
     if (isGoalSetup) setGoalScreenOpen(true);
     else setGoalWizardOpen(true);
+  };
+
+  const handleAddWorkout = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const isFuture = target > today;
+    if (isFuture) {
+      Alert.alert(
+        t('addManualWorkout', lang),
+        lang === 'ko' ? '미래 날짜에는 운동을 추가할 수 없습니다.' : 'Cannot add a workout for a future date.',
+        [{ text: t('cancel', lang), style: 'cancel' }]
+      );
+      return;
+    }
+    // 달력에 즉시 표시 + 앱 재시작 후에도 유지 (운동 없는 체크인)
+    saveManualSession(date);
+    // 운동 화면 열기 (운동 추가 가능, 세트 기록 시 세션 교체 저장)
+    startManualSession(date);
+    router.navigate('/(tabs)/workout');
   };
 
   const handleEditGoal = () => {
@@ -60,17 +79,15 @@ export default function ProgressScreen() {
           dayMap={dayMap}
           onViewMonthChange={setViewMonth}
           onSelectDate={setSelectedDate}
+          onAddWorkout={handleAddWorkout}
         />
 
-        <View style={styles.tabsWrap}>
-          <ProgressSegmentTabs lang={lang} value={panel} onChange={setPanel} />
-        </View>
-
-        {panel === 'streak' ? (
-          <StreakPanel lang={lang} viewMonth={viewMonth} dayMap={dayMap} />
-        ) : (
-          <WorkoutDetailPanel lang={lang} selectedDate={selectedDate} dayMap={dayMap} />
-        )}
+        <WorkoutDetailPanel
+          lang={lang}
+          selectedDate={selectedDate}
+          dayMap={dayMap}
+          sessions={sessions}
+        />
       </ScrollView>
 
       <GoalWizardModal
@@ -105,8 +122,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: layout.screenPadding,
     paddingBottom: 32,
     gap: 16,
-  },
-  tabsWrap: {
-    marginTop: 4,
   },
 });

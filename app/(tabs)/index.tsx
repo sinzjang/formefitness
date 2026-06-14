@@ -49,7 +49,7 @@ export default function HomeScreen() {
       >
         <View style={styles.header}>
           <View style={styles.headerTop}>
-            <Text style={styles.logo}>FORMÉ</Text>
+            <Text style={styles.logo}>KYNE</Text>
             {/* 구독 상태 배지 */}
             <Pressable
               style={[styles.planBadge, { backgroundColor: badge.bg }]}

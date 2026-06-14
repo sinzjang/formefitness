@@ -29,6 +29,9 @@ export interface ExerciseSessionPoint {
 interface HistoryState {
   sessions: SavedWorkoutSession[];
   saveSession: (session: WorkoutSession) => void;
+  saveManualSession: (date: Date) => void;
+  /** 달력에서 진입한 수동 세션 저장 — hasData 체크 없이, startedAt 기준 날짜 유지 */
+  saveManualLog: (session: WorkoutSession) => void;
   importBulk: (sessions: SavedWorkoutSession[]) => void;
   replaceAll: (sessions: SavedWorkoutSession[]) => void;
   updateSessionTimes: (id: string, startedAt: string, endedAt: string) => void;
@@ -71,6 +74,59 @@ export const useHistoryStore = create<HistoryState>()(
             0,
             MAX_SESSIONS
           ),
+        }));
+        void import('../lib/sync/workoutSync').then((m) => m.pushSession(saved));
+      },
+
+      saveManualLog: (session) => {
+        // 달력에서 선택한 날짜의 정오를 startedAt/endedAt으로 사용
+        const startedAt = session.startedAt ?? new Date().toISOString();
+        const endedAt = session.endedAt ?? startedAt;
+
+        const saved: SavedWorkoutSession = {
+          id: session.id,
+          startedAt,
+          endedAt,
+          locationId: session.locationId,
+          routineId: undefined,
+          exercises: session.exercises.map((ex) => {
+            // reps가 기록된 세트만 포함 — 없으면 completed:true 마커 세트 1개 생성
+            const validSets = ex.sets.filter((s) => s.reps > 0 || s.completed);
+            const sets: typeof ex.sets =
+              validSets.length > 0
+                ? validSets
+                : [{ setNumber: 1, reps: 0, completed: true }];
+            return {
+              exerciseKey: getExerciseKey(ex.exerciseName, ex.customId),
+              exerciseName: ex.exerciseName,
+              muscleGroup: ex.muscleGroup,
+              resistanceType: ex.resistanceType,
+              sets,
+            };
+          }),
+        };
+
+        set((state) => ({
+          sessions: [saved, ...state.sessions.filter((s) => s.id !== saved.id)].slice(
+            0,
+            MAX_SESSIONS
+          ),
+        }));
+        void import('../lib/sync/workoutSync').then((m) => m.pushSession(saved));
+      },
+
+      saveManualSession: (date) => {
+        const dateStr = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0).toISOString();
+        const saved: SavedWorkoutSession = {
+          id: `manual_${dateStr}`,
+          startedAt: dateStr,
+          endedAt: dateStr,
+          locationId: undefined,
+          routineId: undefined,
+          exercises: [],
+        };
+        set((state) => ({
+          sessions: [saved, ...state.sessions.filter((s) => s.id !== saved.id)].slice(0, MAX_SESSIONS),
         }));
         void import('../lib/sync/workoutSync').then((m) => m.pushSession(saved));
       },
@@ -132,7 +188,8 @@ export const useHistoryStore = create<HistoryState>()(
         const map: Record<string, WorkoutDayInfo> = {};
 
         for (const session of get().sessions) {
-          const key = isoToLocalDateKey(session.endedAt);
+          // startedAt 우선 — 수동 세션(과거 날짜)도 올바른 날짜에 표시
+          const key = isoToLocalDateKey(session.startedAt ?? session.endedAt);
           const muscles = [
             ...new Set(session.exercises.map((ex) => normalizeMuscleGroup(ex.muscleGroup))),
           ] as MuscleGroup[];

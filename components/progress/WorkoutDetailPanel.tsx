@@ -1,107 +1,185 @@
-// Progress — Workout Detail 패널 (부위별 breakdown 플레이스홀더)
-import { View, Text, StyleSheet } from 'react-native';
-import type { Language, MuscleGroup } from '../../types';
+// Progress — Workout Detail 패널 (운동한 부위 + 운동 목록 + 세트 상세)
+import { useState } from 'react';
+import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
+import type { Language, SavedWorkoutSession } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
-import { MUSCLES, muscleGroupLabel } from '../../constants/muscles';
+import { muscleGroupLabel } from '../../constants/muscles';
 import { t } from '../../lib/i18n';
-import { formatMonthYear, toLocalDateKey } from '../../lib/dates';
+import { toLocalDateKey, isoToLocalDateKey } from '../../lib/dates';
 import type { WorkoutDayInfo } from '../../stores/historyStore';
-import { MuscleBodyView } from '../workout/MuscleBodyView';
+import { useCustomExerciseStore } from '../../stores/customExerciseStore';
+import { Icon } from '../ui/Icon';
+import { ExerciseDbThumb } from '../workout/ExerciseDbThumb';
 
 interface WorkoutDetailPanelProps {
   lang: Language;
   selectedDate: Date;
   dayMap: Record<string, WorkoutDayInfo>;
+  sessions: SavedWorkoutSession[];
 }
 
-export function WorkoutDetailPanel({ lang, selectedDate, dayMap }: WorkoutDetailPanelProps) {
+export function WorkoutDetailPanel({
+  lang,
+  selectedDate,
+  dayMap,
+  sessions,
+}: WorkoutDetailPanelProps) {
   const dateKey = toLocalDateKey(selectedDate);
   const dayInfo = dayMap[dateKey];
-  const muscles = dayInfo?.muscles ?? [];
+
+  // 해당 날짜 세션들 필터링 (startedAt 우선, 없으면 endedAt)
+  const daySessions = sessions.filter(
+    (s) => isoToLocalDateKey(s.startedAt ?? s.endedAt) === dateKey
+  );
 
   const dateLabel =
     lang === 'ko'
       ? `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일`
       : selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.headerCard}>
-        <Text style={styles.dateTitle}>{dateLabel}</Text>
-        <Text style={styles.dateSub}>{formatMonthYear(selectedDate, lang)}</Text>
-      </View>
+  const yearLabel = selectedDate.getFullYear().toString();
 
-      {!dayInfo?.workedOut ? (
+  if (!dayInfo?.workedOut) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.headerCard}>
+          <Text style={styles.dateTitle}>{dateLabel}</Text>
+          <Text style={styles.dateSub}>{yearLabel}</Text>
+        </View>
         <View style={styles.emptyCard}>
           <Text style={styles.emptyTitle}>{t('progressNoWorkoutDay', lang)}</Text>
           <Text style={styles.emptyBody}>{t('progressSelectDayHint', lang)}</Text>
         </View>
-      ) : (
-        <>
-          <View style={styles.summaryCard}>
-            <Text style={styles.sectionTitle}>{t('progressMuscleBreakdown', lang)}</Text>
-            <Text style={styles.summaryHint}>{t('progressDetailComingSoon', lang)}</Text>
-          </View>
+      </View>
+    );
+  }
 
-          <View style={styles.muscleGrid}>
-            {MUSCLES.map((muscle) => {
-              const active = muscles.includes(muscle.id);
-              return (
-                <MuscleBreakdownRow
-                  key={muscle.id}
-                  lang={lang}
-                  muscleGroup={muscle.id}
-                  active={active}
-                />
-              );
-            })}
-          </View>
-        </>
+  // 운동한 근육 그룹만 (중복 제거)
+  const activeMuscles = dayInfo.muscles;
+
+  // 전체 운동 목록 (중복 없이 세션 순서대로)
+  const allExercises = daySessions.flatMap((s) => s.exercises);
+
+  return (
+    <View style={styles.container}>
+      {/* 날짜 헤더 */}
+      <View style={styles.headerCard}>
+        <Text style={styles.dateTitle}>{dateLabel}</Text>
+        <Text style={styles.dateSub}>{yearLabel}</Text>
+      </View>
+
+      {/* 운동한 근육 그룹 태그 */}
+      {activeMuscles.length > 0 && (
+        <View style={styles.muscleTags}>
+          {activeMuscles.map((muscle) => (
+            <View key={muscle} style={styles.muscleTag}>
+              <Text style={styles.muscleTagText}>
+                {muscleGroupLabel(muscle, lang).toUpperCase()}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* 운동 목록 */}
+      {allExercises.length > 0 ? (
+        <View style={styles.exerciseList}>
+          {allExercises.map((ex, idx) => (
+            <ExerciseRow key={`${ex.exerciseKey}-${idx}`} exercise={ex} lang={lang} />
+          ))}
+        </View>
+      ) : (
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyBody}>
+            {lang === 'ko' ? '운동 세부 정보 없음' : 'No exercise details recorded'}
+          </Text>
+        </View>
       )}
     </View>
   );
 }
 
-function MuscleBreakdownRow({
+function ExerciseRow({
+  exercise,
   lang,
-  muscleGroup,
-  active,
 }: {
+  exercise: SavedWorkoutSession['exercises'][number];
   lang: Language;
-  muscleGroup: MuscleGroup;
-  active: boolean;
 }) {
-  const def = MUSCLES.find((m) => m.id === muscleGroup)!;
+  const [expanded, setExpanded] = useState(false);
+  const completedSets = exercise.sets.filter((s) => s.completed).length;
+  const name = exercise.exerciseName[lang] ?? exercise.exerciseName.en ?? '';
+
+  // 커스텀 운동인 경우 store에서 mediaUri 조회 (exerciseKey = "custom:<id>")
+  const customExercises = useCustomExerciseStore((s) => s.exercises);
+  const customMediaUri = (() => {
+    if (!exercise.exerciseKey.startsWith('custom:')) return undefined;
+    const customId = exercise.exerciseKey.slice('custom:'.length);
+    return customExercises.find((c) => c.id === customId)?.mediaUri;
+  })();
 
   return (
-    <View style={[styles.muscleRow, !active && styles.muscleRowInactive]}>
-      <MuscleBodyView muscleGroup={muscleGroup} size="thumb" empty={!active} />
-      <View style={styles.muscleMeta}>
-        <Text style={[styles.muscleName, !active && styles.muscleNameInactive]}>
-          {muscleGroupLabel(muscleGroup, lang)}
-        </Text>
-        <View style={styles.barTrack}>
-          <View
-            style={[
-              styles.barFill,
-              {
-                width: active ? '55%' : '0%',
-                backgroundColor: def.color,
-              },
-            ]}
+    <Pressable
+      style={({ pressed }) => [styles.exerciseRow, pressed && styles.exerciseRowPressed]}
+      onPress={() => setExpanded((v) => !v)}
+    >
+      <View style={styles.exerciseHeader}>
+        {/* 썸네일 — 커스텀은 자체 이미지, 카탈로그는 ExerciseDB */}
+        {customMediaUri ? (
+          <Image
+            source={{ uri: customMediaUri }}
+            style={styles.customThumb}
+            resizeMode="cover"
           />
+        ) : (
+          <ExerciseDbThumb
+            nameEn={exercise.exerciseName.en}
+            variant="list"
+            width={44}
+            height={44}
+            borderRadius={8}
+          />
+        )}
+        <View style={styles.exerciseInfo}>
+          <Text style={styles.exerciseName}>{name}</Text>
+          <Text style={styles.exerciseMeta}>
+            {muscleGroupLabel(exercise.muscleGroup, lang)} · {completedSets}
+            {lang === 'ko' ? '세트' : ' sets'}
+          </Text>
         </View>
-        <Text style={styles.muscleStat}>
-          {active ? '—' : t('progressNoData', lang)}
-        </Text>
+        <Icon
+          name={expanded ? 'chevron-up' : 'chevron-down'}
+          size={16}
+          color={colors.textSecondary}
+        />
       </View>
-    </View>
+
+      {expanded && (
+        <View style={styles.setsContainer}>
+          {exercise.sets.map((set) => (
+            <View key={set.setNumber} style={styles.setRow}>
+              <Text style={styles.setNum}>{set.setNumber}</Text>
+              <Text style={[styles.setData, !set.completed && styles.setDataIncomplete]}>
+                {set.reps > 0 ? `${set.reps} reps` : '—'}
+                {set.weightLb != null && set.weightLb > 0
+                  ? ` · ${(set.weightLb * 0.4536).toFixed(1)} kg`
+                  : ''}
+                {set.bandLevel != null ? ` · ${set.bandLevel}` : ''}
+              </Text>
+              {set.completed && (
+                <Icon name="check" size={12} color={colors.accent} />
+              )}
+            </View>
+          ))}
+        </View>
+      )}
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: 10,
   },
   headerCard: {
     borderWidth: 1,
@@ -118,7 +196,7 @@ const styles = StyleSheet.create({
   },
   dateSub: {
     ...typography.caption,
-    marginTop: 4,
+    marginTop: 2,
   },
   emptyCard: {
     borderWidth: 1,
@@ -135,63 +213,90 @@ const styles = StyleSheet.create({
   emptyBody: {
     ...typography.body,
     textAlign: 'center',
+    color: colors.textSecondary,
   },
-  summaryCard: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: layout.cardRadius,
-    padding: 14,
-    backgroundColor: colors.surface,
-  },
-  sectionTitle: {
-    ...typography.caption,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 4,
-  },
-  summaryHint: {
-    ...typography.body,
-    fontSize: 13,
-  },
-  muscleGrid: {
-    gap: 8,
-  },
-  muscleRow: {
+  muscleTags: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: layout.cardRadius,
-    padding: 10,
-    backgroundColor: colors.background,
-  },
-  muscleRowInactive: {
-    opacity: 0.45,
-  },
-  muscleMeta: {
-    flex: 1,
+    flexWrap: 'wrap',
     gap: 6,
   },
-  muscleName: {
+  muscleTag: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  muscleTagText: {
+    ...typography.caption,
+    fontSize: 11,
+    letterSpacing: 0.6,
+    color: colors.textPrimary,
+  },
+  customThumb: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    backgroundColor: colors.surface,
+  },
+  exerciseList: {
+    gap: 6,
+  },
+  exerciseRow: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: layout.cardRadius,
+    padding: 12,
+    backgroundColor: colors.background,
+  },
+  exerciseRowPressed: {
+    opacity: 0.75,
+  },
+  exerciseHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    justifyContent: 'space-between',
+  },
+  exerciseInfo: {
+    flex: 1,
+    gap: 2,
+  },
+  exerciseName: {
     ...typography.listItem,
     fontSize: 14,
   },
-  muscleNameInactive: {
-    color: colors.textSecondary,
-  },
-  barTrack: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.surface,
-    overflow: 'hidden',
-  },
-  barFill: {
-    height: '100%',
-    borderRadius: 3,
-  },
-  muscleStat: {
+  exerciseMeta: {
     ...typography.caption,
-    fontSize: 11,
+    color: colors.textSecondary,
+    fontSize: 12,
+  },
+  setsContainer: {
+    marginTop: 10,
+    gap: 6,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  setRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  setNum: {
+    ...typography.caption,
+    fontSize: 12,
+    color: colors.textMuted,
+    width: 20,
+    textAlign: 'center',
+  },
+  setData: {
+    ...typography.body,
+    fontSize: 13,
+    flex: 1,
+  },
+  setDataIncomplete: {
+    color: colors.textSecondary,
   },
 });

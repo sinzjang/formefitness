@@ -285,7 +285,7 @@ export function PaywallModal({ visible, lang, onClose }: PaywallModalProps) {
             />
             {/* 하단 페이드 */}
             <View style={styles.bannerFade} pointerEvents="none" />
-            <Text style={styles.bannerTitle}>FORMÉ</Text>
+            <Text style={styles.bannerTitle}>KYNE</Text>
           </View>
 
           {/* ── 비교 테이블 ── */}

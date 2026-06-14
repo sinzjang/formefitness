@@ -199,7 +199,17 @@ export async function pullWorkoutData(userId: string): Promise<void> {
   const prevSelected = useLocationStore.getState().selectedLocationId;
   useLocationStore.getState().replaceAll(locations, prevSelected);
   useRoutineStore.getState().replaceAll(routines);
-  useHistoryStore.getState().replaceAll(sessions);
+
+  // 세션은 replaceAll 대신 merge — 클라우드에 아직 없는 로컬 세션 보호
+  const cloudIds = new Set(sessions.map((s) => s.id));
+  const localSessions = useHistoryStore.getState().sessions;
+  const unsynced = localSessions.filter((s) => !cloudIds.has(s.id));
+  // 미싱크 로컬 세션 → 클라우드에 재push
+  for (const s of unsynced) {
+    pushSession(s);
+  }
+  useHistoryStore.getState().importBulk(sessions);
+
   useCustomExerciseStore.getState().replaceAll(customExercises);
   useExerciseCatalogPrefsStore.getState().replaceAll(prefs);
 

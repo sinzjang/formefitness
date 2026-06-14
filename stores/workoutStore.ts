@@ -25,6 +25,8 @@ interface WorkoutState {
   sessionPausedAtMs: number | null;
   sessionAccumulatedPauseMs: number;
   startSession: (locationId: string, routineId?: string) => void;
+  /** Progress 달력 + 버튼 — 특정 날짜로 수동 세션 시작 (루틴 없음) */
+  startManualSession: (date: Date) => void;
   beginSession: () => void;
   openSessionScreen: () => void;
   closeSessionScreen: () => void;
@@ -66,6 +68,26 @@ export const useWorkoutStore = create<WorkoutState>((set) => ({
       sessionPausedAtMs: null,
       sessionAccumulatedPauseMs: 0,
     }),
+
+  startManualSession: (date) => {
+    // 선택 날짜의 정오(12:00)를 startedAt으로 설정 — 달력에서 해당 날짜로 표시됨
+    const noon = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0);
+    // saveManualSession과 동일한 ID 포맷 사용 → upsert 시 같은 레코드로 덮어씀
+    const noonIso = noon.toISOString();
+    set({
+      session: {
+        id: `manual_${noonIso}`,
+        startedAt: noonIso,
+        locationId: undefined,
+        routineId: undefined,
+        exercises: [],
+      },
+      sessionScreenOpen: true,
+      sessionPaused: false,
+      sessionPausedAtMs: null,
+      sessionAccumulatedPauseMs: 0,
+    });
+  },
 
   beginSession: () =>
     set((state) => {

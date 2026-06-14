@@ -27,7 +27,7 @@ export type ExerciseMeasurementType = 'weight' | 'level' | 'bodyweight' | 'repsO
 
 export type ExerciseMediaType = 'gif' | 'image';
 
-export type BandLevel = 'Light' | 'Medium' | 'Heavy' | 'X-Heavy';
+export type BandLevel = 'Lvl 1' | 'Lvl 2' | 'Lvl 3' | 'Lvl 4';
 
 export type FatigueLevel = 'none' | 'good' | 'caution' | 'overload';
 

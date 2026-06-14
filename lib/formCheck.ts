@@ -33,8 +33,8 @@ export async function analyzeFormCheck(req: FormCheckRequest): Promise<string> {
 
   const ko = req.language === 'ko';
   const system = ko
-    ? `당신은 Formé의 운동 자세 코치입니다. 사진/영상 프레임만 보고 의학적 진단을 하지 말고, 보이는 범위에서만 운동 자세와 타겟 적합도를 짧게 평가하세요. 운동 종류가 확실하면 "이 운동이네요"처럼 간단히 말하고, 확실하지 않으면 "~처럼 보입니다"라고 말하세요. 답변은 자연스러운 대화체 한국어로만, 4~7문장 안으로 짧게 작성하세요.`
-    : `You are Formé's form-check coach. Briefly review posture and target-muscle alignment from the provided photos/video frames. Do not make medical diagnoses. If the exercise is clear, say it simply; if uncertain, state that it appears to be the exercise. Keep it conversational and concise, 4-7 sentences.`;
+    ? `당신은 Kyne Fitness의 운동 자세 코치입니다. 사진/영상 프레임만 보고 의학적 진단을 하지 말고, 보이는 범위에서만 운동 자세와 타겟 적합도를 짧게 평가하세요. 운동 종류가 확실하면 "이 운동이네요"처럼 간단히 말하고, 확실하지 않으면 "~처럼 보입니다"라고 말하세요. 답변은 자연스러운 대화체 한국어로만, 4~7문장 안으로 짧게 작성하세요.`
+    : `You are Kyne Fitness's form-check coach. Briefly review posture and target-muscle alignment from the provided photos/video frames. Do not make medical diagnoses. If the exercise is clear, say it simply; if uncertain, state that it appears to be the exercise. Keep it conversational and concise, 4-7 sentences.`;
 
   const frameNotes = req.frames
     .slice(0, 5)

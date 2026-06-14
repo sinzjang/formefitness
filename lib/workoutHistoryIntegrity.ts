@@ -22,7 +22,7 @@ const MUSCLE_GROUPS = new Set<MuscleGroup>([
 ]);
 
 const RESISTANCE_TYPES = new Set<ResistanceType>(['weight', 'band', 'bodyweight']);
-const BAND_LEVELS = new Set<BandLevel>(['Light', 'Medium', 'Heavy', 'X-Heavy']);
+const BAND_LEVELS = new Set<BandLevel>(['Lvl 1', 'Lvl 2', 'Lvl 3', 'Lvl 4']);
 
 export interface IntegrityIssue {
   path: string;
@@ -265,7 +265,11 @@ export function sanitizeSavedWorkoutSession(
     report.exercisesDropped += rawExercises.length - exercises.length;
   }
 
-  if (exercises.length === 0) {
+  // manual_ 세션(달력 수동 체크인)은 운동 없이도 유지
+  const rawId = asString(raw.id ?? raw.client_id, '');
+  const isManualSession = rawId.startsWith('manual_');
+
+  if (exercises.length === 0 && !isManualSession) {
     issue(report, path, '유효한 운동 없음 — 세션 건너뜀');
     if (report) report.sessionsDropped += 1;
     return null;

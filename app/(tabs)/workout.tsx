@@ -9,7 +9,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '../../components/ui/Icon';
 import type { MuscleGroup, WorkoutRoutine } from '../../types';
 import { colors, typography, layout } from '../../constants/theme';
@@ -32,6 +32,7 @@ import { SessionTimeEditModal } from '../../components/workout/SessionTimeEditMo
 
 export default function WorkoutScreen() {
   const lang = useLanguage();
+  const insets = useSafeAreaInsets();
   const session = useWorkoutStore((s) => s.session);
   const sessionScreenOpen = useWorkoutStore((s) => s.sessionScreenOpen);
   const startSession = useWorkoutStore((s) => s.startSession);
@@ -48,8 +49,9 @@ export default function WorkoutScreen() {
   const reorderExercises = useWorkoutStore((s) => s.reorderExercises);
   const resetRestTimer = useRestTimerStore((s) => s.reset);
   const saveSession = useHistoryStore((s) => s.saveSession);
+  const saveManualLog = useHistoryStore((s) => s.saveManualLog);
   const selectedLocationId = useLocationStore((s) => s.selectedLocationId);
-  const archiveRoutine = useRoutineStore((s) => s.archiveRoutine);
+  const deleteRoutine = useRoutineStore((s) => s.deleteRoutine);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -57,6 +59,8 @@ export default function WorkoutScreen() {
 
   const isRunning = Boolean(session?.runningStartedAt);
   const showSessionScreen = Boolean(session && sessionScreenOpen);
+  // 달력 + 버튼으로 진입한 수동 로그 세션
+  const isManualLog = Boolean(session?.id?.startsWith('manual_'));
 
   const clearSession = () => {
     resetRestTimer();
@@ -74,6 +78,14 @@ export default function WorkoutScreen() {
         setTimeEditSessionId(ended.id);
       }
     }
+    clearSession();
+  };
+
+  // 달력에서 진입한 수동 세션 저장
+  const handleSaveManualLog = () => {
+    if (!session) return;
+    saveManualLog(session);
+    setTimeEditSessionId(session.id);
     clearSession();
   };
 
@@ -119,17 +131,21 @@ export default function WorkoutScreen() {
     });
   };
 
-  // 루틴 보관 — 목록에서 숨김 (현재 세션은 유지)
+  // 루틴 삭제 — 완전 삭제 후 루틴 목록으로 복귀
   const handleArchiveRoutine = () => {
     const routineId = session?.routineId;
     if (!routineId) return;
 
-    Alert.alert(t('archiveRoutine', lang), t('archiveRoutineConfirm', lang), [
+    Alert.alert(t('deleteRoutineTitle', lang), t('deleteRoutineConfirm', lang), [
       { text: t('cancel', lang), style: 'cancel' },
       {
-        text: t('archive', lang),
+        text: t('delete', lang),
         style: 'destructive',
-        onPress: () => archiveRoutine(routineId),
+        onPress: () => {
+          deleteRoutine(routineId);
+          reset();
+          closeSessionScreen();
+        },
       },
     ]);
   };
@@ -197,7 +213,8 @@ export default function WorkoutScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 49 + insets.bottom : 0}
       >
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
@@ -268,7 +285,33 @@ export default function WorkoutScreen() {
           </View>
         )}
 
-        {!isRunning && (
+        {!isRunning && isManualLog && (
+          // 달력에서 진입한 수동 로그: 날짜 표시 + 히스토리 저장 버튼
+          <View style={styles.footer}>
+            <View style={styles.manualLogDate}>
+              <Text style={styles.manualLogDateLabel}>
+                {lang === 'ko' ? '기록 날짜' : 'Logging for'}
+              </Text>
+              <Text style={styles.manualLogDateValue}>
+                {session!.startedAt
+                  ? (() => {
+                      const d = new Date(session!.startedAt);
+                      return lang === 'ko'
+                        ? `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`
+                        : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                    })()
+                  : '—'}
+              </Text>
+            </View>
+            <Button
+              title={lang === 'ko' ? '히스토리에 저장' : 'Save to History'}
+              variant="primary"
+              onPress={handleSaveManualLog}
+            />
+          </View>
+        )}
+
+        {!isRunning && !isManualLog && (
           <View style={styles.footer}>
             <Button title={t('beginSession', lang)} variant="primary" onPress={beginSession} />
           </View>
@@ -387,7 +430,8 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: layout.screenPadding,
     paddingTop: 16,
-    paddingBottom: 24,
+    // 키보드가 올라왔을 때 마지막 아이템이 가리지 않도록 충분한 여백
+    paddingBottom: 120,
   },
   hint: {
     ...typography.body,
@@ -402,5 +446,22 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderTopWidth: 0.5,
     borderTopColor: colors.border,
+    gap: 10,
+  },
+  manualLogDate: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  manualLogDateLabel: {
+    ...typography.caption,
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  manualLogDateValue: {
+    ...typography.listItem,
+    fontSize: 14,
   },
 });
